@@ -1,3 +1,7 @@
+mod systems;
+
+use systems::*;
+
 use bevy::{
     prelude::*,
     window::{PrimaryWindow, WindowTheme},
@@ -20,6 +24,7 @@ fn main() {
                         title: "Typing Defense".to_string(),
                         resizable: true,
                         window_theme: Some(WindowTheme::Dark),
+                        // mode: bevy::window::WindowMode::BorderlessFullscreen,
                         ..Default::default()
                     }),
                     ..default()
@@ -27,5 +32,9 @@ fn main() {
         )
         // Add Debugging info in game
         .add_plugins(WorldInspectorPlugin::new())
+        // Spawn camera and add background
+        .add_systems(Startup, spawn_background)
+        .add_systems(Startup, spawn_camera)
+        .add_systems(Update, toggle_borderless_fullscreen)
         .run();
 }
