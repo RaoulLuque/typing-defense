@@ -2,7 +2,108 @@
 name = "typing-defense"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+rust-version = "1.76"
+authors = ["Raoul Luque <raoulsluque@gmail.com>"]
+description = "A typing defense game written in rust using the bevy game engine"
+repository = "https://github.com/RaoulLuque/typing-defense"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+
+
+# Enable a small amount of optimization in debug mode
+[profile.dev]
+opt-level = 1
+
+# Enable high optimizations for dependencies (incl. Bevy), but not for our code:
+[profile.dev.package."*"]
+opt-level = 3
+
 [dependencies]
+rand = { version ="0.8.5", default-features = false }
+bevy-inspector-egui = "0.22.1"
+
+[dependencies.bevy]
+version = "0.12.1"
+# Disable the default features if there are any that you do not want
+default-features = false
+features = [
+  # These are the default features:
+  # (re-enable whichever you like)
+
+  # Bevy functionality:
+  "multi-threaded",     # Run with multithreading
+  "bevy_asset",         # Assets management
+#   "bevy_audio",         # Builtin audio
+  "bevy_gilrs",         # Gamepad input support
+  "bevy_scene",         # Scenes management
+  "bevy_winit",         # Window management (cross-platform Winit backend)
+  "bevy_render",        # Rendering framework core
+  "bevy_core_pipeline", # Common rendering abstractions
+  "bevy_gizmos",        # Support drawing debug lines and shapes
+  "bevy_sprite",        # 2D (sprites) rendering
+#   "bevy_pbr",           # 3D (physically-based) rendering
+#   "bevy_gltf",          # GLTF 3D assets format support
+  "bevy_text",          # Text/font rendering
+  "bevy_ui",            # UI toolkit
+  # "animation",          # Animation support
+  "tonemapping_luts",   # Support different camera Tonemapping modes (enables KTX2+zstd)
+  "default_font",       # Embed a minimal default font for text/UI
+
+  # File formats:
+  "png",    # PNG image format for simple 2D images
+#   "hdr",    # HDR images
+#   "ktx2",   # Preferred format for GPU textures
+#   "zstd",   # ZSTD compression support in KTX2 files
+#   "vorbis", # Audio: OGG Vorbis
+
+  # Platform-specific:
+  "x11",                   # Linux: Support X11 windowing system
+  # "android_shared_stdcxx", # Android: use shared C++ library
+  "webgl2",                # Web: use WebGL2 instead of WebGPU
+
+  # These are other (non-default) features that may be of interest:
+  # (add any of these that you need)
+
+  # Bevy functionality:
+#   "asset_processor",      # Asset processing
+#   "file_watcher",         # Asset hot-reloading
+#   "subpixel_glyph_atlas", # Subpixel antialiasing for text/fonts
+#   "serialize",            # Support for `serde` Serialize/Deserialize
+#   "async-io",             # Make bevy use `async-io` instead of `futures-lite`
+#   "pbr_transmission_textures", # Enable Transmission textures in PBR materials (may cause issues on old/lowend GPUs)
+
+  # File formats:
+  # "dds",  # Alternative DirectX format for GPU textures, instead of KTX2
+  # "jpeg", # JPEG lossy format for 2D photos
+  # "webp", # WebP image format
+  # "bmp",  # Uncompressed BMP image format
+  # "tga",  # Truevision Targa image format
+  # "exr",  # OpenEXR advanced image format
+  # "pnm",  # PNM (pam, pbm, pgm, ppm) image format
+  # "basis-universal", # Basis Universal GPU texture compression format
+  # "zlib", # zlib compression support in KTX2 files
+  # "flac", # Audio: FLAC lossless format
+  # "mp3",  # Audio: MP3 format (not recommended)
+  # "wav",  # Audio: Uncompressed WAV
+  # "symphonia-all", # All Audio formats supported by the Symphonia library
+  # "shader_format_glsl", # GLSL shader support
+  # "shader_format_spirv", # SPIR-V shader support
+
+  # Platform-specific:
+  "wayland",              # (Linux) Support Wayland windowing system
+#   "accesskit_unix",       # (Unix-like) AccessKit integration for UI Accessibility
+#   "bevy_dynamic_plugin",  # (Desktop) support for loading of `DynamicPlugin`s
+
+  # Development/Debug features:
+#  "dynamic_linking",   # Dynamic linking for faster compile-times
+#   "trace",             # Enable tracing for performance measurement
+#   "detailed_trace",    # Make traces more verbose
+#   "trace_tracy",       # Tracing using `tracy`
+#   "trace_tracy_memory", # + memory profiling
+#   "trace_chrome",      # Tracing using the Chrome format
+#   "wgpu_trace",        # WGPU/rendering tracing
+#   "debug_glam_assert", # Assertions to validate math (glam) usage
+#   "embedded_watcher",  # Hot-reloading for Bevy's internal/builtin assets
+]
