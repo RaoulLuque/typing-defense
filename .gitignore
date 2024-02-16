@@ -1,0 +1,7 @@
+/target
+/.cargo
+log.txt
+/.idea
+/.vscode
+fly.toml
+/kenney_cartography-pack
