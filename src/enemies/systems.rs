@@ -1,8 +1,6 @@
-use super::components::{CurrentlyBeingTyped, Enemy};
-use super::resources::IsSomethingBeingTyped;
+use super::*;
 
 use bevy::hierarchy::Children;
-use bevy::prelude::*;
 
 pub fn spawn_enemy(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
@@ -37,10 +35,10 @@ pub fn update_text_from_enemies_on_button_press(
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
         // Iterate over all enemies with children and get typing index if necessary
-        for (entity_id, typing_index, child) in q_parent.iter() {
+        for (entity_id, currently_being_typed, child) in q_parent.iter_mut() {
             if !is_something_being_typed.indicator {
                 // If nothing is currently being typed
-                if let Some(_) = typing_index {
+                if let Some(_) = currently_being_typed {
                     // This should never happen but
                     commands.entity(entity_id).remove::<CurrentlyBeingTyped>();
                 }
@@ -59,12 +57,15 @@ pub fn update_text_from_enemies_on_button_press(
                 is_something_being_typed.indicator = true;
             } else {
                 // Something is being typed already
-                if let Some(index_wrapper) = typing_index {
+                if let Some(mut currently_being_typed) = currently_being_typed {
                     let mut iter = q_child.iter_many_mut(child);
                     while let Some(mut text) = iter.fetch_next() {
-                        if let Some(text_section) = text.sections.get_mut(index_wrapper.index + 1) {
+                        if let Some(text_section) =
+                            text.sections.get_mut(currently_being_typed.index + 1)
+                        {
                             text_section.style.color = Color::ORANGE_RED;
                         }
+                        currently_being_typed.index = currently_being_typed.index + 1;
                     }
                 }
             }

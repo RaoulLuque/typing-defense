@@ -1,9 +1,11 @@
-use bevy::prelude::*;
+use super::*;
 
-#[derive(Component)]
+#[derive(Reflect, Component, Default)]
+#[reflect(Component)]
 pub struct Enemy {}
 
-#[derive(Component, Default)]
+#[derive(Reflect, Component, Default)]
+#[reflect(Component)]
 pub struct CurrentlyBeingTyped {
     pub index: usize,
 }
