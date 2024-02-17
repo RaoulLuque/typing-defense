@@ -1,11 +1,10 @@
 mod systems;
-
 use systems::*;
 
-use bevy::{
-    prelude::*,
-    window::{PrimaryWindow, WindowTheme},
-};
+mod enemies;
+use enemies::EnemiesPlugin;
+
+use bevy::{prelude::*, window::WindowTheme};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 pub const WINDOW_WIDTH: f32 = 1920.0;
@@ -36,5 +35,7 @@ fn main() {
         .add_systems(Startup, spawn_background)
         .add_systems(Startup, spawn_camera)
         .add_systems(Update, toggle_borderless_fullscreen)
+        // Add own plugins
+        .add_plugins(EnemiesPlugin)
         .run();
 }
