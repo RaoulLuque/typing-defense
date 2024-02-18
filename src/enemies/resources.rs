@@ -2,7 +2,7 @@ use super::systems::Words;
 use bevy::prelude::*;
 
 // Interval for checking if enemies should spawn in seconds
-const ENEMY_SPAWN_TIMER: f32 = 1.0;
+const ENEMY_SPAWN_TIMER: f32 = 0.2;
 
 #[derive(Resource)]
 pub struct EnemySpawnTimer {
@@ -17,14 +17,19 @@ impl Default for EnemySpawnTimer {
     }
 }
 
+// Resource for tracking whether enemies are being typed and if so which ones
 #[derive(Resource)]
-pub struct IsSomethingBeingTyped {
+pub struct EnemiesBeingTyped {
     pub indicator: bool,
+    pub vec_of_enemies: Vec<Entity>,
 }
 
-impl Default for IsSomethingBeingTyped {
-    fn default() -> IsSomethingBeingTyped {
-        IsSomethingBeingTyped { indicator: false }
+impl Default for EnemiesBeingTyped {
+    fn default() -> EnemiesBeingTyped {
+        EnemiesBeingTyped {
+            indicator: false,
+            vec_of_enemies: Vec::new(),
+        }
     }
 }
 

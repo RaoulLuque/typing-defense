@@ -18,7 +18,7 @@ impl Plugin for EnemiesPlugin {
             .register_type::<CurrentlyBeingTyped>()
             .register_type::<Enemy>()
             // Initialize Resources
-            .init_resource::<IsSomethingBeingTyped>()
+            .init_resource::<EnemiesBeingTyped>()
             .init_resource::<EnemySpawnTimer>()
             // Setup list of words as asset
             .add_plugins(TomlAssetPlugin::<Words>::new(&["words.toml"]))
