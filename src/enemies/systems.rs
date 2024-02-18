@@ -86,8 +86,8 @@ pub fn update_text_from_enemies_on_button_press(
         } else {
             // Case where key is being pressed
             if let Some(pressed_key) = key_event.key_code {
-                // Check if esc was just pressed and reset all enemies if so
-                if pressed_key == KeyCode::Escape {
+                // Check if esc or backspace was just pressed and reset all enemies if so
+                if pressed_key == KeyCode::Escape || pressed_key == KeyCode::Back {
                     for (entity_id, currently_being_typed, child) in q_parent.iter_mut() {
                         if let Some(_) = currently_being_typed {
                             let mut iter = q_child.iter_many_mut(child);
