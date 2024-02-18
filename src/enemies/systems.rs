@@ -19,42 +19,51 @@ pub fn spawn_enemy(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     enemy_spawn_timer: Res<EnemySpawnTimer>,
+    mut number_of_enemies: ResMut<NumberOfEnemies>,
     asset_server: Res<AssetServer>,
     words_handle: Res<WordsHandle>,
     words: Res<Assets<Words>>,
 ) {
-    if enemy_spawn_timer.timer.finished() && rand::thread_rng().gen_bool(CHANCE_OF_SPAWNING_ENEMY) {
-        let window = window_query.get_single().unwrap();
-        if let Some(word) = words.get(words_handle.0.id()) {
-            let word_for_enemy = word
-                .vec_of_words
-                .choose(&mut rand::thread_rng())
-                .expect("The list of words shouldn't be empty");
-            commands
-                .spawn((
-                    SpriteBundle {
-                        transform: Transform::from_xyz(
-                            window.width() * 0.8 * (rand::random::<f32>() - 0.5),
-                            window.height() * 0.8 * (rand::random::<f32>() - 0.5),
-                            0.0,
-                        ),
-                        texture: asset_server.load("sprites/skull.png"),
-                        ..default()
-                    },
-                    Enemy {},
-                ))
-                .with_children(|parent| {
-                    parent.spawn(Text2dBundle {
-                        text: Text {
-                            sections: turn_string_literal_into_vec_of_text_sections(word_for_enemy),
-                            alignment: TextAlignment::Center,
-                            linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
+    // Cap out enemies
+    if number_of_enemies.number < 15 {
+        if enemy_spawn_timer.timer.finished()
+            && rand::thread_rng().gen_bool(CHANCE_OF_SPAWNING_ENEMY)
+        {
+            let window = window_query.get_single().unwrap();
+            if let Some(word) = words.get(words_handle.0.id()) {
+                let word_for_enemy = word
+                    .vec_of_words
+                    .choose(&mut rand::thread_rng())
+                    .expect("The list of words shouldn't be empty");
+                commands
+                    .spawn((
+                        SpriteBundle {
+                            transform: Transform::from_xyz(
+                                window.width() * 0.8 * (rand::random::<f32>() - 0.5),
+                                window.height() * 0.8 * (rand::random::<f32>() - 0.5),
+                                0.0,
+                            ),
+                            texture: asset_server.load("sprites/skull.png"),
+                            ..default()
                         },
-                        // ensure the text is drawn on top of the box
-                        transform: Transform::from_xyz(0.0, 50.0, 0.0),
-                        ..default()
+                        Enemy {},
+                    ))
+                    .with_children(|parent| {
+                        parent.spawn(Text2dBundle {
+                            text: Text {
+                                sections: turn_string_literal_into_vec_of_text_sections(
+                                    word_for_enemy,
+                                ),
+                                alignment: TextAlignment::Center,
+                                linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
+                            },
+                            // ensure the text is drawn on top of the box
+                            transform: Transform::from_xyz(0.0, 50.0, 0.0),
+                            ..default()
+                        });
                     });
-                });
+            }
+            number_of_enemies.number += 1;
         }
     }
 }
@@ -66,6 +75,7 @@ pub fn tick_enemy_spawn_timer(mut enemy_spawn_timer: ResMut<EnemySpawnTimer>, ti
 pub fn update_text_from_enemies_on_button_press(
     mut commands: Commands,
     mut enemies_being_typed: ResMut<EnemiesBeingTyped>,
+    mut number_of_enemies: ResMut<NumberOfEnemies>,
     mut keyboard_input_events: EventReader<KeyboardInput>,
     mut q_parent: Query<(Entity, Option<&mut CurrentlyBeingTyped>, &Children), With<Enemy>>,
     mut q_child: Query<&mut Text>,
@@ -76,11 +86,29 @@ pub fn update_text_from_enemies_on_button_press(
         } else {
             // Case where key is being pressed
             if let Some(pressed_key) = key_event.key_code {
+                // Check if esc was just pressed and reset all enemies if so
+                if pressed_key == KeyCode::Escape {
+                    for (entity_id, currently_being_typed, child) in q_parent.iter_mut() {
+                        if let Some(_) = currently_being_typed {
+                            let mut iter = q_child.iter_many_mut(child);
+                            while let Some(mut text) = iter.fetch_next() {
+                                for section in text.sections.iter_mut() {
+                                    section.style.color = Color::WHITE;
+                                }
+                            }
+                            commands.entity(entity_id).remove::<CurrentlyBeingTyped>();
+                        }
+                    }
+                    enemies_being_typed.indicator = false;
+                    enemies_being_typed.vec_of_enemies.clear();
+                }
+
                 // Check if the key is a key and not a function/logical key otherwise can ignore
                 if let Some(pressed_letter) = key_to_letter(pressed_key) {
+                    let mut made_a_mistake_global = false;
                     // Iterate over all enemies with children and get typing index if necessary
                     for (entity_id, currently_being_typed, child) in q_parent.iter_mut() {
-                        if !enemies_being_typed.indicator {
+                        if !enemies_being_typed.indicator && !made_a_mistake_global {
                             // If nothing is currently being typed
                             let mut iter = q_child.iter_many_mut(child);
                             while let Some(mut text) = iter.fetch_next() {
@@ -97,10 +125,10 @@ pub fn update_text_from_enemies_on_button_press(
                             }
                         } else {
                             // Something is being typed already
-
                             if let Some(mut currently_being_typed) = currently_being_typed {
                                 let mut iter = q_child.iter_many_mut(child);
                                 while let Some(mut text) = iter.fetch_next() {
+                                    // Track if there is a mistake
                                     let mut made_a_mistake = false;
                                     if let Some(text_section) =
                                         text.sections.get_mut(currently_being_typed.index + 1)
@@ -123,10 +151,12 @@ pub fn update_text_from_enemies_on_button_press(
                                                     // Check if there are no more enemies being typed
                                                     enemies_being_typed.indicator = false;
                                                 }
+                                                number_of_enemies.number -= 1;
                                             }
                                         } else {
                                             // Player is typing another enemy or has made a mistake
                                             made_a_mistake = true;
+                                            made_a_mistake_global = true;
                                         }
                                     }
                                     if made_a_mistake {
@@ -138,6 +168,7 @@ pub fn update_text_from_enemies_on_button_press(
                                             .vec_of_enemies
                                             .retain(|&x| x != entity_id);
                                     }
+                                    // If there were mistakes and there is no enemy left that is being typed
                                     if enemies_being_typed.vec_of_enemies.len() == 0 {
                                         enemies_being_typed.indicator = false;
                                     }
