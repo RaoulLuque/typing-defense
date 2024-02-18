@@ -2,7 +2,7 @@ use super::systems::Words;
 use bevy::prelude::*;
 
 // Interval for checking if enemies should spawn in seconds
-const ENEMY_SPAWN_TIMER: f32 = 3.0;
+const ENEMY_SPAWN_TIMER: f32 = 1.0;
 
 #[derive(Resource)]
 pub struct EnemySpawnTimer {

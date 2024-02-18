@@ -99,8 +99,13 @@ pub fn update_text_from_enemies_on_button_press(
                             text.sections.get_mut(currently_being_typed.index + 1)
                         {
                             text_section.style.color = Color::ORANGE_RED;
+                            currently_being_typed.index = currently_being_typed.index + 1;
+                            if currently_being_typed.index == text.sections.len() - 1 {
+                                // You got "typed"
+                                commands.entity(entity_id).despawn_recursive();
+                                is_something_being_typed.indicator = false;
+                            }
                         }
-                        currently_being_typed.index = currently_being_typed.index + 1;
                     }
                 }
             }
