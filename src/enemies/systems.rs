@@ -1,29 +1,64 @@
 use super::*;
 
 use bevy::hierarchy::Children;
+use bevy::window::PrimaryWindow;
+use rand::seq::SliceRandom;
+use rand::Rng;
 
-pub fn spawn_enemy(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands
-        .spawn((
-            SpriteBundle {
-                transform: Transform::default(),
-                texture: asset_server.load("sprites/skull.png"),
-                ..default()
-            },
-            Enemy {},
-        ))
-        .with_children(|parent| {
-            parent.spawn(Text2dBundle {
-                text: Text {
-                    sections: turn_string_literal_into_vec_of_text_sections("lol"),
-                    alignment: TextAlignment::Center,
-                    linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
-                },
-                // ensure the text is drawn on top of the box
-                transform: Transform::from_xyz(0.0, 50.0, 0.0),
-                ..default()
-            });
-        });
+// Chance of spawning an enemy every super::resources::ENEMY_SPAWN_TIME seconds
+pub const CHANCE_OF_SPAWNING_ENEMY: f64 = 0.5;
+
+#[derive(serde::Deserialize, Asset, TypePath)]
+pub struct Words {
+    pub vec_of_words: Vec<String>,
+}
+
+pub fn spawn_enemy(
+    mut commands: Commands,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+    enemy_spawn_timer: Res<EnemySpawnTimer>,
+    asset_server: Res<AssetServer>,
+    words_handle: Res<WordsHandle>,
+    words: Res<Assets<Words>>,
+) {
+    if enemy_spawn_timer.timer.finished() && rand::thread_rng().gen_bool(CHANCE_OF_SPAWNING_ENEMY) {
+        let window = window_query.get_single().unwrap();
+        if let Some(word) = words.get(words_handle.0.id()) {
+            let word_for_enemy = word
+                .vec_of_words
+                .choose(&mut rand::thread_rng())
+                .expect("The list of words shouldn't be empty");
+            commands
+                .spawn((
+                    SpriteBundle {
+                        transform: Transform::from_xyz(
+                            window.width() * 0.8 * (rand::random::<f32>() - 0.5),
+                            window.height() * 0.8 * (rand::random::<f32>() - 0.5),
+                            0.0,
+                        ),
+                        texture: asset_server.load("sprites/skull.png"),
+                        ..default()
+                    },
+                    Enemy {},
+                ))
+                .with_children(|parent| {
+                    parent.spawn(Text2dBundle {
+                        text: Text {
+                            sections: turn_string_literal_into_vec_of_text_sections(word_for_enemy),
+                            alignment: TextAlignment::Center,
+                            linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
+                        },
+                        // ensure the text is drawn on top of the box
+                        transform: Transform::from_xyz(0.0, 50.0, 0.0),
+                        ..default()
+                    });
+                });
+        }
+    }
+}
+
+pub fn tick_enemy_spawn_timer(mut enemy_spawn_timer: ResMut<EnemySpawnTimer>, time: Res<Time>) {
+    enemy_spawn_timer.timer.tick(time.delta());
 }
 
 pub fn update_text_from_enemies_on_button_press(
@@ -87,4 +122,10 @@ fn turn_string_literal_into_vec_of_text_sections(string_literal: &str) -> Vec<Te
             )
         })
         .collect()
+}
+
+pub fn setup_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let words_handle =
+        WordsHandle(asset_server.load("words/thousand_most_frequent_words.words.toml"));
+    commands.insert_resource(words_handle);
 }
