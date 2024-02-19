@@ -4,6 +4,9 @@ use systems::*;
 mod enemies;
 use enemies::EnemiesPlugin;
 
+mod castle;
+use castle::CastlePlugin;
+
 use bevy::{prelude::*, window::WindowTheme};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
@@ -37,5 +40,6 @@ fn main() {
         .add_systems(Update, toggle_borderless_fullscreen)
         // Add own plugins
         .add_plugins(EnemiesPlugin)
+        .add_plugins(CastlePlugin)
         .run();
 }

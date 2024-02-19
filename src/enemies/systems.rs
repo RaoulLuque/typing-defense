@@ -8,45 +8,53 @@ use rand::seq::SliceRandom;
 use rand::Rng;
 
 // Chance of spawning an enemy every super::resources::ENEMY_SPAWN_TIME seconds
-pub const CHANCE_OF_SPAWNING_ENEMY: f64 = 0.5;
+pub const CHANCE_OF_SPAWNING_ENEMY: f64 = 1.0;
 
 #[derive(serde::Deserialize, Asset, TypePath)]
 pub struct Words {
     pub vec_of_words: Vec<String>,
 }
 
-pub fn spawn_enemy(
+pub fn randomly_spawn_enemies_over_time(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
-    enemy_spawn_timer: Res<EnemySpawnTimer>,
+    mut last_enemy_spawn_point: ResMut<LastEnemySpawnPoint>,
     mut number_of_enemies: ResMut<NumberOfEnemies>,
+    enemy_spawn_timer: Res<EnemySpawnTimer>,
     asset_server: Res<AssetServer>,
     words_handle: Res<WordsHandle>,
     words: Res<Assets<Words>>,
 ) {
     // Cap out enemies
     if number_of_enemies.number < 15 {
-        if enemy_spawn_timer.timer.finished()
-            && rand::thread_rng().gen_bool(CHANCE_OF_SPAWNING_ENEMY)
-        {
+        // Get thread rng once for better performance
+        let mut rng = rand::thread_rng();
+        if enemy_spawn_timer.timer.finished() && rng.gen_bool(CHANCE_OF_SPAWNING_ENEMY) {
             let window = window_query.get_single().unwrap();
+
+            // Get a random spawn point
+            let spawn_point = last_enemy_spawn_point
+                .spawn_point
+                .next_spawn_point_excluding_self(&mut rng);
+            last_enemy_spawn_point.spawn_point = spawn_point;
+            let spawn_point_transform =
+                generate_spawn_point_transform_from_enum(spawn_point, window);
+
             if let Some(word) = words.get(words_handle.0.id()) {
                 let word_for_enemy = word
                     .vec_of_words
-                    .choose(&mut rand::thread_rng())
+                    .choose(&mut rng)
                     .expect("The list of words shouldn't be empty");
                 commands
                     .spawn((
                         SpriteBundle {
-                            transform: Transform::from_xyz(
-                                window.width() * 0.8 * (rand::random::<f32>() - 0.5),
-                                window.height() * 0.8 * (rand::random::<f32>() - 0.5),
-                                0.0,
-                            ),
+                            transform: spawn_point_transform,
                             texture: asset_server.load("sprites/skull.png"),
                             ..default()
                         },
                         Enemy {},
+                        spawn_point,
+                        Speed { speed: 100.0 },
                     ))
                     .with_children(|parent| {
                         parent.spawn(Text2dBundle {
@@ -68,8 +76,48 @@ pub fn spawn_enemy(
     }
 }
 
+fn generate_spawn_point_transform_from_enum(
+    enemy_spawn_point_enum: EnemySpawnPoint,
+    window: &Window,
+) -> Transform {
+    match enemy_spawn_point_enum {
+        EnemySpawnPoint::Top => Transform::from_xyz(0.0, window.height() * 0.5, 0.0),
+        EnemySpawnPoint::Bottom => Transform::from_xyz(0.0, -window.height() * 0.5, 0.0),
+        EnemySpawnPoint::Left => Transform::from_xyz(-window.width() * 0.5, 0.0, 0.0),
+        EnemySpawnPoint::Right => Transform::from_xyz(window.width() * 0.5, 0.0, 0.0),
+    }
+}
+
 pub fn tick_enemy_spawn_timer(mut enemy_spawn_timer: ResMut<EnemySpawnTimer>, time: Res<Time>) {
     enemy_spawn_timer.timer.tick(time.delta());
+}
+
+pub fn update_position_of_enemies(
+    mut enemy_query: Query<(&Speed, &EnemySpawnPoint, &mut Transform), With<Enemy>>,
+    time: Res<Time>,
+) {
+    for (speed, spawn_point, mut transform) in enemy_query.iter_mut() {
+        let translation = match spawn_point {
+            EnemySpawnPoint::Top => Vec3::new(0.0, -speed.speed * time.delta_seconds(), 0.0),
+            EnemySpawnPoint::Bottom => Vec3::new(0.0, speed.speed * time.delta_seconds(), 0.0),
+            EnemySpawnPoint::Left => Vec3::new(speed.speed * time.delta_seconds(), 0.0, 0.0),
+            EnemySpawnPoint::Right => Vec3::new(-speed.speed * time.delta_seconds(), 0.0, 0.0),
+        };
+        transform.translation += translation;
+    }
+}
+
+pub fn enemy_collision_with_castle(
+    mut commands: Commands,
+    mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
+    mut number_of_enemies: ResMut<NumberOfEnemies>,
+) {
+    for (entity, transform) in enemy_query.iter_mut() {
+        if transform.translation.distance(Vec3::new(0.0, 0.0, 0.0)) < 5.0 {
+            commands.entity(entity).despawn_recursive();
+            number_of_enemies.number -= 1;
+        }
+    }
 }
 
 pub fn update_text_from_enemies_on_button_press(
