@@ -112,14 +112,23 @@ pub fn update_text_from_enemies_on_button_press(
                             // If nothing is currently being typed
                             let mut iter = q_child.iter_many_mut(child);
                             while let Some(mut text) = iter.fetch_next() {
+                                let number_of_letter_in_word = text.sections.len();
                                 if let Some(text_section) = text.sections.get_mut(0) {
                                     if text_section.value == pressed_letter {
-                                        text_section.style.color = Color::ORANGE_RED;
-                                        // Insert the currently being typed component into enemy
-                                        commands
-                                            .entity(entity_id)
-                                            .insert(CurrentlyBeingTyped { index: 0 });
-                                        enemies_being_typed.vec_of_enemies.push(entity_id);
+                                        if number_of_letter_in_word == 1 {
+                                            // Enemy only consists of one letter - You got "typed"
+                                            // Despawn entity and remove entity from list of enemies that are currently being typed
+                                            commands.entity(entity_id).despawn_recursive();
+                                            number_of_enemies.number -= 1;
+                                        } else {
+                                            // Player is starting to type this enemy
+                                            text_section.style.color = Color::ORANGE_RED;
+                                            // Insert the currently being typed component into enemy
+                                            commands
+                                                .entity(entity_id)
+                                                .insert(CurrentlyBeingTyped { index: 0 });
+                                            enemies_being_typed.vec_of_enemies.push(entity_id);
+                                        }
                                     }
                                 }
                             }
