@@ -3,7 +3,7 @@ use super::*;
 /// Number by which the number of enemies per round increases
 const NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT: u32 = 3;
 /// Number by which the number of enemies per round increases
-const ENEMY_BASE_SPEED_INCREMENT: f32 = 5.0;
+const ENEMY_BASE_SPEED_INCREMENT: f32 = 7.5;
 
 /// Resets the number of enemies spawned and typed current round and increases the maximum number of
 /// enemies spawned this round and base speed according to constants defined in this file.

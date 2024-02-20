@@ -1,7 +1,11 @@
-mod components;
+pub mod components;
 use components::*;
+
 mod systems;
 use systems::*;
+
+pub mod resources;
+use resources::*;
 
 use super::*;
 
@@ -12,9 +16,17 @@ impl Plugin for CastlePlugin {
         app
             // Register types for debug
             .register_type::<Castle>()
+            .register_type::<NumberOfLivesLeft>()
             // Initialize Resources
-            // Setup list of words as asset
-            .add_systems(OnEnter(AppState::InGame), spawn_castle);
-        // Add update systems
+            .init_resource::<NumberOfLivesLeft>()
+            // Add systems for startup into the game
+            .add_systems(OnEnter(AppState::InGame), spawn_castle)
+            // Add update systems
+            .add_systems(
+                Update,
+                despawn_castle_if_all_lives_are_gone
+                    .run_if(in_state(RoundState::InRound))
+                    .after(enemies::systems::enemy_collision_with_castle),
+            );
     }
 }

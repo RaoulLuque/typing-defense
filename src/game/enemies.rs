@@ -2,7 +2,7 @@ mod components;
 use components::*;
 mod resources;
 use resources::*;
-mod systems;
+pub mod systems;
 use systems::*;
 
 use super::*;

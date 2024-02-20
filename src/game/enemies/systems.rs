@@ -116,12 +116,17 @@ pub fn update_position_of_enemies(
 pub fn enemy_collision_with_castle(
     mut commands: Commands,
     mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
+    castle_query: Query<&Transform, With<castle::components::Castle>>,
     mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedCurrentRound>,
+    mut number_of_lives_left: ResMut<castle::resources::NumberOfLivesLeft>,
 ) {
-    for (entity, transform) in enemy_query.iter_mut() {
-        if transform.translation.distance(Vec3::new(0.0, 0.0, 0.0)) < 5.0 {
-            commands.entity(entity).despawn_recursive();
-            number_of_enemies_typed_current_round.number += 1;
+    if let Ok(castle_transform) = castle_query.get_single() {
+        for (entity, transform) in enemy_query.iter_mut() {
+            if transform.translation.distance(castle_transform.translation) < 5.0 {
+                commands.entity(entity).despawn_recursive();
+                number_of_enemies_typed_current_round.number += 1;
+                number_of_lives_left.number -= 1;
+            }
         }
     }
 }
