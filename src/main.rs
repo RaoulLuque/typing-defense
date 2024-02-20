@@ -1,12 +1,13 @@
 mod systems;
 use systems::*;
 
-mod enemies;
-use enemies::EnemiesPlugin;
+mod game;
+use game::GamePlugin;
 
-mod castle;
-use castle::CastlePlugin;
+mod menu;
+use menu::MenuPlugin;
 
+use bevy::app;
 use bevy::{prelude::*, window::WindowTheme};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
@@ -34,12 +35,20 @@ fn main() {
         )
         // Add Debugging info in game
         .add_plugins(WorldInspectorPlugin::new())
+        // Initialize AppState
+        .add_state::<AppState>()
         // Spawn camera and add background
         .add_systems(Startup, spawn_background)
         .add_systems(Startup, spawn_camera)
         .add_systems(Update, toggle_borderless_fullscreen)
-        // Add own plugins
-        .add_plugins(EnemiesPlugin)
-        .add_plugins(CastlePlugin)
+        // Add game and menu plugins
+        .add_plugins((GamePlugin, MenuPlugin))
         .run();
+}
+
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
+enum AppState {
+    #[default]
+    Menu,
+    InGame,
 }

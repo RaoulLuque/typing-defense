@@ -5,7 +5,9 @@ use resources::*;
 mod systems;
 use systems::*;
 
-use bevy::prelude::*;
+use crate::AppState;
+
+use super::*;
 
 use bevy_common_assets::toml::TomlAssetPlugin;
 
@@ -31,15 +33,18 @@ impl Plugin for EnemiesPlugin {
             .init_resource::<LastEnemySpawnPoint>()
             // Setup list of words as asset
             .add_plugins(TomlAssetPlugin::<Words>::new(&["words.toml"]))
-            .add_systems(
-                Startup,
-                setup_assets.before(randomly_spawn_enemies_over_time),
-            )
+            .add_systems(Startup, setup_assets)
             // Add update systems
-            .add_systems(Update, randomly_spawn_enemies_over_time)
-            .add_systems(Update, update_text_from_enemies_on_button_press)
-            .add_systems(Update, update_position_of_enemies)
-            .add_systems(Update, enemy_collision_with_castle)
-            .add_systems(Update, tick_enemy_spawn_timer);
+            .add_systems(
+                Update,
+                (
+                    randomly_spawn_enemies_over_time,
+                    update_text_from_enemies_on_button_press,
+                    tick_enemy_spawn_timer,
+                    update_position_of_enemies,
+                    enemy_collision_with_castle,
+                )
+                    .run_if(in_state(AppState::InGame)),
+            );
     }
 }

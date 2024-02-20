@@ -3,7 +3,9 @@ use components::*;
 mod systems;
 use systems::*;
 
-use bevy::prelude::*;
+use crate::AppState;
+
+use super::*;
 
 pub struct CastlePlugin;
 
@@ -14,7 +16,7 @@ impl Plugin for CastlePlugin {
             .register_type::<Castle>()
             // Initialize Resources
             // Setup list of words as asset
-            .add_systems(Startup, spawn_castle);
-            // Add update systems
+            .add_systems(OnEnter(AppState::InGame), spawn_castle);
+        // Add update systems
     }
 }
