@@ -1,5 +1,4 @@
 use super::*;
-use bevy::prelude::*;
 
 /// Interval for checking if enemies should spawn - in seconds
 const ENEMY_SPAWN_TIMER: f32 = 1.0;
@@ -40,13 +39,6 @@ impl Default for EnemiesBeingTyped {
 #[derive(Reflect, Resource, Default)]
 #[reflect(Resource)]
 pub struct WordsHandle(pub Handle<Words>);
-
-/// Resource for tracking the current number of enemies
-#[derive(Reflect, Resource, Default)]
-#[reflect(Resource)]
-pub struct NumberOfEnemies {
-    pub number: usize,
-}
 
 /// Resource for keeping track of where the last enemy was spawned.
 /// Default spawn point is left

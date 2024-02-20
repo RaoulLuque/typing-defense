@@ -1,5 +1,7 @@
 use super::*;
 
+use crate::game::rounds::resources::*;
+
 use bevy::input::keyboard::KeyboardInput;
 use bevy::input::ButtonState;
 use bevy::window::PrimaryWindow;
@@ -18,14 +20,16 @@ pub fn randomly_spawn_enemies_over_time(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     mut last_enemy_spawn_point: ResMut<LastEnemySpawnPoint>,
-    mut number_of_enemies: ResMut<NumberOfEnemies>,
+    mut number_of_enemies_spawned_this_round: ResMut<NumberOfEnemiesSpawnedCurrentRound>,
+    max_number_of_enemies_this_round: Res<MaxNumberOfEnemiesCurrentRound>,
+    enemy_base_speed_this_round: Res<EnemyBaseSpeedCurrentRound>,
     enemy_spawn_timer: Res<EnemySpawnTimer>,
     asset_server: Res<AssetServer>,
     words_handle: Res<WordsHandle>,
     words: Res<Assets<Words>>,
 ) {
-    // Cap out enemies
-    if number_of_enemies.number < 15 {
+    // Spawn only as many enemies as is planned for this round
+    if number_of_enemies_spawned_this_round.number < max_number_of_enemies_this_round.number {
         // Get thread rng once for better performance
         let mut rng = rand::thread_rng();
         if enemy_spawn_timer.timer.finished() && rng.gen_bool(CHANCE_OF_SPAWNING_ENEMY) {
@@ -53,7 +57,10 @@ pub fn randomly_spawn_enemies_over_time(
                         },
                         Enemy {},
                         spawn_point,
-                        Speed { speed: 100.0 },
+                        Speed {
+                            // Set speed of enemy randomly in range of 0.5 to 1.5 times the enemy base speed this round
+                            speed: (rng.gen::<f32>() + 0.5) * enemy_base_speed_this_round.speed,
+                        },
                     ))
                     .with_children(|parent| {
                         parent.spawn(Text2dBundle {
@@ -70,7 +77,7 @@ pub fn randomly_spawn_enemies_over_time(
                         });
                     });
             }
-            number_of_enemies.number += 1;
+            number_of_enemies_spawned_this_round.number += 1;
         }
     }
 }
@@ -109,12 +116,12 @@ pub fn update_position_of_enemies(
 pub fn enemy_collision_with_castle(
     mut commands: Commands,
     mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
-    mut number_of_enemies: ResMut<NumberOfEnemies>,
+    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedCurrentRound>,
 ) {
     for (entity, transform) in enemy_query.iter_mut() {
         if transform.translation.distance(Vec3::new(0.0, 0.0, 0.0)) < 5.0 {
             commands.entity(entity).despawn_recursive();
-            number_of_enemies.number -= 1;
+            number_of_enemies_typed_current_round.number += 1;
         }
     }
 }
@@ -122,7 +129,7 @@ pub fn enemy_collision_with_castle(
 pub fn update_text_from_enemies_on_button_press(
     mut commands: Commands,
     mut enemies_being_typed: ResMut<EnemiesBeingTyped>,
-    mut number_of_enemies: ResMut<NumberOfEnemies>,
+    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedCurrentRound>,
     mut keyboard_input_events: EventReader<KeyboardInput>,
     mut q_parent: Query<(Entity, Option<&mut CurrentlyBeingTyped>, &Children), With<Enemy>>,
     mut q_child: Query<&mut Text>,
@@ -163,10 +170,11 @@ pub fn update_text_from_enemies_on_button_press(
                                 if let Some(text_section) = text.sections.get_mut(0) {
                                     if text_section.value == pressed_letter {
                                         if number_of_letter_in_word == 1 {
+                                            // You got "typed"
                                             // Enemy only consists of one letter - You got "typed"
                                             // Despawn entity and remove entity from list of enemies that are currently being typed
                                             commands.entity(entity_id).despawn_recursive();
-                                            number_of_enemies.number -= 1;
+                                            number_of_enemies_typed_current_round.number += 1;
                                         } else {
                                             // Player is starting to type this enemy
                                             text_section.style.color = Color::ORANGE_RED;
@@ -207,7 +215,7 @@ pub fn update_text_from_enemies_on_button_press(
                                                     // Check if there are no more enemies being typed
                                                     enemies_being_typed.indicator = false;
                                                 }
-                                                number_of_enemies.number -= 1;
+                                                number_of_enemies_typed_current_round.number += 1;
                                             }
                                         } else {
                                             // Player is typing another enemy or has made a mistake

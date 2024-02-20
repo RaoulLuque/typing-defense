@@ -20,14 +20,12 @@ impl Plugin for EnemiesPlugin {
             .register_type::<Speed>()
             .register_type::<EnemiesBeingTyped>()
             .register_type::<EnemySpawnTimer>()
-            .register_type::<NumberOfEnemies>()
             .register_type::<WordsHandle>()
             .register_type::<LastEnemySpawnPoint>()
             .register_type::<EnemySpawnPoint>()
             // Initialize Resources
             .init_resource::<EnemiesBeingTyped>()
             .init_resource::<EnemySpawnTimer>()
-            .init_resource::<NumberOfEnemies>()
             .init_resource::<LastEnemySpawnPoint>()
             // Setup list of words as asset
             .add_plugins(TomlAssetPlugin::<Words>::new(&["words.toml"]))
@@ -43,7 +41,8 @@ impl Plugin for EnemiesPlugin {
                     enemy_collision_with_castle,
                 )
                     .run_if(in_state(AppState::InGame))
-                    .run_if(in_state(SimulationState::Running)),
+                    .run_if(in_state(SimulationState::Running))
+                    .before(rounds::systems::check_if_round_is_over),
             );
     }
 }
