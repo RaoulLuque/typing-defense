@@ -4,7 +4,12 @@ use enemies::EnemiesPlugin;
 mod castle;
 use castle::CastlePlugin;
 
+mod systems;
+use systems::*;
+
 use bevy::prelude::*;
+
+use crate::AppState;
 
 pub struct GamePlugin;
 
@@ -16,7 +21,16 @@ impl Plugin for GamePlugin {
             .add_state::<RoundState>()
             // Add own plugins
             .add_plugins(EnemiesPlugin)
-            .add_plugins(CastlePlugin);
+            .add_plugins(CastlePlugin)
+            // Add system for changing simulation states - only possible if:
+            // 1. InGame
+            // 2. InRound (in order not to confuse when in between rounds since pausing seems uneccessary)
+            .add_systems(
+                Update,
+                toggle_simulation_state
+                    .run_if(in_state(AppState::InGame))
+                    .run_if(in_state(RoundState::InRound)),
+            );
     }
 }
 
@@ -28,7 +42,7 @@ enum SimulationState {
 }
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
-enum RoundState {
+pub enum RoundState {
     #[default]
     InBetweenRounds,
     InRound,

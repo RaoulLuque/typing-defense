@@ -34,7 +34,7 @@ impl Plugin for EnemiesPlugin {
             // Setup list of words as asset
             .add_plugins(TomlAssetPlugin::<Words>::new(&["words.toml"]))
             .add_systems(Startup, setup_assets)
-            // Add update systems
+            // Add update systems that only run if currently in_game and simulation is running
             .add_systems(
                 Update,
                 (
@@ -44,7 +44,8 @@ impl Plugin for EnemiesPlugin {
                     update_position_of_enemies,
                     enemy_collision_with_castle,
                 )
-                    .run_if(in_state(AppState::InGame)),
+                    .run_if(in_state(AppState::InGame))
+                    .run_if(in_state(SimulationState::Running)),
             );
     }
 }
