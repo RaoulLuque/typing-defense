@@ -1,5 +1,4 @@
 use super::*;
-use crate::AppState;
 
 pub fn toggle_simulation_state(
     keyboard_input: Res<Input<KeyCode>>,

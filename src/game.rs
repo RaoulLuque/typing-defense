@@ -4,6 +4,9 @@ use enemies::EnemiesPlugin;
 mod castle;
 use castle::CastlePlugin;
 
+mod rounds;
+use rounds::RoundsPlugin;
+
 mod systems;
 use systems::*;
 
@@ -22,6 +25,7 @@ impl Plugin for GamePlugin {
             // Add own plugins
             .add_plugins(EnemiesPlugin)
             .add_plugins(CastlePlugin)
+            .add_plugins(RoundsPlugin)
             // Add system for changing simulation states - only possible if:
             // 1. InGame
             // 2. InRound (in order not to confuse when in between rounds since pausing seems uneccessary)

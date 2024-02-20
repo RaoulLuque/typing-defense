@@ -5,8 +5,6 @@ use resources::*;
 mod systems;
 use systems::*;
 
-use crate::AppState;
-
 use super::*;
 
 use bevy_common_assets::toml::TomlAssetPlugin;

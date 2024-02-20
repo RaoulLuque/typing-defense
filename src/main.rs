@@ -7,7 +7,6 @@ use game::GamePlugin;
 mod menu;
 use menu::MenuPlugin;
 
-use bevy::app;
 use bevy::{prelude::*, window::WindowTheme};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 

@@ -3,8 +3,6 @@ use components::*;
 mod systems;
 use systems::*;
 
-use crate::AppState;
-
 use super::*;
 
 pub struct CastlePlugin;
