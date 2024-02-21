@@ -18,6 +18,8 @@ impl Plugin for EnemiesPlugin {
             .register_type::<CurrentlyBeingTyped>()
             .register_type::<Enemy>()
             .register_type::<Speed>()
+            .register_type::<SpriteSize>()
+            .register_type::<EnemyType>()
             .register_type::<EnemiesBeingTyped>()
             .register_type::<EnemySpawnTimer>()
             .register_type::<WordsHandle>()
@@ -39,6 +41,7 @@ impl Plugin for EnemiesPlugin {
                     tick_enemy_spawn_timer,
                     update_position_of_enemies,
                     enemy_collision_with_castle,
+                    animate_enemies,
                 )
                     .run_if(in_state(AppState::InGame))
                     .run_if(in_state(SimulationState::Running))
