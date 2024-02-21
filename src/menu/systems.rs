@@ -6,7 +6,7 @@ pub fn print_menu_message() {
 }
 
 pub fn transition_from_menu_to_in_game(
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     app_state: Res<State<AppState>>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
     mut round_state_next_state: ResMut<NextState<RoundState>>,

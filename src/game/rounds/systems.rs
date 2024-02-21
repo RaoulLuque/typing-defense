@@ -41,7 +41,7 @@ pub fn check_if_round_is_over(
 pub fn proceed_to_next_round_from_in_between_rounds(
     round_state: Res<State<RoundState>>,
     mut round_state_next_state: ResMut<NextState<RoundState>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Space)
         && round_state.get() == &RoundState::InBetweenRounds

@@ -1,7 +1,7 @@
 use super::*;
 
 pub fn toggle_simulation_state(
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     simulation_state: Res<State<SimulationState>>,
     mut simulation_state_next_state: ResMut<NextState<SimulationState>>,
 ) {

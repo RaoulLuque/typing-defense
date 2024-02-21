@@ -32,10 +32,10 @@ fn main() {
                     ..default()
                 }),
         )
-        // Add Debugging info in game
-        .add_plugins(WorldInspectorPlugin::new())
+        // // Add Debugging info in game
+        // .add_plugins(WorldInspectorPlugin::new())
         // Initialize AppState
-        .add_state::<AppState>()
+        .init_state::<AppState>()
         // Spawn camera and add background
         .add_systems(Startup, spawn_background)
         .add_systems(Startup, spawn_camera)

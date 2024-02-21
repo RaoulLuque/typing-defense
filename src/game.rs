@@ -20,8 +20,8 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app
             // Initialize App States
-            .add_state::<SimulationState>()
-            .add_state::<RoundState>()
+            .init_state::<SimulationState>()
+            .init_state::<RoundState>()
             // Add own plugins
             .add_plugins(EnemiesPlugin)
             .add_plugins(CastlePlugin)

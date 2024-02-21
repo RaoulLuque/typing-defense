@@ -22,12 +22,12 @@ opt-level = 3
 
 [dependencies]
 rand = { version = "0.8.5" }
-bevy_common_assets = { version ="0.9", features = ["toml"] }
+bevy_common_assets = { version ="0.10.0", features = ["toml"] }
 bevy-inspector-egui = "0.22.1"
 serde = { version = "1.0", features = ["derive"] }
 
 [dependencies.bevy]
-version = "0.12.1"
+version = "0.13.0"
 # Disable the default features if there are any that you do not want
 default-features = false
 features = [
@@ -94,7 +94,7 @@ features = [
   # "shader_format_spirv", # SPIR-V shader support
 
   # Platform-specific:
-  "wayland",              # (Linux) Support Wayland windowing system
+#   "wayland",              # (Linux) Support Wayland windowing system
 #   "accesskit_unix",       # (Unix-like) AccessKit integration for UI Accessibility
 #   "bevy_dynamic_plugin",  # (Desktop) support for loading of `DynamicPlugin`s
 
