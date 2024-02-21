@@ -7,6 +7,9 @@ use castle::CastlePlugin;
 mod rounds;
 use rounds::RoundsPlugin;
 
+mod hud;
+use hud::HUDPlugin;
+
 mod systems;
 use systems::*;
 
