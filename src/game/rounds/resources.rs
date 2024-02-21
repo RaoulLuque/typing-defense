@@ -3,7 +3,7 @@ use super::*;
 /// Initial speed of enemies at start of game
 const INITIAL_ENEMY_SPEED: f32 = 30.0;
 /// Number of enemies in the first round - super::systems::NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT
-const INITIAL_MAX_NUMBER_OF_ENEMIES: u32 = 3;
+const INITIAL_MAX_NUMBER_OF_ENEMIES: u32 = 2;
 
 /// Resource for tracking the number of enemies that are supposed to be spawned this round
 #[derive(Reflect, Resource)]

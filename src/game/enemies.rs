@@ -31,7 +31,7 @@ impl Plugin for EnemiesPlugin {
             .init_resource::<LastEnemySpawnPoint>()
             // Setup list of words as asset
             .add_plugins(TomlAssetPlugin::<Words>::new(&["words.toml"]))
-            .add_systems(Startup, setup_assets)
+            .add_systems(Startup, setup_list_of_words_asset)
             // Add update systems that only run if currently in_game and simulation is running
             .add_systems(
                 Update,
@@ -40,8 +40,9 @@ impl Plugin for EnemiesPlugin {
                     update_text_from_enemies_on_button_press,
                     tick_enemy_spawn_timer,
                     update_position_of_enemies,
-                    enemy_collision_with_castle,
                     animate_enemies,
+                    enemy_collision_with_castle,
+                    despawn_enemy_if_out_of_screen,
                 )
                     .run_if(in_state(AppState::InGame))
                     .run_if(in_state(SimulationState::Running))

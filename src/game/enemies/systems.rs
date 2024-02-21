@@ -223,6 +223,25 @@ pub fn enemy_collision_with_castle(
     }
 }
 
+pub fn despawn_enemy_if_out_of_screen(
+    mut commands: Commands,
+    enemy_query: Query<(Entity, &Transform), With<Enemy>>,
+    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedCurrentRound>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+) {
+    let window = window_query.get_single().expect("Window should exist");
+    for (enemy_entity, enemy_transform) in &enemy_query {
+        if enemy_transform.translation.x > window.width() * 0.7
+            || enemy_transform.translation.x < -window.width() * 0.7
+            || enemy_transform.translation.y > window.height() * 0.7
+            || enemy_transform.translation.y < -window.height() * 0.7
+        {
+            commands.entity(enemy_entity).despawn_recursive();
+            number_of_enemies_typed_current_round.number += 1;
+        }
+    }
+}
+
 pub fn update_text_from_enemies_on_button_press(
     mut commands: Commands,
     mut enemies_being_typed: ResMut<EnemiesBeingTyped>,
@@ -401,7 +420,7 @@ fn turn_string_literal_into_vec_of_text_sections(string_literal: &str) -> Vec<Te
         .collect()
 }
 
-pub fn setup_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_list_of_words_asset(mut commands: Commands, asset_server: Res<AssetServer>) {
     let words_handle =
         WordsHandle(asset_server.load("words/thousand_most_frequent_words.words.toml"));
     commands.insert_resource(words_handle);
