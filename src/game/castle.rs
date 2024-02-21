@@ -16,6 +16,7 @@ impl Plugin for CastlePlugin {
         app
             // Register types for debug
             .register_type::<Castle>()
+            .register_type::<DestroyedCastle>()
             .register_type::<NumberOfLivesLeft>()
             // Initialize Resources
             .init_resource::<NumberOfLivesLeft>()
@@ -24,7 +25,7 @@ impl Plugin for CastlePlugin {
             // Add update systems
             .add_systems(
                 Update,
-                despawn_castle_if_all_lives_are_gone
+                despawn_castle_if_all_lives_are_gone_and_spawn_destroyed_castle
                     .run_if(in_state(RoundState::InRound))
                     .after(enemies::systems::enemy_collision_with_castle),
             );
