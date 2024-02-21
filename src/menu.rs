@@ -26,7 +26,10 @@ impl Plugin for MenuPlugin {
             )
             .add_systems(OnEnter(AppState::Menu), setup_menu)
             .add_systems(OnEnter(MenuState::Main), spawn_main_menu)
-            .add_systems(Update, menu_action.run_if(in_state(AppState::Menu)));
+            .add_systems(
+                Update,
+                (menu_action, menu_button_animations).run_if(in_state(AppState::Menu)),
+            );
     }
 }
 

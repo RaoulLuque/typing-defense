@@ -157,7 +157,7 @@ pub fn despawn_screen<T: Component>(to_despawn: Query<Entity, With<T>>, mut comm
     }
 }
 
-// Function for tracking
+// Function for handling the buttons in the main menu
 pub fn menu_action(
     interaction_query: Query<
         (&Interaction, &MenuButtonAction),
@@ -181,6 +181,25 @@ pub fn menu_action(
                     next_menu_state.set(MenuState::HowToPlay);
                 }
             }
+        }
+    }
+}
+
+// This system handles changing all buttons color based on mouse interaction
+pub fn menu_button_animations(
+    mut interaction_query: Query<
+        (&Interaction, &mut UiImage),
+        (Changed<Interaction>, With<Button>),
+    >,
+    asset_server: Res<AssetServer>,
+) {
+    for (interaction, mut ui_image) in &mut interaction_query {
+        *ui_image = match *interaction {
+            Interaction::Pressed => {
+                UiImage::new(asset_server.load("menu/mainMenuButtonPressed.png"))
+            }
+            Interaction::Hovered => UiImage::new(asset_server.load("menu/mainMenuButtonHover.png")),
+            Interaction::None => UiImage::new(asset_server.load("menu/mainMenuButton.png")),
         }
     }
 }
