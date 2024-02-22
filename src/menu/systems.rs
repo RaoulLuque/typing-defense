@@ -50,8 +50,8 @@ pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 style: Style {
                                     width: Val::Percent(46.875),
                                     height: Val::Percent(54.68),
-                                    margin: UiRect::top(Val::VMin(13.)),
-                                    // justify_content: JustifyContent::Center,
+                                    // Vertical align of menu banner
+                                    margin: UiRect::top(Val::VMin(25.)),
                                     align_items: AlignItems::Center,
                                     flex_direction: FlexDirection::Column,
                                     row_gap: Val::Percent(4.0),
