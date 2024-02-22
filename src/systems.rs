@@ -7,7 +7,7 @@ pub fn spawn_camera(mut commands: Commands) {
 pub fn spawn_background(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((SpriteBundle {
         transform: Transform::from_xyz(0.0, 0.0, -10.0),
-        texture: asset_server.load("background/parchmentAncientUpscaled.png"),
+        texture: asset_server.load("background/background_new.png"),
         ..default()
     },));
 }
