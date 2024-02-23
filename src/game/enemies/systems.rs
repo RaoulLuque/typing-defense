@@ -176,24 +176,6 @@ pub fn animate_enemies(
     }
 }
 
-pub fn enemy_collision_with_castle(
-    mut commands: Commands,
-    mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
-    castle_query: Query<&Transform, With<castle::components::Castle>>,
-    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedCurrentRound>,
-    mut number_of_lives_left: ResMut<castle::resources::NumberOfLivesLeft>,
-) {
-    if let Ok(castle_transform) = castle_query.get_single() {
-        for (entity, transform) in enemy_query.iter_mut() {
-            if transform.translation.distance(castle_transform.translation) < 100.0 {
-                commands.entity(entity).despawn_recursive();
-                number_of_enemies_typed_current_round.number += 1;
-                number_of_lives_left.number -= 1;
-            }
-        }
-    }
-}
-
 pub fn update_text_from_enemies_on_button_press(
     mut commands: Commands,
     mut enemies_being_typed: ResMut<EnemiesBeingTyped>,

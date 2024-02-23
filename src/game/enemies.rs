@@ -46,7 +46,7 @@ impl Plugin for EnemiesPlugin {
                     tick_enemy_spawn_timer,
                     movement::systems::update_position_of_enemies,
                     animate_enemies,
-                    enemy_collision_with_castle,
+                    movement::systems::enemy_collision_with_castle,
                     movement::systems::despawn_enemy_if_out_of_screen,
                 )
                     .run_if(in_state(AppState::InGame))
