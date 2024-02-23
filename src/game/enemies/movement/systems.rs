@@ -20,6 +20,60 @@ use TurnInstruction::*;
 // Checkpoints are given in percent * 100 of the screen width/height respectively.
 // E.g.: 540 is 0.5 in height if the screen height is 1080 (Full HD)
 // The last checkpoint is always far enough out of the screen such that enemies have despawned before
+
+// Configuration for screen without Taskbar at the side (left)
+// const TOP_LEFT_ROUTE_CHECKPOINTS: [(f32, f32); 6] = [
+//     (-0.30, 0.5),
+//     (-0.30, 0.31578),
+//     (0.0, 0.31578),
+//     (0.0, -0.30178),
+//     (0.20099, -0.30178),
+//     (0.20099, -1.0),
+// ];
+// const TOP_LEFT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 6] =
+//     [Down, Right, Down, Right, Down, Down];
+
+// const BOTTOM_RIGHT_ROUTE_CHECKPOINTS: [(f32, f32); 6] = [
+//     (0.20099, -0.5),
+//     (0.20099, -0.30178),
+//     (0.0, -0.30178),
+//     (0.0, 0.31578),
+//     (-0.30, 0.31578),
+//     (-0.30, 1.0),
+// ];
+// const BOTTOM_RIGHT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 6] = [Up, Left, Up, Left, Up, Up];
+
+// const TOP_RIGHT_ROUTE_CHECKPOINTS: [(f32, f32); 9] = [
+//     (0.26764, 0.5),
+//     (0.26764, 0.19252),
+//     (0.09999, 0.19252),
+//     (0.09999, 0.31778),
+//     (0.0, 0.31778),
+//     (0.0, -0.18552),
+//     (-0.19998, -0.18552),
+//     (-0.19998, -0.36841),
+//     (-1.0, -0.36841),
+// ];
+// const TOP_RIGHT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 9] =
+//     [Down, Left, Up, Left, Down, Left, Down, Left, Left];
+
+// const BOTTOM_LEFT_ROUTE_CHECKPOINTS: [(f32, f32); 9] = [
+//     (-0.5, -0.36841),
+//     (-0.19998, -0.36841),
+//     (-0.19998, -0.18552),
+//     (0.0, -0.18552),
+//     (0.0, 0.31778),
+//     (0.09999, 0.31778),
+//     (0.09999, 0.19252),
+//     (0.26764, 0.19252),
+//     (0.26764, 1.0),
+// ];
+// const BOTTOM_LEFT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 9] =
+//     [Right, Up, Right, Up, Right, Down, Right, Up, Up];
+
+const WINDOW_WIDTH_IN_DEV: f32 = 1856.0;
+const WINDOW_HEIGHT_IN_DEV: f32 = 1018.0;
+
 const TOP_LEFT_ROUTE_CHECKPOINTS: [(f32, f32); 6] = [
     (-0.31, 0.5),
     (-0.31, 0.31578),
@@ -93,8 +147,14 @@ pub fn update_position_of_enemies(
             .get_single()
             .expect("Primary window should exist");
 
+        println!(
+            "Window width: {}, window height: {}",
+            window.width(),
+            window.height()
+        );
+
         let (x_scale_next_checkpoint, y_scale_next_checkpoint) =
-            get_x_y_scale_of_checkpoint(spawn_point, path_checkpoint_number.number + 1);
+            get_x_y_scale_of_checkpoint(spawn_point, path_checkpoint_number.number + 1, &window);
         let next_checkpoint_vec = Vec3::new(
             window.width() * x_scale_next_checkpoint,
             window.height() * y_scale_next_checkpoint,
@@ -131,26 +191,7 @@ pub fn generate_spawn_point_transform_from_enum(
     enemy_spawn_point_enum: EnemySpawnPoint,
     window: &Window,
 ) -> Transform {
-    let (x_scale, y_scale) = match enemy_spawn_point_enum {
-        EnemySpawnPoint::TopLeft => TOP_LEFT_ROUTE_CHECKPOINTS
-            .get(0)
-            .expect("Array shouldn't be empty"),
-        EnemySpawnPoint::TopRight => TOP_RIGHT_ROUTE_CHECKPOINTS
-            .get(0)
-            .expect("Array shouldn't be empty"),
-        EnemySpawnPoint::Right => RIGHT_ROUTE_CHECKPOINTS
-            .get(0)
-            .expect("Array shouldn't be empty"),
-        EnemySpawnPoint::Left => LEFT_ROUTE_CHECKPOINTS
-            .get(0)
-            .expect("Array shouldn't be empty"),
-        EnemySpawnPoint::BottomLeft => BOTTOM_LEFT_ROUTE_CHECKPOINTS
-            .get(0)
-            .expect("Array shouldn't be empty"),
-        EnemySpawnPoint::BottomRight => BOTTOM_RIGHT_ROUTE_CHECKPOINTS
-            .get(0)
-            .expect("Array shouldn't be empty"),
-    };
+    let (x_scale, y_scale) = get_x_y_scale_of_checkpoint(&enemy_spawn_point_enum, 0, window);
     Transform::from_xyz(window.width() * x_scale, window.height() * y_scale, 0.0)
 }
 
@@ -178,8 +219,9 @@ fn get_translation_from_turn_instruction(turn_instruction: &TurnInstruction) -> 
 fn get_x_y_scale_of_checkpoint(
     spawn_point: &EnemySpawnPoint,
     check_point_number: usize,
+    window: &Window,
 ) -> (f32, f32) {
-    *match spawn_point {
+    let (x_scale, y_scale) = *match spawn_point {
         EnemySpawnPoint::TopLeft => TOP_LEFT_ROUTE_CHECKPOINTS
             .get(check_point_number)
             .expect("Turning Point should exist"),
@@ -198,7 +240,11 @@ fn get_x_y_scale_of_checkpoint(
         EnemySpawnPoint::BottomRight => BOTTOM_RIGHT_ROUTE_CHECKPOINTS
             .get(check_point_number)
             .expect("Turning Point should exist"),
-    }
+    };
+    (
+        x_scale * (WINDOW_WIDTH_IN_DEV / window.width()),
+        y_scale * (WINDOW_HEIGHT_IN_DEV / window.height()),
+    )
 }
 
 fn get_turn_instruction(
