@@ -1,4 +1,5 @@
 use super::*;
+use movement::components::EnemySpawnPoint;
 
 /// Interval for checking if enemies should spawn - in seconds
 const ENEMY_SPAWN_TIMER: f32 = 1.0;

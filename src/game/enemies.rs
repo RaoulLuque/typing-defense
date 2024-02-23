@@ -1,9 +1,13 @@
 mod components;
 use components::*;
+
 mod resources;
 use resources::*;
+
 pub mod systems;
 use systems::*;
+
+pub mod movement;
 
 use super::*;
 
@@ -24,7 +28,8 @@ impl Plugin for EnemiesPlugin {
             .register_type::<EnemySpawnTimer>()
             .register_type::<WordsHandle>()
             .register_type::<LastEnemySpawnPoint>()
-            .register_type::<EnemySpawnPoint>()
+            .register_type::<movement::components::EnemySpawnPoint>()
+            .register_type::<movement::components::PathCheckpointNumber>()
             // Initialize Resources
             .init_resource::<EnemiesBeingTyped>()
             .init_resource::<EnemySpawnTimer>()
@@ -39,10 +44,10 @@ impl Plugin for EnemiesPlugin {
                     randomly_spawn_enemies_over_time,
                     update_text_from_enemies_on_button_press,
                     tick_enemy_spawn_timer,
-                    update_position_of_enemies,
+                    movement::systems::update_position_of_enemies,
                     animate_enemies,
                     enemy_collision_with_castle,
-                    despawn_enemy_if_out_of_screen,
+                    movement::systems::despawn_enemy_if_out_of_screen,
                 )
                     .run_if(in_state(AppState::InGame))
                     .run_if(in_state(SimulationState::Running))

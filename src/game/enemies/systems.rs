@@ -1,10 +1,11 @@
+use self::movement::components::PathCheckpointNumber;
+
 use super::*;
 
 use crate::game::rounds::resources::*;
 
 use bevy::input::keyboard::KeyboardInput;
 use bevy::input::ButtonState;
-use bevy::render::texture;
 use bevy::window::PrimaryWindow;
 use rand::seq::SliceRandom;
 use rand::Rng;
@@ -47,7 +48,7 @@ pub fn randomly_spawn_enemies_over_time(
                 .next_spawn_point_excluding_self(&mut rng);
             last_enemy_spawn_point.spawn_point = spawn_point;
             let spawn_point_transform =
-                generate_spawn_point_transform_from_enum(spawn_point, window);
+                movement::systems::generate_spawn_point_transform_from_enum(spawn_point, window);
 
             // Get random enemy sprite
             let enemy_type: EnemyType = rng.gen();
@@ -75,12 +76,8 @@ pub fn randomly_spawn_enemies_over_time(
             };
 
             // Flip the sprite on the y-axis if enemy is spawned left or bottom
-            let flip_on_y_axis = match spawn_point {
-                EnemySpawnPoint::Left => true,
-                EnemySpawnPoint::Bottom => rng.gen_bool(0.5),
-                EnemySpawnPoint::Top => rng.gen_bool(0.5),
-                EnemySpawnPoint::Right => false,
-            };
+            let flip_on_y_axis =
+                movement::systems::check_if_sprite_needs_to_be_flipped_from_spawnpoint(spawn_point);
 
             // Resize the sprites for game
             let custom_sprite_size = Some(Vec2::new(
@@ -112,6 +109,7 @@ pub fn randomly_spawn_enemies_over_time(
                         Speed { speed: speed },
                         walking_animation,
                         enemy_type,
+                        PathCheckpointNumber::default(),
                     ))
                     .with_children(|parent| {
                         parent.spawn(Text2dBundle {
@@ -133,19 +131,7 @@ pub fn randomly_spawn_enemies_over_time(
     }
 }
 
-fn generate_spawn_point_transform_from_enum(
-    enemy_spawn_point_enum: EnemySpawnPoint,
-    window: &Window,
-) -> Transform {
-    match enemy_spawn_point_enum {
-        EnemySpawnPoint::Top => Transform::from_xyz(0.0, window.height() * 0.5, 0.0),
-        EnemySpawnPoint::Bottom => Transform::from_xyz(0.0, -window.height() * 0.5, 0.0),
-        EnemySpawnPoint::Left => Transform::from_xyz(-window.width() * 0.5, 0.0, 0.0),
-        EnemySpawnPoint::Right => Transform::from_xyz(window.width() * 0.5, 0.0, 0.0),
-    }
-}
-
-/// Sets the
+/// Returns the necessary info in order to generate a spritesheet for each enemy type
 pub fn pick_random_enemy_and_generate_sprite_information(
     enemy_type: &EnemyType,
 ) -> (
@@ -190,21 +176,6 @@ pub fn animate_enemies(
     }
 }
 
-pub fn update_position_of_enemies(
-    mut enemy_query: Query<(&Speed, &EnemySpawnPoint, &mut Transform), With<Enemy>>,
-    time: Res<Time>,
-) {
-    for (speed, spawn_point, mut transform) in enemy_query.iter_mut() {
-        let translation = match spawn_point {
-            EnemySpawnPoint::Top => Vec3::new(0.0, -speed.speed * time.delta_seconds(), 0.0),
-            EnemySpawnPoint::Bottom => Vec3::new(0.0, speed.speed * time.delta_seconds(), 0.0),
-            EnemySpawnPoint::Left => Vec3::new(speed.speed * time.delta_seconds(), 0.0, 0.0),
-            EnemySpawnPoint::Right => Vec3::new(-speed.speed * time.delta_seconds(), 0.0, 0.0),
-        };
-        transform.translation += translation;
-    }
-}
-
 pub fn enemy_collision_with_castle(
     mut commands: Commands,
     mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
@@ -219,25 +190,6 @@ pub fn enemy_collision_with_castle(
                 number_of_enemies_typed_current_round.number += 1;
                 number_of_lives_left.number -= 1;
             }
-        }
-    }
-}
-
-pub fn despawn_enemy_if_out_of_screen(
-    mut commands: Commands,
-    enemy_query: Query<(Entity, &Transform), With<Enemy>>,
-    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedCurrentRound>,
-    window_query: Query<&Window, With<PrimaryWindow>>,
-) {
-    let window = window_query.get_single().expect("Window should exist");
-    for (enemy_entity, enemy_transform) in &enemy_query {
-        if enemy_transform.translation.x > window.width() * 0.7
-            || enemy_transform.translation.x < -window.width() * 0.7
-            || enemy_transform.translation.y > window.height() * 0.7
-            || enemy_transform.translation.y < -window.height() * 0.7
-        {
-            commands.entity(enemy_entity).despawn_recursive();
-            number_of_enemies_typed_current_round.number += 1;
         }
     }
 }

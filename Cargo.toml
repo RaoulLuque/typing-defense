@@ -71,7 +71,7 @@ features = [
   # Bevy functionality:
 #   "asset_processor",      # Asset processing
 #   "file_watcher",         # Asset hot-reloading
-#   "subpixel_glyph_atlas", # Subpixel antialiasing for text/fonts
+  "subpixel_glyph_atlas", # Subpixel antialiasing for text/fonts
   "serialize",            # Support for `serde` Serialize/Deserialize
 #   "async-io",             # Make bevy use `async-io` instead of `futures-lite`
 #   "pbr_transmission_textures", # Enable Transmission textures in PBR materials (may cause issues on old/lowend GPUs)
