@@ -13,6 +13,9 @@ use hud::HUDPlugin;
 mod systems;
 use systems::*;
 
+mod effects;
+use effects::EffectsPlugin;
+
 use bevy::prelude::*;
 
 use crate::AppState;
@@ -29,6 +32,7 @@ impl Plugin for GamePlugin {
             .add_plugins(EnemiesPlugin)
             .add_plugins(CastlePlugin)
             .add_plugins(RoundsPlugin)
+            .add_plugins(EffectsPlugin)
             // Add system for changing simulation states - only possible if:
             // 1. InGame
             // 2. InRound (in order not to confuse when in between rounds since pausing seems uneccessary)

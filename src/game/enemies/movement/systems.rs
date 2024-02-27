@@ -1,3 +1,4 @@
+use effects::components::{Explosion, ExplosionAnimation};
 use enemies::rounds::resources::NumberOfEnemiesTypedCurrentRound;
 
 use super::*;
@@ -298,14 +299,70 @@ pub fn enemy_collision_with_castle(
     castle_query: Query<&Transform, With<castle::components::Castle>>,
     mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedCurrentRound>,
     mut number_of_lives_left: ResMut<castle::resources::NumberOfLivesLeft>,
+    asset_server: Res<AssetServer>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
-    if let Ok(castle_transform) = castle_query.get_single() {
+    if let Ok(_) = castle_query.get_single() {
         for (entity, transform) in enemy_query.iter_mut() {
             if transform.translation.y > -80.0
                 && transform.translation.y < 125.0
                 && transform.translation.x > -150.0
                 && transform.translation.x < 150.0
-            {      
+            {
+                // Check if collision happened and if so, where
+                let explosion_transform_option = if transform.translation.y.abs() < 15.0
+                    && transform.translation.x < 0.0
+                {
+                    Some(Vec3::new(-150.0, 0.0, 0.0))
+                } else if transform.translation.y.abs() < 15.0 && transform.translation.x > 0.0 {
+                    Some(Vec3::new(150.0, 0.0, 0.0))
+                } else if transform.translation.x.abs() < 15.0 && transform.translation.y < 0.0 {
+                    Some(Vec3::new(0.0, -80.0, 0.0))
+                } else if transform.translation.x.abs() < 15.0 && transform.translation.y > 0.0 {
+                    Some(Vec3::new(0.0, 125.0, 0.0))
+                } else {
+                    None
+                };
+
+                if let Some(explosion_translation) = explosion_transform_option {
+                    let explosion_transform = Transform::from_translation(explosion_translation);
+                    // Spawn explosion/death animation
+                    let texture_handle: Handle<Image> =
+                        asset_server.load("sprites/effects/explosion.png");
+                    let texture_atlas = TextureAtlas::from_grid(
+                        texture_handle,
+                        Vec2::new(192.0, 192.0),
+                        9,
+                        1,
+                        None,
+                        None,
+                    );
+                    let texture_atlas_handle: Handle<TextureAtlas> =
+                        texture_atlases.add(texture_atlas);
+
+                    let explosion_animation: ExplosionAnimation = ExplosionAnimation {
+                        length_of_animation: 9,
+                        animation_timer: Timer::from_seconds(
+                            effects::components::EXPLOSION_ANIMATION_SPEED,
+                            TimerMode::Repeating,
+                        ),
+                    };
+
+                    commands.spawn((
+                        SpriteSheetBundle {
+                            transform: explosion_transform,
+                            sprite: TextureAtlasSprite {
+                                index: 0,
+                                ..default()
+                            },
+                            texture_atlas: texture_atlas_handle,
+                            ..default()
+                        },
+                        Explosion {},
+                        explosion_animation,
+                    ));
+                }
+                // Despawn enemy
                 commands.entity(entity).despawn_recursive();
                 number_of_enemies_typed_current_round.number += 1;
                 number_of_lives_left.number -= 1;
