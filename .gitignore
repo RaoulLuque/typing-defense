@@ -9,3 +9,4 @@ fly.toml
 /TinySwords
 /KingsandPigs
 /additionalAssets
+*.xcf

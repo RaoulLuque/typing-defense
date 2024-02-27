@@ -10,6 +10,9 @@ use rounds::RoundsPlugin;
 mod hud;
 use hud::HUDPlugin;
 
+mod decorations;
+use decorations::DecorationsPlugin;
+
 mod systems;
 use systems::*;
 
@@ -33,6 +36,7 @@ impl Plugin for GamePlugin {
             .add_plugins(CastlePlugin)
             .add_plugins(RoundsPlugin)
             .add_plugins(EffectsPlugin)
+            .add_plugins(DecorationsPlugin)
             // Add system for changing simulation states - only possible if:
             // 1. InGame
             // 2. InRound (in order not to confuse when in between rounds since pausing seems uneccessary)
