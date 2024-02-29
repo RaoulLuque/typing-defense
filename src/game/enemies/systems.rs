@@ -21,6 +21,8 @@ pub const ENEMY_SPRITE_SCALE_FACTOR: f32 = 1.4;
 pub const STANDARD_TEXT_COLOR: Color = Color::AZURE;
 // Text color while typing
 pub const TYPING_COLOR: Color = Color::ORANGE_RED;
+// Font size for text
+pub const TEXT_FONT_SIZE: f32 = 60.0;
 
 #[derive(serde::Deserialize, Asset, TypePath)]
 pub struct Words {
@@ -168,7 +170,7 @@ fn turn_string_literal_into_vec_of_text_sections(string_literal: &str) -> Vec<Te
             TextSection::new(
                 x.to_string(),
                 TextStyle {
-                    font_size: 60.0,
+                    font_size: TEXT_FONT_SIZE,
                     color: STANDARD_TEXT_COLOR,
                     ..default()
                 },
