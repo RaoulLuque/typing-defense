@@ -8,6 +8,7 @@ pub mod systems;
 use systems::*;
 
 pub mod movement;
+pub mod text;
 
 use super::*;
 
@@ -36,13 +37,13 @@ impl Plugin for EnemiesPlugin {
             .init_resource::<LastEnemySpawnPoint>()
             // Setup list of words as asset
             .add_plugins(TomlAssetPlugin::<Words>::new(&["words.toml"]))
-            .add_systems(Startup, setup_list_of_words_asset)
+            .add_systems(Startup, text::systems::setup_list_of_words_asset)
             // Add update systems that only run if currently in_game and simulation is running
             .add_systems(
                 Update,
                 (
                     randomly_spawn_enemies_over_time,
-                    update_text_from_enemies_on_button_press,
+                    text::systems::update_text_from_enemies_on_button_press,
                     tick_enemy_spawn_timer,
                     movement::systems::update_position_of_enemies,
                     animate_enemies,
