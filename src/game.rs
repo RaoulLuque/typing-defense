@@ -58,7 +58,7 @@ enum SimulationState {
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum RoundState {
-    #[default]
     InBetweenRounds,
+    #[default]
     InRound,
 }

@@ -18,6 +18,6 @@ impl Plugin for DecorationsPlugin {
             // Add systems for startup into the game
             .add_systems(Startup, spawn_trees)
             // Add update systems
-            .add_systems(Update, animate_trees);
+            .add_systems(Update, animate_trees.run_if(in_state(RoundState::InRound)));
     }
 }
