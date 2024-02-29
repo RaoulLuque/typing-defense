@@ -148,12 +148,6 @@ pub fn update_position_of_enemies(
             .get_single()
             .expect("Primary window should exist");
 
-        println!(
-            "Window width: {}, window height: {}",
-            window.width(),
-            window.height()
-        );
-
         let (x_scale_next_checkpoint, y_scale_next_checkpoint) =
             get_x_y_scale_of_checkpoint(spawn_point, path_checkpoint_number.number + 1, &window);
         let next_checkpoint_vec = Vec3::new(
