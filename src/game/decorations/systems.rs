@@ -1,4 +1,5 @@
 use bevy::window::PrimaryWindow;
+use rand::Rng;
 
 use super::*;
 
@@ -71,7 +72,7 @@ pub fn spawn_trees(
             SpriteSheetBundle {
                 transform: tree_spawnpoint,
                 sprite: TextureAtlasSprite {
-                    index: 0,
+                    index: rand::thread_rng().gen_range(0..4),
                     ..default()
                 },
                 texture_atlas: texture_atlas_handle,
