@@ -17,6 +17,11 @@ pub const BASE_ANIMATION_SPEED: f32 = 3.0;
 // Scale factor by which enemy sprites are scaled - higher = bigger
 pub const ENEMY_SPRITE_SCALE_FACTOR: f32 = 1.4;
 
+// Standard text color
+pub const STANDARD_TEXT_COLOR: Color = Color::AZURE;
+// Text color while typing
+pub const TYPING_COLOR: Color = Color::ORANGE_RED;
+
 #[derive(serde::Deserialize, Asset, TypePath)]
 pub struct Words {
     pub vec_of_words: Vec<String>,
@@ -197,7 +202,7 @@ pub fn update_text_from_enemies_on_button_press(
                             let mut iter = q_child.iter_many_mut(child);
                             while let Some(mut text) = iter.fetch_next() {
                                 for section in text.sections.iter_mut() {
-                                    section.style.color = Color::WHITE;
+                                    section.style.color = STANDARD_TEXT_COLOR;
                                 }
                             }
                             commands.entity(entity_id).remove::<CurrentlyBeingTyped>();
@@ -227,7 +232,7 @@ pub fn update_text_from_enemies_on_button_press(
                                             number_of_enemies_typed_current_round.number += 1;
                                         } else {
                                             // Player is starting to type this enemy
-                                            text_section.style.color = Color::ORANGE_RED;
+                                            text_section.style.color = TYPING_COLOR;
                                             // Insert the currently being typed component into enemy
                                             commands
                                                 .entity(entity_id)
@@ -249,7 +254,7 @@ pub fn update_text_from_enemies_on_button_press(
                                     {
                                         if text_section.value == pressed_letter {
                                             // Player is continuing to type this enemy
-                                            text_section.style.color = Color::ORANGE_RED;
+                                            text_section.style.color = TYPING_COLOR;
                                             currently_being_typed.index =
                                                 currently_being_typed.index + 1;
                                             if currently_being_typed.index
@@ -275,7 +280,7 @@ pub fn update_text_from_enemies_on_button_press(
                                     }
                                     if made_a_mistake {
                                         for section in text.sections.iter_mut() {
-                                            section.style.color = Color::WHITE;
+                                            section.style.color = STANDARD_TEXT_COLOR;
                                         }
                                         commands.entity(entity_id).remove::<CurrentlyBeingTyped>();
                                         enemies_being_typed
@@ -347,6 +352,7 @@ fn turn_string_literal_into_vec_of_text_sections(string_literal: &str) -> Vec<Te
                 x.to_string(),
                 TextStyle {
                     font_size: 60.0,
+                    color: STANDARD_TEXT_COLOR,
                     ..default()
                 },
             )
