@@ -3,15 +3,40 @@ use bevy::window::PrimaryWindow;
 use super::*;
 
 const TREE_ANIMATION_SPEED: f32 = 0.1;
-const TREE_SPAWN_POINTS_SCALES: [(f32, f32); 8] = [
-    (0.40, 0.10),
-    (0.35, -0.10),
-    (-0.25, -0.13),
-    (-0.42, 0.2),
-    (0.05, 0.4),
-    (-0.05, -0.4),
-    (0.35, 0.4),
-    (0.27, -0.2),
+const TREE_SPAWN_POINTS_SCALES: [(f32, f32); 33] = [
+    (-0.477083333, 0.436111111),
+    (-0.4375, 0.127777778),
+    (-0.426041667, 0.293518519),
+    (-0.416145833, 0.386111111),
+    (-0.3625, 0.342592593),
+    (-0.34375, 0.175925926),
+    (-0.226041667, 0.219444444),
+    (-0.177083333, 0.157407407),
+    (-0.163541667, 0.434259259),
+    (-0.057291667, 0.14537037),
+    (-0.034375, 0.467592593),
+    (0.14375, 0.12962963),
+    (0.175, 0.410185185),
+    (0.301041667, 0.125),
+    (0.363541667, 0.355555556),
+    (0.408854167, 0.475925926),
+    (0.434895833, 0.161111111),
+    (0.463541667, 0.361111111),
+    (-0.446354167, -0.140740741),
+    (-0.369791667, -0.419444444),
+    (-0.317708333, -0.067592593),
+    (-0.177083333, -0.388888889),
+    (-0.145833333, -0.062037037),
+    (-0.129166667, -0.268518519),
+    (-0.057291667, -0.347222222),
+    (0.038541667, -0.37962963),
+    (0.09375, -0.092592593),
+    (0.1265625, -0.34537037),
+    (0.133333333, -0.166666667),
+    (0.192708333, -0.061111111),
+    (0.271875, -0.231481481),
+    (0.289583333, -0.092592593),
+    (0.413020833, -0.12037037),
 ];
 
 pub fn spawn_trees(
@@ -32,10 +57,15 @@ pub fn spawn_trees(
             TextureAtlas::from_grid(texture_handle, Vec2::new(192.0, 192.0), 4, 1, None, None);
         let texture_atlas_handle: Handle<TextureAtlas> = texture_atlases.add(texture_atlas);
 
-        let tree_wiggle_animation: TreeWiggleAnimation = TreeWiggleAnimation {
+        let mut tree_wiggle_animation: TreeWiggleAnimation = TreeWiggleAnimation {
             length_of_animation: 4,
             animation_timer: Timer::from_seconds(TREE_ANIMATION_SPEED, TimerMode::Repeating),
         };
+        tree_wiggle_animation
+            .animation_timer
+            .set_elapsed(std::time::Duration::from_secs_f32(
+                rand::random::<f32>() * TREE_ANIMATION_SPEED,
+            ));
 
         commands.spawn((
             SpriteSheetBundle {
@@ -73,5 +103,5 @@ fn generate_spawn_point_transform_from_x_y(
     y_scale: f32,
     window: &Window,
 ) -> Transform {
-    Transform::from_xyz(window.width() * x_scale, window.height() * y_scale, 1.0)
+    Transform::from_xyz(window.width() * x_scale, window.height() * y_scale, 0.5)
 }

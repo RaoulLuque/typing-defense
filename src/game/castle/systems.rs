@@ -14,7 +14,7 @@ pub fn spawn_castle(
 
     commands.spawn((
         SpriteBundle {
-            transform: Transform::from_xyz(0.0, window.height() * 0.05, 0.0),
+            transform: Transform::from_xyz(0.0, window.height() * 0.05, 1.0),
             texture: asset_server.load(castle_sprite_path),
             ..default()
         },

@@ -121,7 +121,7 @@ pub fn randomly_spawn_enemies_over_time(
                                 linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
                             },
                             // ensure the text is drawn on top of the box
-                            transform: Transform::from_xyz(0.0, 50.0, 0.0),
+                            transform: Transform::from_xyz(0.0, 50.0, 1.0),
                             ..default()
                         });
                     });

@@ -313,13 +313,13 @@ pub fn enemy_collision_with_castle(
                 let explosion_transform_option = if transform.translation.y.abs() < 15.0
                     && transform.translation.x < 0.0
                 {
-                    Some(Vec3::new(-150.0, 0.0, 0.0))
+                    Some(Vec3::new(-150.0, 0.0, 10.0))
                 } else if transform.translation.y.abs() < 15.0 && transform.translation.x > 0.0 {
-                    Some(Vec3::new(150.0, 0.0, 0.0))
+                    Some(Vec3::new(150.0, 0.0, 10.0))
                 } else if transform.translation.x.abs() < 15.0 && transform.translation.y < 0.0 {
-                    Some(Vec3::new(0.0, -80.0, 0.0))
+                    Some(Vec3::new(0.0, -80.0, 10.0))
                 } else if transform.translation.x.abs() < 15.0 && transform.translation.y > 0.0 {
-                    Some(Vec3::new(0.0, 125.0, 0.0))
+                    Some(Vec3::new(0.0, 125.0, 10.0))
                 } else {
                     None
                 };
