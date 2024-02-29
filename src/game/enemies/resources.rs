@@ -2,7 +2,7 @@ use super::*;
 use movement::components::EnemySpawnPoint;
 
 /// Interval for checking if enemies should spawn - in seconds
-const ENEMY_SPAWN_TIMER: f32 = 1.0;
+pub const INITIAL_ENEMY_SPAWN_INTERVAL: f32 = 2.0;
 
 /// Resource for keeping the time between enemy spawns
 #[derive(Reflect, Resource)]
@@ -14,7 +14,7 @@ pub struct EnemySpawnTimer {
 impl Default for EnemySpawnTimer {
     fn default() -> EnemySpawnTimer {
         EnemySpawnTimer {
-            timer: Timer::from_seconds(ENEMY_SPAWN_TIMER, TimerMode::Repeating),
+            timer: Timer::from_seconds(INITIAL_ENEMY_SPAWN_INTERVAL, TimerMode::Repeating),
         }
     }
 }

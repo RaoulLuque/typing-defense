@@ -1,9 +1,13 @@
+use enemies::resources::EnemySpawnTimer;
+
 use super::*;
 
-/// Number by which the number of enemies per round increases
+/// Number by which the number of enemies increases each round
 const NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT: u32 = 3;
-/// Number by which the number of enemies per round increases
+/// Number by which the number of enemies increases each round
 const ENEMY_BASE_SPEED_INCREMENT: f32 = 7.5;
+/// Number of secs by which the interval for enemies spawning decreases each round
+const ENEMY_SPAWN_INTERVAL_DECREMENT: f32 = 0.04;
 
 /// Resets the number of enemies spawned and typed current round and increases the maximum number of
 /// enemies spawned this round and base speed according to constants defined in this file.
@@ -12,7 +16,13 @@ pub fn increase_round_difficulty(
     mut number_of_enemies_spawned_this_round: ResMut<NumberOfEnemiesSpawnedCurrentRound>,
     mut enemy_base_speed_this_round: ResMut<EnemyBaseSpeedCurrentRound>,
     mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedCurrentRound>,
+    mut enemy_spawn_timer: ResMut<EnemySpawnTimer>,
 ) {
+    enemy_spawn_timer.timer = Timer::from_seconds(
+        (enemy_spawn_timer.timer.duration().as_secs_f32() - ENEMY_SPAWN_INTERVAL_DECREMENT)
+            .max(0.5),
+        TimerMode::Repeating,
+    );
     number_of_enemies_spawned_this_round.number = 0;
     number_of_enemies_typed_current_round.number = 0;
     max_number_of_enemies_this_round.number += NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT;

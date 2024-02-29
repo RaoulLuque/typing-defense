@@ -4,6 +4,8 @@ use super::*;
 const INITIAL_ENEMY_SPEED: f32 = 30.0;
 /// Number of enemies in the first round - super::systems::NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT
 const INITIAL_MAX_NUMBER_OF_ENEMIES: u32 = 2;
+// Initial interval for spawning enemies
+use enemies::resources::INITIAL_ENEMY_SPAWN_INTERVAL;
 
 /// Resource for tracking the number of enemies that are supposed to be spawned this round
 #[derive(Reflect, Resource)]
@@ -45,6 +47,21 @@ impl Default for EnemyBaseSpeedCurrentRound {
     fn default() -> EnemyBaseSpeedCurrentRound {
         EnemyBaseSpeedCurrentRound {
             speed: INITIAL_ENEMY_SPEED,
+        }
+    }
+}
+
+/// Base speed of enemies in the current round
+#[derive(Reflect, Resource)]
+#[reflect(Resource)]
+pub struct EnemyBaseSpawnIntervalRound {
+    pub interval: f32,
+}
+
+impl Default for EnemyBaseSpawnIntervalRound {
+    fn default() -> EnemyBaseSpawnIntervalRound {
+        EnemyBaseSpawnIntervalRound {
+            interval: INITIAL_ENEMY_SPAWN_INTERVAL,
         }
     }
 }

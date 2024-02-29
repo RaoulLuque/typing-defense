@@ -1,7 +1,7 @@
 mod components;
 use components::*;
 
-mod resources;
+pub mod resources;
 use resources::*;
 
 pub mod systems;
