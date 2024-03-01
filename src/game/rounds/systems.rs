@@ -7,7 +7,7 @@ const NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT: u32 = 3;
 /// Number by which the number of enemies increases each round
 const ENEMY_BASE_SPEED_INCREMENT: f32 = 7.5;
 /// Number of secs by which the interval for enemies spawning decreases each round
-const ENEMY_SPAWN_INTERVAL_DECREMENT: f32 = 0.04;
+const ENEMY_SPAWN_INTERVAL_DECREMENT: f32 = 0.1;
 
 /// Resets the number of enemies spawned and typed current round and increases the maximum number of
 /// enemies spawned this round and base speed according to constants defined in this file.
