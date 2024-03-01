@@ -35,8 +35,9 @@ pub fn randomly_spawn_enemies_over_time(
     mut last_enemy_spawn_point: ResMut<LastEnemySpawnPoint>,
     mut number_of_enemies_spawned_this_round: ResMut<NumberOfEnemiesSpawnedCurrentRound>,
     max_number_of_enemies_this_round: Res<MaxNumberOfEnemiesCurrentRound>,
+    number_of_enemies_typed_current_round: Res<NumberOfEnemiesTypedCurrentRound>,
     enemy_base_speed_this_round: Res<EnemyBaseSpeedCurrentRound>,
-    enemy_spawn_timer: Res<EnemySpawnTimer>,
+    mut enemy_spawn_timer: ResMut<EnemySpawnTimer>,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     words_handle: Res<WordsHandle>,
@@ -46,7 +47,17 @@ pub fn randomly_spawn_enemies_over_time(
     if number_of_enemies_spawned_this_round.number < max_number_of_enemies_this_round.number {
         // Get thread rng once for better performance
         let mut rng = rand::thread_rng();
-        if enemy_spawn_timer.timer.finished() && rng.gen_bool(CHANCE_OF_SPAWNING_ENEMY) {
+        if (enemy_spawn_timer.timer.finished() && rng.gen_bool(CHANCE_OF_SPAWNING_ENEMY))
+            || (number_of_enemies_spawned_this_round.number
+                == number_of_enemies_typed_current_round.number)
+        {
+            if (number_of_enemies_spawned_this_round.number
+                == number_of_enemies_typed_current_round.number)
+            {
+                enemy_spawn_timer
+                    .timer
+                    .set_elapsed(std::time::Duration::from_secs_f32(0.0));
+            }
             let window = window_query.get_single().unwrap();
 
             // Get a random spawn point
