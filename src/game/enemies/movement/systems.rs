@@ -359,7 +359,9 @@ pub fn enemy_collision_with_castle(
                 // Despawn enemy
                 commands.entity(entity).despawn_recursive();
                 number_of_enemies_typed_current_round.number += 1;
-                number_of_lives_left.number -= 1;
+                if let Some(val) = number_of_lives_left.number.checked_sub(1) {
+                    number_of_lives_left.number = val;
+                }
             }
         }
     }
