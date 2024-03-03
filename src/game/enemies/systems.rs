@@ -1,11 +1,9 @@
-use self::movement::components::PathCheckpointNumber;
+use self::movement::components::{EnemySpawnPoint, PathCheckpointNumber};
 
 use super::*;
 
 use crate::game::rounds::resources::*;
 
-use bevy::input::keyboard::KeyboardInput;
-use bevy::input::ButtonState;
 use bevy::window::PrimaryWindow;
 use rand::seq::SliceRandom;
 use rand::Rng;
@@ -23,10 +21,26 @@ pub const STANDARD_TEXT_COLOR: Color = Color::AZURE;
 pub const TYPING_COLOR: Color = Color::ORANGE_RED;
 // Font size for text
 pub const TEXT_FONT_SIZE: f32 = 60.0;
+// Standard enemy text height (height in pixels that the text is above enemies)
+pub const TEXT_HEIGHT: f32 = 50.0;
+// Standard text z value (in order to be in front of decorations)
+pub const TEXT_Z_VALUE: f32 = 1.0;
 
 #[derive(serde::Deserialize, Asset, TypePath)]
 pub struct Words {
     pub vec_of_words: Vec<String>,
+}
+
+#[derive(Bundle)]
+struct EnemyBundle {
+    sprite_sheet_bundle: SpriteSheetBundle,
+    entity_type: Enemy,
+    spawn_point: EnemySpawnPoint,
+    speed: Speed,
+    walking_animation: WalkingAnimation,
+    enemy_type: EnemyType,
+    path_checkpoint_number: PathCheckpointNumber,
+    name: Name,
 }
 
 pub fn randomly_spawn_enemies_over_time(
@@ -51,8 +65,8 @@ pub fn randomly_spawn_enemies_over_time(
             || (number_of_enemies_spawned_this_round.number
                 == number_of_enemies_typed_current_round.number)
         {
-            if (number_of_enemies_spawned_this_round.number
-                == number_of_enemies_typed_current_round.number)
+            if number_of_enemies_spawned_this_round.number
+                == number_of_enemies_typed_current_round.number
             {
                 enemy_spawn_timer
                     .timer
@@ -110,25 +124,28 @@ pub fn randomly_spawn_enemies_over_time(
                     .choose(&mut rng)
                     .expect("The list of words shouldn't be empty");
                 commands
-                    .spawn((
-                        SpriteSheetBundle {
-                            transform: spawn_point_transform,
-                            sprite: TextureAtlasSprite {
-                                flip_x: flip_on_y_axis,
-                                index: 0,
-                                custom_size: custom_sprite_size,
+                    .spawn(
+                        (EnemyBundle {
+                            sprite_sheet_bundle: SpriteSheetBundle {
+                                transform: spawn_point_transform,
+                                sprite: TextureAtlasSprite {
+                                    flip_x: flip_on_y_axis,
+                                    index: 0,
+                                    custom_size: custom_sprite_size,
+                                    ..default()
+                                },
+                                texture_atlas: texture_atlas_handle,
                                 ..default()
                             },
-                            texture_atlas: texture_atlas_handle,
-                            ..default()
-                        },
-                        Enemy {},
-                        spawn_point,
-                        Speed { speed: speed },
-                        walking_animation,
-                        enemy_type,
-                        PathCheckpointNumber::default(),
-                    ))
+                            entity_type: Enemy {},
+                            spawn_point,
+                            speed: Speed { speed: speed },
+                            walking_animation,
+                            enemy_type,
+                            path_checkpoint_number: PathCheckpointNumber::default(),
+                            name: Name::new(word_for_enemy.clone()),
+                        }),
+                    )
                     .with_children(|parent| {
                         parent.spawn(Text2dBundle {
                             text: Text {
@@ -139,7 +156,7 @@ pub fn randomly_spawn_enemies_over_time(
                                 linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
                             },
                             // ensure the text is drawn on top of the box
-                            transform: Transform::from_xyz(0.0, 50.0, 1.0),
+                            transform: Transform::from_xyz(0.0, TEXT_HEIGHT, TEXT_Z_VALUE),
                             ..default()
                         });
                     });
