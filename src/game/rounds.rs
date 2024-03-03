@@ -27,10 +27,7 @@ impl Plugin for RoundsPlugin {
             .add_systems(OnEnter(RoundState::InRound), increase_round_difficulty)
             .add_systems(OnEnter(RoundState::InRound), increase_round_counter)
             // Add update systems
-            .add_systems(
-                Update,
-                check_if_round_is_over.run_if(in_state(RoundState::InRound)),
-            )
+            .add_systems(Update, check_if_round_is_over.in_set(super::InputHandlingSystemSet::AfterInputHandling))
             .add_systems(
                 Update,
                 proceed_to_next_round_from_in_between_rounds

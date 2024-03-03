@@ -31,6 +31,7 @@ impl Plugin for EnemiesPlugin {
             .register_type::<LastEnemySpawnPoint>()
             .register_type::<movement::components::EnemySpawnPoint>()
             .register_type::<movement::components::PathCheckpointNumber>()
+            .register_type::<text::components::TextCollidingWith>()
             // Initialize Resources
             .init_resource::<EnemiesBeingTyped>()
             .init_resource::<EnemySpawnTimer>()
@@ -42,17 +43,24 @@ impl Plugin for EnemiesPlugin {
             .add_systems(
                 Update,
                 (
+                    text::systems::reset_text_height_when_colliding_enemy_is_removed,
+                    text::systems::reset_text_height_when_enemies_passed_each_other,
+                )
+                    .in_set(super::InputHandlingSystemSet::AfterInputHandling),
+            )
+            .add_systems(
+                Update,
+                (
                     randomly_spawn_enemies_over_time,
                     text::systems::update_text_from_enemies_on_button_press,
+                    text::systems::handle_text_when_enemies_collide,
                     tick_enemy_spawn_timer,
                     movement::systems::update_position_of_enemies,
                     animate_enemies,
                     movement::systems::enemy_collision_with_castle,
                     movement::systems::despawn_enemy_if_out_of_screen,
                 )
-                    .run_if(in_state(AppState::InGame))
-                    .run_if(in_state(SimulationState::Running))
-                    .before(rounds::systems::check_if_round_is_over),
+                    .in_set(super::InputHandlingSystemSet::InputHandling),
             );
     }
 }

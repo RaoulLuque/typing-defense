@@ -23,6 +23,13 @@ use bevy::prelude::*;
 
 use crate::AppState;
 
+#[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
+pub enum InputHandlingSystemSet {
+    BeforeInputHandling,
+    InputHandling,
+    AfterInputHandling,
+}
+
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
@@ -37,6 +44,21 @@ impl Plugin for GamePlugin {
             .add_plugins(RoundsPlugin)
             .add_plugins(EffectsPlugin)
             .add_plugins(DecorationsPlugin)
+            .add_plugins(HUDPlugin)
+            // Configure System Sets
+            .configure_sets(
+                Update,
+                // chain() will ensure sets run in the order they are listed
+                (
+                    InputHandlingSystemSet::BeforeInputHandling,
+                    InputHandlingSystemSet::InputHandling,
+                    InputHandlingSystemSet::AfterInputHandling,
+                )
+                    .chain()
+                    .run_if(in_state(RoundState::InRound))
+                    .run_if(in_state(AppState::InGame))
+                    .run_if(in_state(SimulationState::Running)),
+            )
             // Add system for changing simulation states - only possible if:
             // 1. InGame
             // 2. InRound (in order not to confuse when in between rounds since pausing seems uneccessary)

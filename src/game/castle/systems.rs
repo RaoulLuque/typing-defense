@@ -19,6 +19,7 @@ pub fn spawn_castle(
             ..default()
         },
         Castle {},
+        Name::new("Castle"),
     ));
 }
 

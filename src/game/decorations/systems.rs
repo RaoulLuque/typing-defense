@@ -79,6 +79,7 @@ pub fn spawn_trees(
                 ..default()
             },
             tree_wiggle_animation,
+            Name::new("Tree"),
         ));
     }
 }
