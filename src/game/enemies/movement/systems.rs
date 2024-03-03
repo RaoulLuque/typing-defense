@@ -7,8 +7,8 @@ use super::*;
 // One grid block on the background corresponds to:
 // In width: 0.03333
 // In height: 0.05263
-
-enum TurnInstruction {
+#[derive(PartialEq, Eq)]
+pub enum TurnInstruction {
     Left,
     Right,
     Up,
@@ -155,7 +155,8 @@ pub fn update_position_of_enemies(
             window.height() * y_scale_next_checkpoint,
             0.0,
         );
-        let turn_instruction = get_turn_instruction(spawn_point, path_checkpoint_number.number);
+        let turn_instruction =
+            get_current_turn_instruction(spawn_point, path_checkpoint_number.number);
         let translation = speed.speed
             * time.delta_seconds()
             * get_translation_from_turn_instruction(&turn_instruction);
@@ -172,7 +173,8 @@ pub fn update_position_of_enemies(
             let distance_to_go =
                 translation.length() - transform.translation.distance(next_checkpoint_vec);
             path_checkpoint_number.number += 1;
-            let turn_instruction = get_turn_instruction(spawn_point, path_checkpoint_number.number);
+            let turn_instruction =
+                get_current_turn_instruction(spawn_point, path_checkpoint_number.number);
             transform.translation +=
                 distance_to_go * get_translation_from_turn_instruction(&turn_instruction);
         } else {
@@ -242,7 +244,7 @@ fn get_x_y_scale_of_checkpoint(
     )
 }
 
-fn get_turn_instruction(
+pub fn get_current_turn_instruction(
     spawn_point: &EnemySpawnPoint,
     check_point_number: usize,
 ) -> &TurnInstruction {

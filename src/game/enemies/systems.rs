@@ -126,29 +126,27 @@ pub fn randomly_spawn_enemies_over_time(
                     .choose(&mut rng)
                     .expect("The list of words shouldn't be empty");
                 commands
-                    .spawn(
-                        (EnemyBundle {
-                            sprite_sheet_bundle: SpriteSheetBundle {
-                                transform: spawn_point_transform,
-                                sprite: TextureAtlasSprite {
-                                    flip_x: flip_on_y_axis,
-                                    index: 0,
-                                    custom_size: custom_sprite_size,
-                                    ..default()
-                                },
-                                texture_atlas: texture_atlas_handle,
+                    .spawn(EnemyBundle {
+                        sprite_sheet_bundle: SpriteSheetBundle {
+                            transform: spawn_point_transform,
+                            sprite: TextureAtlasSprite {
+                                flip_x: flip_on_y_axis,
+                                index: 0,
+                                custom_size: custom_sprite_size,
                                 ..default()
                             },
-                            entity_type: Enemy {},
-                            spawn_point,
-                            speed: Speed { speed: speed },
-                            walking_animation,
-                            enemy_type,
-                            path_checkpoint_number: PathCheckpointNumber::default(),
-                            text_collision: TextCollidingWith::default(),
-                            name: Name::new(word_for_enemy.clone()),
-                        }),
-                    )
+                            texture_atlas: texture_atlas_handle,
+                            ..default()
+                        },
+                        entity_type: Enemy {},
+                        spawn_point,
+                        speed: Speed { speed: speed },
+                        walking_animation,
+                        enemy_type,
+                        path_checkpoint_number: PathCheckpointNumber::default(),
+                        text_collision: TextCollidingWith::default(),
+                        name: Name::new(word_for_enemy.clone()),
+                    })
                     .with_children(|parent| {
                         parent.spawn(Text2dBundle {
                             text: Text {
