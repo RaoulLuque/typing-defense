@@ -1,5 +1,5 @@
 use self::movement::components::{EnemySpawnPoint, PathCheckpointNumber};
-use self::text::components::TextCollidingWith;
+use self::text::components::CollidingWith;
 
 use super::*;
 
@@ -41,7 +41,7 @@ struct EnemyBundle {
     walking_animation: WalkingAnimation,
     enemy_type: EnemyType,
     path_checkpoint_number: PathCheckpointNumber,
-    text_collision: TextCollidingWith,
+    text_collision: CollidingWith,
     name: Name,
 }
 
@@ -144,7 +144,7 @@ pub fn randomly_spawn_enemies_over_time(
                         walking_animation,
                         enemy_type,
                         path_checkpoint_number: PathCheckpointNumber::default(),
-                        text_collision: TextCollidingWith::default(),
+                        text_collision: CollidingWith::default(),
                         name: Name::new(word_for_enemy.clone()),
                     })
                     .with_children(|parent| {

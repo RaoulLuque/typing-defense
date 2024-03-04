@@ -2,13 +2,13 @@ use super::*;
 
 #[derive(Reflect, Component)]
 #[reflect(Component)]
-pub struct TextCollidingWith {
+pub struct CollidingWith {
     pub entity_colliding_with: Entity,
 }
 
-impl Default for TextCollidingWith {
-    fn default() -> TextCollidingWith {
-        TextCollidingWith {
+impl Default for CollidingWith {
+    fn default() -> CollidingWith {
+        CollidingWith {
             entity_colliding_with: Entity::PLACEHOLDER,
         }
     }

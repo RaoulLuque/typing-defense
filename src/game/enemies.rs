@@ -31,7 +31,7 @@ impl Plugin for EnemiesPlugin {
             .register_type::<LastEnemySpawnPoint>()
             .register_type::<movement::components::EnemySpawnPoint>()
             .register_type::<movement::components::PathCheckpointNumber>()
-            .register_type::<text::components::TextCollidingWith>()
+            .register_type::<text::components::CollidingWith>()
             // Initialize Resources
             .init_resource::<EnemiesBeingTyped>()
             .init_resource::<EnemySpawnTimer>()
@@ -43,8 +43,10 @@ impl Plugin for EnemiesPlugin {
             .add_systems(
                 Update,
                 (
+                    // Reset colliding text if necessary
                     text::systems::reset_text_height_when_colliding_enemy_is_removed,
                     text::systems::reset_text_height_when_enemies_passed_each_other,
+                    text::systems::check_if_colliding_text_has_moved,
                 )
                     .in_set(super::InputHandlingSystemSet::AfterInputHandling),
             )

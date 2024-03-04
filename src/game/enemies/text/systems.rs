@@ -190,7 +190,7 @@ pub fn handle_text_when_enemies_collide(
             &Children,
             &EnemySpawnPoint,
             &PathCheckpointNumber,
-            &mut TextCollidingWith,
+            &mut CollidingWith,
         ),
         With<Enemy>,
     >,
@@ -229,7 +229,8 @@ pub fn handle_text_when_enemies_collide(
         );
 
         // If there is a collision, then change position of text
-        if let Some((text_collision_bool, text_collision_adjustments)) = text_collision_instructions
+        if let Some((text_collision_bool, colliding_text_new_translation)) =
+            text_collision_instructions
         {
             match text_collision_bool {
                 // First enemy's text will be moved up
@@ -239,7 +240,7 @@ pub fn handle_text_when_enemies_collide(
                     change_position_of_text(
                         &mut q_child_with_text,
                         children_first,
-                        text_collision_adjustments,
+                        colliding_text_new_translation,
                     );
                 }
                 // Second enemy's text will be moved up
@@ -249,7 +250,7 @@ pub fn handle_text_when_enemies_collide(
                     change_position_of_text(
                         &mut q_child_with_text,
                         children_second,
-                        text_collision_adjustments,
+                        colliding_text_new_translation,
                     );
                 }
             };
@@ -352,14 +353,22 @@ fn check_if_text_is_colliding(
                                     TurnInstruction::Left => {
                                         return Some((
                                             false,
-                                            Vec3::new(0.0, enemies::TEXT_HEIGHT, 0.0),
+                                            Vec3::new(
+                                                translation_first_text.x,
+                                                translation_first_text.y + enemies::TEXT_HEIGHT,
+                                                translation_first_text.z,
+                                            ),
                                         ))
                                     }
                                     // First text needs to be moved
                                     TurnInstruction::Right => {
                                         return Some((
                                             true,
-                                            Vec3::new(0.0, enemies::TEXT_HEIGHT, 0.0),
+                                            Vec3::new(
+                                                translation_second_text.x,
+                                                translation_second_text.y + enemies::TEXT_HEIGHT,
+                                                translation_second_text.z,
+                                            ),
                                         ))
                                     }
                                     // This can never happen
@@ -371,14 +380,22 @@ fn check_if_text_is_colliding(
                                     TurnInstruction::Right => {
                                         return Some((
                                             false,
-                                            Vec3::new(0.0, enemies::TEXT_HEIGHT, 0.0),
+                                            Vec3::new(
+                                                translation_first_text.x,
+                                                translation_first_text.y + enemies::TEXT_HEIGHT,
+                                                translation_first_text.z,
+                                            ),
                                         ))
                                     }
-                                    // Second text needs to be moved
+                                    // First text needs to be moved
                                     TurnInstruction::Left => {
                                         return Some((
                                             true,
-                                            Vec3::new(0.0, enemies::TEXT_HEIGHT, 0.0),
+                                            Vec3::new(
+                                                translation_second_text.x,
+                                                translation_second_text.y + enemies::TEXT_HEIGHT,
+                                                translation_second_text.z,
+                                            ),
                                         ))
                                     }
                                     // This can never happen
@@ -403,14 +420,22 @@ fn check_if_text_is_colliding(
                                     TurnInstruction::Up => {
                                         return Some((
                                             false,
-                                            Vec3::new(0.0, enemies::TEXT_HEIGHT, 0.0),
+                                            Vec3::new(
+                                                translation_first_text.x,
+                                                translation_first_text.y + enemies::TEXT_HEIGHT,
+                                                translation_first_text.z,
+                                            ),
                                         ))
                                     }
                                     // Second text needs to be moved
                                     TurnInstruction::Down => {
                                         return Some((
                                             false,
-                                            Vec3::new(0.0, enemies::TEXT_HEIGHT, 0.0),
+                                            Vec3::new(
+                                                translation_first_text.x,
+                                                translation_first_text.y + enemies::TEXT_HEIGHT,
+                                                translation_first_text.z,
+                                            ),
                                         ))
                                     }
                                     // This can never happen
@@ -422,14 +447,22 @@ fn check_if_text_is_colliding(
                                     TurnInstruction::Up => {
                                         return Some((
                                             true,
-                                            Vec3::new(0.0, enemies::TEXT_HEIGHT, 0.0),
+                                            Vec3::new(
+                                                translation_second_text.x,
+                                                translation_second_text.y + enemies::TEXT_HEIGHT,
+                                                translation_second_text.z,
+                                            ),
                                         ))
                                     }
                                     // First text needs to be moved
                                     TurnInstruction::Down => {
                                         return Some((
                                             true,
-                                            Vec3::new(0.0, enemies::TEXT_HEIGHT, 0.0),
+                                            Vec3::new(
+                                                translation_second_text.x,
+                                                translation_second_text.y + enemies::TEXT_HEIGHT,
+                                                translation_second_text.z,
+                                            ),
                                         ))
                                     }
                                     // This can never happen
@@ -448,18 +481,18 @@ fn check_if_text_is_colliding(
 fn change_position_of_text(
     q_child_with_text: &mut Query<(&mut Transform, &Text), Without<Enemy>>,
     children: &Children,
-    text_collision_adjustments: Vec3,
+    colliding_text_new_translation: Vec3,
 ) {
     let mut text_iter = q_child_with_text.iter_many_mut(children);
     if let Some((mut text_transform, _)) = text_iter.fetch_next() {
-        text_transform.translation += text_collision_adjustments;
+        text_transform.translation = colliding_text_new_translation;
     }
 }
 
 fn reset_height_of_text(
     q_child_with_text: &mut Query<(&mut Transform, &Text), Without<Enemy>>,
     children: &Children,
-    colliding_text_colliding_with: &mut TextCollidingWith,
+    colliding_text_colliding_with: &mut CollidingWith,
 ) {
     let mut text_iter = q_child_with_text.iter_many_mut(children);
     if let Some((mut text_transform, _)) = text_iter.fetch_next() {
@@ -476,7 +509,7 @@ pub fn reset_text_height_when_enemies_passed_each_other(
             &Children,
             &EnemySpawnPoint,
             &PathCheckpointNumber,
-            Option<&mut TextCollidingWith>,
+            &mut CollidingWith,
         ),
         With<Enemy>,
     >,
@@ -490,54 +523,48 @@ pub fn reset_text_height_when_enemies_passed_each_other(
             children_first,
             enemy_spawn_point_first_enemy,
             path_checkpoint_number_first_enemy,
-            text_colliding_option_first_enemy,
+            mut text_colliding_with_first_enemy,
         ), (
             entity_second_enemy,
             transform_second_enemy,
             children_second,
             enemy_spawn_point_second_enemy,
             path_checkpoint_number_second_enemy,
-            text_colliding_option_second_enemy,
+            mut text_colliding_with_second_enemy,
         )],
     ) = q_parent_combinations_iter.fetch_next()
     {
-        if let Some(mut first_enemy_text_colliding_with) = text_colliding_option_first_enemy {
-            if first_enemy_text_colliding_with.entity_colliding_with == entity_second_enemy {
-                handle_resetting_text(
-                    children_first,
-                    transform_first_enemy,
-                    children_second,
-                    transform_second_enemy,
-                    enemy_spawn_point_first_enemy,
-                    enemy_spawn_point_second_enemy,
-                    path_checkpoint_number_first_enemy,
-                    path_checkpoint_number_second_enemy,
-                    &mut q_child_with_text,
-                    &mut first_enemy_text_colliding_with,
-                );
-            }
-        } else if let Some(mut second_enemy_text_colliding_with) =
-            text_colliding_option_second_enemy
-        {
-            if second_enemy_text_colliding_with.entity_colliding_with == entity_first_enemy {
-                handle_resetting_text(
-                    children_second,
-                    transform_second_enemy,
-                    children_first,
-                    transform_first_enemy,
-                    enemy_spawn_point_first_enemy,
-                    enemy_spawn_point_second_enemy,
-                    path_checkpoint_number_first_enemy,
-                    path_checkpoint_number_second_enemy,
-                    &mut q_child_with_text,
-                    &mut second_enemy_text_colliding_with,
-                )
-            }
+        if text_colliding_with_first_enemy.entity_colliding_with == entity_second_enemy {
+            handle_checking_collision_and_resetting_text(
+                children_first,
+                transform_first_enemy,
+                children_second,
+                transform_second_enemy,
+                enemy_spawn_point_first_enemy,
+                enemy_spawn_point_second_enemy,
+                path_checkpoint_number_first_enemy,
+                path_checkpoint_number_second_enemy,
+                &mut q_child_with_text,
+                &mut text_colliding_with_first_enemy,
+            );
+        } else if text_colliding_with_second_enemy.entity_colliding_with == entity_first_enemy {
+            handle_checking_collision_and_resetting_text(
+                children_second,
+                transform_second_enemy,
+                children_first,
+                transform_first_enemy,
+                enemy_spawn_point_first_enemy,
+                enemy_spawn_point_second_enemy,
+                path_checkpoint_number_first_enemy,
+                path_checkpoint_number_second_enemy,
+                &mut q_child_with_text,
+                &mut text_colliding_with_second_enemy,
+            )
         };
     }
 }
 
-fn handle_resetting_text(
+fn handle_checking_collision_and_resetting_text(
     colliding_enemy_child: &Children,
     colliding_enemy_transform: &Transform,
     non_colliding_enemy_child: &Children,
@@ -547,7 +574,7 @@ fn handle_resetting_text(
     path_checkpoint_number_first_enemy: &PathCheckpointNumber,
     path_checkpoint_number_second_enemy: &PathCheckpointNumber,
     mut q_child_with_text: &mut Query<(&mut Transform, &Text), Without<Enemy>>,
-    colliding_text_colliding_with: &mut TextCollidingWith,
+    colliding_text_colliding_with: &mut CollidingWith,
 ) {
     if let None = query_texts_and_check_if_it_collides(
         &q_child_with_text,
@@ -572,7 +599,7 @@ fn handle_resetting_text(
 pub fn reset_text_height_when_colliding_enemy_is_removed(
     mut removed: RemovedComponents<Enemy>,
     mut enemies_with_colliding_text_query: Query<
-        (Entity, &Transform, &Children, &mut TextCollidingWith),
+        (Entity, &Transform, &Children, &mut CollidingWith),
         With<Enemy>,
     >,
     mut q_child_with_text: Query<(&mut Transform, &Text), Without<Enemy>>,
@@ -587,6 +614,59 @@ pub fn reset_text_height_when_colliding_enemy_is_removed(
                     enemy_children,
                     &mut enemy_text_colliding_with,
                 );
+            }
+        }
+    }
+}
+
+pub fn check_if_colliding_text_has_moved(
+    q_parent_with_enemy: Query<(Entity, &Children, &CollidingWith), With<Enemy>>,
+    mut q_child_with_text: Query<(&mut Transform, &Text), Without<Enemy>>,
+) {
+    let mut q_parent_combinations_iter = q_parent_with_enemy.iter_combinations();
+    while let Some(
+        [(entity_first_enemy, children_first, text_colliding_with_first_enemy), (entity_second_enemy, children_second, text_colliding_with_second_enemy)],
+    ) = q_parent_combinations_iter.fetch_next()
+    {
+        if text_colliding_with_first_enemy.entity_colliding_with == entity_second_enemy {
+            check_if_colliding_text_is_right_above_and_change_position_of_text_if_necessary(
+                &mut q_child_with_text,
+                children_first,
+                children_second,
+            );
+        } else if text_colliding_with_second_enemy.entity_colliding_with == entity_first_enemy {
+            check_if_colliding_text_is_right_above_and_change_position_of_text_if_necessary(
+                &mut q_child_with_text,
+                children_second,
+                children_first,
+            );
+        };
+    }
+}
+
+fn check_if_colliding_text_is_right_above_and_change_position_of_text_if_necessary(
+    q_child_with_text: &mut Query<(&mut Transform, &Text), Without<Enemy>>,
+    child_text_that_is_moved_above: &Children,
+    child_text_of_enemy_that_is_collided_with: &Children,
+) {
+    let mut text_iter_collided_with =
+        q_child_with_text.iter_many(child_text_of_enemy_that_is_collided_with);
+    let mut y_translation_of_text_that_is_collided_with_option: Option<f32> = None;
+    if let Some((text_transform, _)) = text_iter_collided_with.fetch_next() {
+        y_translation_of_text_that_is_collided_with_option = Some(text_transform.translation.y);
+    }
+
+    let mut text_iter = q_child_with_text.iter_many_mut(child_text_that_is_moved_above);
+    if let Some((mut text_transform, _)) = text_iter.fetch_next() {
+        if let Some(y_translation_of_text_that_is_collided_with) =
+            y_translation_of_text_that_is_collided_with_option
+        {
+            if text_transform.translation.y
+                != y_translation_of_text_that_is_collided_with + TEXT_HEIGHT
+            {
+                println!("Colliding Text was just moved down because source moved down");
+                text_transform.translation.y =
+                    y_translation_of_text_that_is_collided_with + TEXT_HEIGHT;
             }
         }
     }
