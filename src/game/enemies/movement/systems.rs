@@ -297,6 +297,7 @@ pub fn enemy_collision_with_castle(
     mut number_of_lives_left: ResMut<castle::resources::NumberOfLivesLeft>,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut enemies_being_typed: ResMut<EnemiesBeingTyped>,
 ) {
     if let Ok(_) = castle_query.get_single() {
         for (entity, transform) in enemy_query.iter_mut() {
@@ -305,7 +306,7 @@ pub fn enemy_collision_with_castle(
                 && transform.translation.x > -150.0
                 && transform.translation.x < 150.0
             {
-                // Check if collision happened and if so, where
+                // Enemy hit castle. Check where collision happened
                 let explosion_transform_option = if transform.translation.y.abs() < 15.0
                     && transform.translation.x < 0.0
                 {
@@ -358,9 +359,15 @@ pub fn enemy_collision_with_castle(
                         explosion_animation,
                     ));
                 }
-                // Despawn enemy
+                // Despawn enemy and set resources accordingly
                 commands.entity(entity).despawn_recursive();
                 number_of_enemies_typed_current_round.number += 1;
+                if enemies_being_typed.vec_of_enemies.contains(&entity) {
+                    enemies_being_typed.vec_of_enemies.retain(|&x| x != entity);
+                    if enemies_being_typed.vec_of_enemies.len() == 0 {
+                        enemies_being_typed.indicator = false;
+                    }
+                }
                 if let Some(val) = number_of_lives_left.number.checked_sub(1) {
                     number_of_lives_left.number = val;
                 }
