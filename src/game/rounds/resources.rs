@@ -1,9 +1,9 @@
 use super::*;
 
 /// Initial speed of enemies at start of game
-const INITIAL_ENEMY_SPEED: f32 = 30.0;
+pub const INITIAL_ENEMY_SPEED: f32 = 30.0;
 /// Number of enemies in the first round - super::systems::NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT
-const INITIAL_MAX_NUMBER_OF_ENEMIES: u32 = 2;
+pub const INITIAL_MAX_NUMBER_OF_ENEMIES: u32 = 2;
 // Initial interval for spawning enemies
 use enemies::resources::INITIAL_ENEMY_SPAWN_INTERVAL;
 
@@ -66,8 +66,9 @@ impl Default for EnemyBaseSpawnIntervalRound {
     }
 }
 
-/// Counts up right at the start of the round.
-/// In between rounds the counter is the number of the round before.
+/// Counts up right at the start of the round. In between rounds the counter is the number of the round before.
+///
+/// Is zero in main menu and increments to 1 when pressing start game.
 #[derive(Reflect, Resource, Default)]
 #[reflect(Resource)]
 pub struct RoundCounter {

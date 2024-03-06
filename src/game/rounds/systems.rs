@@ -9,6 +9,13 @@ const ENEMY_BASE_SPEED_INCREMENT: f32 = 7.5;
 /// Number of secs by which the interval for enemies spawning decreases each round
 const ENEMY_SPAWN_INTERVAL_DECREMENT: f32 = 0.1;
 
+/// Initial speed of enemies at start of game
+use super::resources::INITIAL_ENEMY_SPEED;
+/// Number of enemies in the first round - super::systems::NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT
+use super::resources::INITIAL_MAX_NUMBER_OF_ENEMIES;
+// Initial interval for spawning enemies
+use enemies::resources::INITIAL_ENEMY_SPAWN_INTERVAL;
+
 /// Resets the number of enemies spawned and typed current round and increases the maximum number of
 /// enemies spawned this round and base speed according to constants defined in this file.
 pub fn increase_round_difficulty(
@@ -17,16 +24,20 @@ pub fn increase_round_difficulty(
     mut enemy_base_speed_this_round: ResMut<EnemyBaseSpeedCurrentRound>,
     mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedCurrentRound>,
     mut enemy_spawn_timer: ResMut<EnemySpawnTimer>,
+    round_counter: Res<RoundCounter>,
 ) {
     enemy_spawn_timer.timer = Timer::from_seconds(
-        (enemy_spawn_timer.timer.duration().as_secs_f32() - ENEMY_SPAWN_INTERVAL_DECREMENT)
+        (enemies::resources::INITIAL_ENEMY_SPAWN_INTERVAL
+            - round_counter.counter as f32 * ENEMY_SPAWN_INTERVAL_DECREMENT)
             .max(0.5),
         TimerMode::Repeating,
     );
     number_of_enemies_spawned_this_round.number = 0;
     number_of_enemies_typed_current_round.number = 0;
-    max_number_of_enemies_this_round.number += NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT;
-    enemy_base_speed_this_round.speed += ENEMY_BASE_SPEED_INCREMENT;
+    max_number_of_enemies_this_round.number = INITIAL_MAX_NUMBER_OF_ENEMIES
+        + round_counter.counter * NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT;
+    enemy_base_speed_this_round.speed =
+        INITIAL_ENEMY_SPEED + round_counter.counter as f32 * ENEMY_BASE_SPEED_INCREMENT;
 }
 
 /// Increases the round_counter by one at the start of each round.
