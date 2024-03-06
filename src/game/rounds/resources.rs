@@ -4,6 +4,7 @@ use super::*;
 pub const INITIAL_ENEMY_SPEED: f32 = 30.0;
 /// Number of enemies in the first round - super::systems::NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT
 pub const INITIAL_MAX_NUMBER_OF_ENEMIES: u32 = 2;
+use bevy::time::Stopwatch;
 // Initial interval for spawning enemies
 use enemies::resources::INITIAL_ENEMY_SPAWN_INTERVAL;
 
@@ -73,4 +74,21 @@ impl Default for EnemyBaseSpawnIntervalRound {
 #[reflect(Resource)]
 pub struct RoundCounter {
     pub counter: u32,
+}
+
+/// Stopwatch for counting how much time has passed this round.
+///
+/// Is reset to 0 at beginning of each round.
+#[derive(Reflect, Resource)]
+#[reflect(Resource)]
+pub struct RoundStopwatch {
+    pub stopwatch: Stopwatch,
+}
+
+impl Default for RoundStopwatch {
+    fn default() -> RoundStopwatch {
+        RoundStopwatch {
+            stopwatch: Stopwatch::new(),
+        }
+    }
 }

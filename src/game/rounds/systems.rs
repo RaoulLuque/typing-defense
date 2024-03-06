@@ -71,3 +71,11 @@ pub fn proceed_to_next_round_from_in_between_rounds(
         println!("Round was started: Entered InRound State");
     }
 }
+
+pub fn tick_round_stopwatch(mut round_stopwatch: ResMut<RoundStopwatch>, time: Res<Time>) {
+    round_stopwatch.stopwatch.tick(time.delta());
+}
+
+pub fn reset_round_stopwatch(mut round_stopwatch: ResMut<RoundStopwatch>) {
+    round_stopwatch.stopwatch.reset();
+}

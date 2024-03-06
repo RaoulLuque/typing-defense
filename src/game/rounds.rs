@@ -17,16 +17,23 @@ impl Plugin for RoundsPlugin {
             .register_type::<EnemyBaseSpeedCurrentRound>()
             .register_type::<NumberOfEnemiesTypedCurrentRound>()
             .register_type::<RoundCounter>()
+            .register_type::<RoundStopwatch>()
             // Initialize Resources
             .init_resource::<MaxNumberOfEnemiesCurrentRound>()
             .init_resource::<NumberOfEnemiesSpawnedCurrentRound>()
             .init_resource::<EnemyBaseSpeedCurrentRound>()
             .init_resource::<NumberOfEnemiesTypedCurrentRound>()
             .init_resource::<RoundCounter>()
+            .init_resource::<RoundStopwatch>()
             // Add systems that run on entry of round
             .add_systems(OnEnter(RoundState::InRound), increase_round_difficulty)
             .add_systems(OnEnter(RoundState::InRound), increase_round_counter)
+            .add_systems(OnEnter(super::RoundState::InRound), reset_round_stopwatch)
             // Add update systems
+            .add_systems(
+                Update,
+                tick_round_stopwatch.in_set(super::InputHandlingSystemSet::BeforeInputHandling),
+            )
             .add_systems(
                 Update,
                 check_if_round_is_over.in_set(super::InputHandlingSystemSet::AfterInputHandling),

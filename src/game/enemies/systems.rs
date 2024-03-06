@@ -152,6 +152,7 @@ pub fn randomly_spawn_enemies_over_time(
                             text: Text {
                                 sections: turn_string_literal_into_vec_of_text_sections(
                                     word_for_enemy,
+                                    STANDARD_TEXT_COLOR,
                                 ),
                                 alignment: TextAlignment::Center,
                                 linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
@@ -192,7 +193,10 @@ pub fn generate_sprite_information_from_enemy_type(
 }
 
 // Turns a string literal into a vector of text sections each containing one character from the string literal
-fn turn_string_literal_into_vec_of_text_sections(string_literal: &str) -> Vec<TextSection> {
+fn turn_string_literal_into_vec_of_text_sections(
+    string_literal: &str,
+    color: Color,
+) -> Vec<TextSection> {
     string_literal
         .chars()
         .map(|x| {
@@ -200,7 +204,7 @@ fn turn_string_literal_into_vec_of_text_sections(string_literal: &str) -> Vec<Te
                 x.to_string(),
                 TextStyle {
                     font_size: TEXT_FONT_SIZE,
-                    color: STANDARD_TEXT_COLOR,
+                    color: color,
                     ..default()
                 },
             )
