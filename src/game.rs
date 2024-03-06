@@ -71,6 +71,9 @@ impl Plugin for GamePlugin {
     }
 }
 
+/// Starts in Running.
+///
+/// Switches when ctrl is pressed. In Paused, enemies don't move and are not typeable.
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum SimulationState {
     Paused,
@@ -78,9 +81,12 @@ enum SimulationState {
     Running,
 }
 
+/// Starts InBetweenRounds and enters InRound when Start Game is pressed.
+///
+/// Alternates between the two states when all enemies are typed and next round is started with space.
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum RoundState {
-    InBetweenRounds,
     #[default]
+    InBetweenRounds,
     InRound,
 }
