@@ -12,7 +12,7 @@ use rand::Rng;
 // Chance of spawning an enemy every super::resources::ENEMY_SPAWN_TIME seconds
 pub const CHANCE_OF_SPAWNING_ENEMY: f64 = 1.0;
 // Base value which is divided by the enemy speed to get the animation speed - lower = faster
-pub const BASE_ANIMATION_SPEED: f32 = 3.0;
+pub const BASE_ANIMATION_SPEED: f32 = 5.0;
 // Scale factor by which enemy sprites are scaled - higher = bigger
 pub const ENEMY_SPRITE_SCALE_FACTOR: f32 = 1.4;
 
