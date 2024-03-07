@@ -3,12 +3,21 @@ use enemies::text::systems::EnemyTypedEvent;
 
 use super::*;
 
-/// Number by which the number of enemies increases each round
-const NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT: u32 = 3;
-/// Number by which the number of enemies increases each round
-const ENEMY_BASE_SPEED_INCREMENT: f32 = 7.5;
-/// Number of secs by which the interval for enemies spawning decreases each round
-const ENEMY_SPAWN_INTERVAL_DECREMENT: f32 = 0.1;
+// Increments and decrements of game values each round for the different difficulties:
+
+// Easy
+const NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT_EASY_DIFFICULTY: u32 = 2;
+const ENEMY_BASE_SPEED_INCREMENT_EASY_DIFFICULTY: f32 = 3.75;
+const ENEMY_SPAWN_INTERVAL_DECREMENT_EASY_DIFFICULTY: f32 = 0.05;
+
+// Medium
+const NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT_MEDIUM_DIFFICULTY: u32 = 4;
+const ENEMY_BASE_SPEED_INCREMENT_MEDIUM_DIFFICULTY: f32 = 7.5;
+const ENEMY_SPAWN_INTERVAL_DECREMENT_MEDIUM_DIFFICULTY: f32 = 0.1;
+
+const NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT_HARD_DIFFICULTY: u32 = 6;
+const ENEMY_BASE_SPEED_INCREMENT_HARD_DIFFICULTY: f32 = 10.5;
+const ENEMY_SPAWN_INTERVAL_DECREMENT_HARD_DIFFICULTY: f32 = 0.15;
 
 // Initial interval for spawning enemies
 use enemies::resources::INITIAL_ENEMY_SPAWN_INTERVAL;
@@ -27,22 +36,36 @@ pub fn reset_indicators(
 /// Increases the maximum number of enemies spawned this round and base speed according to constants defined in this file.
 pub fn increase_round_difficulty(
     mut max_number_of_enemies_this_round: ResMut<MaxNumberOfEnemiesCurrentRound>,
-
     mut enemy_base_speed_this_round: ResMut<EnemyBaseSpeedCurrentRound>,
-
     mut enemy_spawn_timer: ResMut<EnemySpawnTimer>,
     round_counter: Res<RoundNumber>,
+    difficulty_indicator: Res<DifficultyIndicator>,
 ) {
     enemy_spawn_timer.timer = Timer::from_seconds(
         (INITIAL_ENEMY_SPAWN_INTERVAL
-            - round_counter.number as f32 * ENEMY_SPAWN_INTERVAL_DECREMENT)
-            .max(0.5),
+            - round_counter.number as f32
+                * match difficulty_indicator.difficulty {
+                    Difficulty::Easy => ENEMY_SPAWN_INTERVAL_DECREMENT_EASY_DIFFICULTY,
+                    Difficulty::Medium => ENEMY_SPAWN_INTERVAL_DECREMENT_MEDIUM_DIFFICULTY,
+                    Difficulty::Hard => ENEMY_SPAWN_INTERVAL_DECREMENT_HARD_DIFFICULTY,
+                })
+        .max(0.5),
         TimerMode::Repeating,
     );
     max_number_of_enemies_this_round.number = INITIAL_MAX_NUMBER_OF_ENEMIES
-        + round_counter.number * NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT;
-    enemy_base_speed_this_round.speed =
-        INITIAL_ENEMY_SPEED + round_counter.number as f32 * ENEMY_BASE_SPEED_INCREMENT;
+        + round_counter.number
+            * match difficulty_indicator.difficulty {
+                Difficulty::Easy => NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT_EASY_DIFFICULTY,
+                Difficulty::Medium => NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT_MEDIUM_DIFFICULTY,
+                Difficulty::Hard => NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT_HARD_DIFFICULTY,
+            };
+    enemy_base_speed_this_round.speed = INITIAL_ENEMY_SPEED
+        + round_counter.number as f32
+            * match difficulty_indicator.difficulty {
+                Difficulty::Easy => ENEMY_BASE_SPEED_INCREMENT_EASY_DIFFICULTY,
+                Difficulty::Medium => ENEMY_BASE_SPEED_INCREMENT_MEDIUM_DIFFICULTY,
+                Difficulty::Hard => ENEMY_BASE_SPEED_INCREMENT_HARD_DIFFICULTY,
+            };
 }
 
 /// Increases the round_counter by one at the start of each round.
