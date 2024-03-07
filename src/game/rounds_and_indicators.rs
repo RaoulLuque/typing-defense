@@ -21,7 +21,7 @@ impl Plugin for RoundsAndIndicatorsPlugin {
             .register_type::<RoundStopwatch>()
             .register_type::<WordPerMinuteTypedIndicator>()
             .register_type::<ScoreIndicator>()
-            .register_type::<StreakNumberThisRound>()
+            .register_type::<StreakIndicator>()
             .register_type::<DifficultyIndicator>()
             // Initialize Resources
             .init_resource::<MaxNumberOfEnemiesCurrentRound>()
@@ -33,7 +33,7 @@ impl Plugin for RoundsAndIndicatorsPlugin {
             .init_resource::<RoundStopwatch>()
             .init_resource::<WordPerMinuteTypedIndicator>()
             .init_resource::<ScoreIndicator>()
-            .init_resource::<StreakNumberThisRound>()
+            .init_resource::<StreakIndicator>()
             .init_resource::<DifficultyIndicator>()
             // Add systems that run on entry of round
             .add_systems(

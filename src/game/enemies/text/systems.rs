@@ -1,7 +1,7 @@
 use bevy::input::{keyboard::KeyboardInput, ButtonState};
 
 use enemies::rounds_and_indicators::resources::{
-    NumberOfEnemiesTypedThisRound, NumberOfEnemiesUnlivedThisRound, StreakNumberThisRound,
+    NumberOfEnemiesTypedThisRound, NumberOfEnemiesUnlivedThisRound, StreakIndicator,
 };
 
 use self::enemies::movement::{
@@ -19,7 +19,7 @@ pub fn update_text_from_enemies_on_button_press(
     mut enemies_being_typed: ResMut<EnemiesBeingTyped>,
     mut number_of_enemies_unlived_current_round: ResMut<NumberOfEnemiesUnlivedThisRound>,
     mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedThisRound>,
-    mut streak_number_this_round: ResMut<StreakNumberThisRound>,
+    mut streak_indicator: ResMut<StreakIndicator>,
     mut keyboard_input_events: EventReader<KeyboardInput>,
     mut q_parent_with_enemy: Query<
         (Entity, Option<&mut CurrentlyBeingTyped>, &Children),
@@ -65,7 +65,7 @@ pub fn update_text_from_enemies_on_button_press(
                                 let number_of_letter_in_word = text.sections.len();
                                 if let Some(text_section) = text.sections.get_mut(0) {
                                     if text_section.value == pressed_letter {
-                                        streak_number_this_round.number += 1;
+                                        streak_indicator.number += 1;
                                         if number_of_letter_in_word == 1 {
                                             // You got "typed"
                                             // Enemy only consists of one letter - You got "typed"
@@ -101,7 +101,7 @@ pub fn update_text_from_enemies_on_button_press(
                                             text_section.style.color = TYPING_COLOR;
                                             currently_being_typed.index =
                                                 currently_being_typed.index + 1;
-                                            streak_number_this_round.number += 1;
+                                            streak_indicator.number += 1;
                                             if currently_being_typed.index
                                                 == text.sections.len() - 1
                                             {
@@ -139,7 +139,7 @@ pub fn update_text_from_enemies_on_button_press(
                                     if enemies_being_typed.vec_of_enemies.len() == 0 {
                                         enemies_being_typed.indicator = false;
                                         if made_a_mistake_global {
-                                            streak_number_this_round.number = 0;
+                                            streak_indicator.number = 0;
                                         }
                                     }
                                 }

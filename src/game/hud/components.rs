@@ -14,3 +14,8 @@ pub struct WpmText;
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub struct ScoreText;
+
+// Tag component used to tag the text that displays the current streak
+#[derive(Reflect, Component, Default)]
+#[reflect(Component)]
+pub struct StreakText;

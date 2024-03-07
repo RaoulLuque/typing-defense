@@ -109,7 +109,7 @@ pub fn update_score(
     mut score: ResMut<ScoreIndicator>,
     mut enemy_typed_event: EventReader<EnemyTypedEvent>,
     wpm: Res<WordPerMinuteTypedIndicator>,
-    streak_counter: Res<StreakNumberThisRound>,
+    streak_counter: Res<StreakIndicator>,
     round_number: Res<RoundNumber>,
     difficulty: Res<DifficultyIndicator>,
 ) {

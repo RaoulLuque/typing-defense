@@ -134,13 +134,13 @@ impl Default for ScoreIndicator {
 /// or enemy runs into castle or out of screen.
 #[derive(Reflect, Resource)]
 #[reflect(Resource)]
-pub struct StreakNumberThisRound {
+pub struct StreakIndicator {
     pub number: u64,
 }
 
-impl Default for StreakNumberThisRound {
-    fn default() -> StreakNumberThisRound {
-        StreakNumberThisRound { number: 0 }
+impl Default for StreakIndicator {
+    fn default() -> StreakIndicator {
+        StreakIndicator { number: 0 }
     }
 }
 
