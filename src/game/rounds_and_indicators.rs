@@ -13,7 +13,7 @@ impl Plugin for RoundsAndIndicatorsPlugin {
         app
             // Register types for debug
             .register_type::<MaxNumberOfEnemiesCurrentRound>()
-            .register_type::<NumberOfEnemiesSpawnedCurrentRound>()
+            .register_type::<NumberOfEnemiesSpawnedThisRound>()
             .register_type::<EnemyBaseSpeedCurrentRound>()
             .register_type::<NumberOfEnemiesUnlivedThisRound>()
             .register_type::<NumberOfEnemiesTypedThisRound>()
@@ -21,11 +21,11 @@ impl Plugin for RoundsAndIndicatorsPlugin {
             .register_type::<RoundStopwatch>()
             .register_type::<WordPerMinuteTypedIndicator>()
             .register_type::<ScoreIndicator>()
-            .register_type::<StreakIndicatorThisRound>()
+            .register_type::<StreakNumberThisRound>()
             .register_type::<DifficultyIndicator>()
             // Initialize Resources
             .init_resource::<MaxNumberOfEnemiesCurrentRound>()
-            .init_resource::<NumberOfEnemiesSpawnedCurrentRound>()
+            .init_resource::<NumberOfEnemiesSpawnedThisRound>()
             .init_resource::<EnemyBaseSpeedCurrentRound>()
             .init_resource::<NumberOfEnemiesUnlivedThisRound>()
             .init_resource::<NumberOfEnemiesTypedThisRound>()
@@ -33,13 +33,13 @@ impl Plugin for RoundsAndIndicatorsPlugin {
             .init_resource::<RoundStopwatch>()
             .init_resource::<WordPerMinuteTypedIndicator>()
             .init_resource::<ScoreIndicator>()
-            .init_resource::<StreakIndicatorThisRound>()
+            .init_resource::<StreakNumberThisRound>()
             .init_resource::<DifficultyIndicator>()
             // Add systems that run on entry of round
             .add_systems(
                 OnEnter(RoundState::InRound),
                 (
-                    reset_number_of_enemies_spawn_unlived_and_typed,
+                    reset_indicators,
                     increase_round_difficulty,
                     increase_round_counter,
                     reset_round_stopwatch,

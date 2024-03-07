@@ -14,8 +14,8 @@ const ENEMY_SPAWN_INTERVAL_DECREMENT: f32 = 0.1;
 use enemies::resources::INITIAL_ENEMY_SPAWN_INTERVAL;
 
 /// Resets the number of enemies spawned, unlived and typed current round
-pub fn reset_number_of_enemies_spawn_unlived_and_typed(
-    mut number_of_enemies_spawned_this_round: ResMut<NumberOfEnemiesSpawnedCurrentRound>,
+pub fn reset_indicators(
+    mut number_of_enemies_spawned_this_round: ResMut<NumberOfEnemiesSpawnedThisRound>,
     mut number_of_enemies_unlived_current_round: ResMut<NumberOfEnemiesUnlivedThisRound>,
     mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedThisRound>,
 ) {
@@ -101,14 +101,15 @@ pub fn reset_wpm(mut wpm: ResMut<WordPerMinuteTypedIndicator>) {
 
 /// When an enemy is typed, the score is increased by:
 ///
-/// current wpm * (streak counter / 10 + 1) * (round number / 10 + 1) * difficulty multiplier
+/// current wpm * (streak counter / 50 + 1) * (round number / 10 + 1) * difficulty multiplier
 ///
-/// Where the difficulty multiplier is 1 for easy, 2 for medium and 3 for hard
+/// Where the difficulty multiplier is 1 for easy, 2 for medium and 3 for hard and operations are
+/// done as f64 and converted to u64 at the end.
 pub fn update_score(
     mut score: ResMut<ScoreIndicator>,
     mut enemy_typed_event: EventReader<EnemyTypedEvent>,
     wpm: Res<WordPerMinuteTypedIndicator>,
-    streak_counter: Res<StreakIndicatorThisRound>,
+    streak_counter: Res<StreakNumberThisRound>,
     round_number: Res<RoundNumber>,
     difficulty: Res<DifficultyIndicator>,
 ) {
@@ -119,7 +120,7 @@ pub fn update_score(
             Difficulty::Hard => 3,
         } as f64
             * wpm.wpm
-            * (streak_counter.streak_length as f64 / 10.0 + 1.0)
+            * (streak_counter.number as f64 / 50.0 + 1.0)
             * (round_number.number as f64 / 10.0 + 1.0)) as u64;
     }
 }

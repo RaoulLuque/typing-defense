@@ -49,7 +49,7 @@ pub fn randomly_spawn_enemies_over_time(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     mut last_enemy_spawn_point: ResMut<LastEnemySpawnPoint>,
-    mut number_of_enemies_spawned_this_round: ResMut<NumberOfEnemiesSpawnedCurrentRound>,
+    mut number_of_enemies_spawned_this_round: ResMut<NumberOfEnemiesSpawnedThisRound>,
     max_number_of_enemies_this_round: Res<MaxNumberOfEnemiesCurrentRound>,
     number_of_enemies_unlived_current_round: Res<NumberOfEnemiesUnlivedThisRound>,
     enemy_base_speed_this_round: Res<EnemyBaseSpeedCurrentRound>,

@@ -26,7 +26,7 @@ impl Default for MaxNumberOfEnemiesCurrentRound {
 /// Resource for tracking the number of enemies that have been spawned this round.
 #[derive(Reflect, Resource, Default)]
 #[reflect(Resource)]
-pub struct NumberOfEnemiesSpawnedCurrentRound {
+pub struct NumberOfEnemiesSpawnedThisRound {
     pub number: u32,
 }
 
@@ -127,16 +127,20 @@ impl Default for ScoreIndicator {
     }
 }
 
-/// Resource for tracking streaks (typing without mistakes and no enemy hitting the castle)
+/// Resource for tracking streaks.
+///
+/// Counts up for each letter typed and resets when a mistake is made (mistakes do not count if
+/// nothing is currently being typed and letter is pressed that doesn't belong to any enemy)
+/// or enemy runs into castle or out of screen.
 #[derive(Reflect, Resource)]
 #[reflect(Resource)]
-pub struct StreakIndicatorThisRound {
-    pub streak_length: u64,
+pub struct StreakNumberThisRound {
+    pub number: u64,
 }
 
-impl Default for StreakIndicatorThisRound {
-    fn default() -> StreakIndicatorThisRound {
-        StreakIndicatorThisRound { streak_length: 1 }
+impl Default for StreakNumberThisRound {
+    fn default() -> StreakNumberThisRound {
+        StreakNumberThisRound { number: 0 }
     }
 }
 
