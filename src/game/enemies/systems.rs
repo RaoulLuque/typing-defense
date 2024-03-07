@@ -21,7 +21,7 @@ pub const STANDARD_TEXT_COLOR: Color = Color::AZURE;
 // Text color while typing
 pub const TYPING_COLOR: Color = Color::ORANGE_RED;
 // Font size for text
-pub const TEXT_FONT_SIZE: f32 = 60.0;
+pub const ENEMY_TEXT_FONT_SIZE: f32 = 60.0;
 // Standard enemy text height (height in pixels that the text is above enemies)
 pub const TEXT_HEIGHT: f32 = 50.0;
 // Standard text z value (in order to be in front of decorations)
@@ -203,7 +203,7 @@ fn turn_string_literal_into_vec_of_text_sections(
             TextSection::new(
                 x.to_string(),
                 TextStyle {
-                    font_size: TEXT_FONT_SIZE,
+                    font_size: ENEMY_TEXT_FONT_SIZE,
                     color: color,
                     ..default()
                 },

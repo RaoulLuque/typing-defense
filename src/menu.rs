@@ -14,11 +14,14 @@ impl Plugin for MenuPlugin {
         app
             // Register types for debug
             .register_type::<MenuButtonAction>()
-            .register_type::<OnMainMenuScreen>()
+            .register_type::<MainMenuScreenUiElement>()
             // Add menu States
             .add_state::<MenuState>()
             // Despawn Main Menu if Main Menu State is exited
-            .add_systems(OnExit(MenuState::Main), despawn_screen::<OnMainMenuScreen>)
+            .add_systems(
+                OnExit(MenuState::Main),
+                despawn_screen::<MainMenuScreenUiElement>,
+            )
             // Add systems
             .add_systems(
                 Update,

@@ -28,7 +28,7 @@ pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                 },
                 ..default()
             },
-            OnMainMenuScreen,
+            MainMenuScreenUiElement,
         ))
         .with_children(|parent| {
             parent
