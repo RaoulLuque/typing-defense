@@ -4,8 +4,8 @@ use enemies::EnemiesPlugin;
 mod castle;
 use castle::CastlePlugin;
 
-mod rounds;
-use rounds::RoundsPlugin;
+mod rounds_and_indicators;
+use rounds_and_indicators::RoundsAndIndicatorsPlugin;
 
 mod hud;
 use hud::HUDPlugin;
@@ -41,7 +41,7 @@ impl Plugin for GamePlugin {
             // Add own plugins
             .add_plugins(EnemiesPlugin)
             .add_plugins(CastlePlugin)
-            .add_plugins(RoundsPlugin)
+            .add_plugins(RoundsAndIndicatorsPlugin)
             .add_plugins(EffectsPlugin)
             .add_plugins(DecorationsPlugin)
             .add_plugins(HUDPlugin)

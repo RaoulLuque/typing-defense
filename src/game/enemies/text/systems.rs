@@ -1,24 +1,31 @@
 use bevy::input::{keyboard::KeyboardInput, ButtonState};
 
-use enemies::rounds::resources::NumberOfEnemiesTypedCurrentRound;
+use enemies::rounds_and_indicators::resources::{
+    NumberOfEnemiesTypedThisRound, NumberOfEnemiesUnlivedThisRound,
+};
 
 use self::enemies::movement::{
     components::{EnemySpawnPoint, PathCheckpointNumber},
     systems::TurnInstruction,
 };
 
+#[derive(Event)]
+pub struct EnemyTypedEvent();
+
 use super::*;
 
 pub fn update_text_from_enemies_on_button_press(
     mut commands: Commands,
     mut enemies_being_typed: ResMut<EnemiesBeingTyped>,
-    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedCurrentRound>,
+    mut number_of_enemies_unlived_current_round: ResMut<NumberOfEnemiesUnlivedThisRound>,
+    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedThisRound>,
     mut keyboard_input_events: EventReader<KeyboardInput>,
     mut q_parent_with_enemy: Query<
         (Entity, Option<&mut CurrentlyBeingTyped>, &Children),
         With<Enemy>,
     >,
     mut q_child_with_text: Query<&mut Text>,
+    mut enemy_typed_event: EventWriter<EnemyTypedEvent>,
 ) {
     for key_event in keyboard_input_events.read() {
         if key_event.state != ButtonState::Pressed {
@@ -62,7 +69,9 @@ pub fn update_text_from_enemies_on_button_press(
                                             // Enemy only consists of one letter - You got "typed"
                                             // Despawn entity and remove entity from list of enemies that are currently being typed
                                             commands.entity(entity_id).despawn_recursive();
+                                            number_of_enemies_unlived_current_round.number += 1;
                                             number_of_enemies_typed_current_round.number += 1;
+                                            enemy_typed_event.send(EnemyTypedEvent {});
                                         } else {
                                             // Player is starting to type this enemy
                                             text_section.style.color = TYPING_COLOR;
@@ -103,7 +112,9 @@ pub fn update_text_from_enemies_on_button_press(
                                                     // Check if there are no more enemies being typed
                                                     enemies_being_typed.indicator = false;
                                                 }
+                                                number_of_enemies_unlived_current_round.number += 1;
                                                 number_of_enemies_typed_current_round.number += 1;
+                                                enemy_typed_event.send(EnemyTypedEvent {});
                                             }
                                         } else {
                                             // Player is typing another enemy or has made a mistake

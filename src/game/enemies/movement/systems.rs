@@ -1,5 +1,5 @@
 use effects::components::{Explosion, ExplosionAnimation};
-use enemies::rounds::resources::NumberOfEnemiesTypedCurrentRound;
+use enemies::rounds_and_indicators::resources::NumberOfEnemiesUnlivedThisRound;
 
 use super::*;
 
@@ -273,7 +273,7 @@ pub fn get_current_turn_instruction(
 pub fn despawn_enemy_if_out_of_screen(
     mut commands: Commands,
     enemy_query: Query<(Entity, &Transform), With<Enemy>>,
-    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedCurrentRound>,
+    mut number_of_enemies_unlived_current_round: ResMut<NumberOfEnemiesUnlivedThisRound>,
     window_query: Query<&Window, With<PrimaryWindow>>,
 ) {
     let window = window_query.get_single().expect("Window should exist");
@@ -284,7 +284,7 @@ pub fn despawn_enemy_if_out_of_screen(
             || enemy_transform.translation.y < -window.height() * 0.7
         {
             commands.entity(enemy_entity).despawn_recursive();
-            number_of_enemies_typed_current_round.number += 1;
+            number_of_enemies_unlived_current_round.number += 1;
         }
     }
 }
@@ -293,7 +293,7 @@ pub fn enemy_collision_with_castle(
     mut commands: Commands,
     mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
     castle_query: Query<&Transform, With<castle::components::Castle>>,
-    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedCurrentRound>,
+    mut number_of_enemies_unlived_current_round: ResMut<NumberOfEnemiesUnlivedThisRound>,
     mut number_of_lives_left: ResMut<castle::resources::NumberOfLivesLeft>,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
@@ -361,7 +361,7 @@ pub fn enemy_collision_with_castle(
                 }
                 // Despawn enemy and set resources accordingly
                 commands.entity(entity).despawn_recursive();
-                number_of_enemies_typed_current_round.number += 1;
+                number_of_enemies_unlived_current_round.number += 1;
                 if enemies_being_typed.vec_of_enemies.contains(&entity) {
                     enemies_being_typed.vec_of_enemies.retain(|&x| x != entity);
                     if enemies_being_typed.vec_of_enemies.len() == 0 {

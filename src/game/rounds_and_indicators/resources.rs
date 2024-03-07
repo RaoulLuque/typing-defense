@@ -23,21 +23,29 @@ impl Default for MaxNumberOfEnemiesCurrentRound {
     }
 }
 
-/// Resource for tracking the number of enemies that have been spawned this round
+/// Resource for tracking the number of enemies that have been spawned this round.
 #[derive(Reflect, Resource, Default)]
 #[reflect(Resource)]
 pub struct NumberOfEnemiesSpawnedCurrentRound {
     pub number: u32,
 }
 
-/// Resource for tracking the number of enemies that have been typed this round
+/// Resource for tracking the number of enemies that have unlived this round
+/// e.g. have been typed, ran out of screen or ran into the castle.
 #[derive(Reflect, Resource, Default)]
 #[reflect(Resource)]
-pub struct NumberOfEnemiesTypedCurrentRound {
+pub struct NumberOfEnemiesUnlivedThisRound {
     pub number: u32,
 }
 
-/// Base speed of enemies in the current round
+/// Resource for tracking the number of enemies that have been typed this round.
+#[derive(Reflect, Resource, Default)]
+#[reflect(Resource)]
+pub struct NumberOfEnemiesTypedThisRound {
+    pub number: u32,
+}
+
+/// Base speed of enemies in the current round.
 #[derive(Reflect, Resource)]
 #[reflect(Resource)]
 pub struct EnemyBaseSpeedCurrentRound {
@@ -72,8 +80,8 @@ impl Default for EnemyBaseSpawnIntervalRound {
 /// Is zero in main menu and increments to 1 when pressing start game.
 #[derive(Reflect, Resource, Default)]
 #[reflect(Resource)]
-pub struct RoundCounter {
-    pub counter: u32,
+pub struct RoundNumber {
+    pub number: u32,
 }
 
 /// Stopwatch for counting how much time has passed this round.
@@ -91,4 +99,66 @@ impl Default for RoundStopwatch {
             stopwatch: Stopwatch::new(),
         }
     }
+}
+
+/// Resource for tracking the number of enemies that are supposed to be spawned this round
+#[derive(Reflect, Resource)]
+#[reflect(Resource)]
+pub struct WordPerMinuteTypedIndicator {
+    pub wpm: f64,
+}
+
+impl Default for WordPerMinuteTypedIndicator {
+    fn default() -> WordPerMinuteTypedIndicator {
+        WordPerMinuteTypedIndicator { wpm: 0.0 }
+    }
+}
+
+/// Resource for tracking the score. For score calculation see [`super::systems::update_score`]
+#[derive(Reflect, Resource)]
+#[reflect(Resource)]
+pub struct ScoreIndicator {
+    pub score: u64,
+}
+
+impl Default for ScoreIndicator {
+    fn default() -> ScoreIndicator {
+        ScoreIndicator { score: 0 }
+    }
+}
+
+/// Resource for tracking streaks (typing without mistakes and no enemy hitting the castle)
+#[derive(Reflect, Resource)]
+#[reflect(Resource)]
+pub struct StreakIndicatorThisRound {
+    pub streak_length: u64,
+}
+
+impl Default for StreakIndicatorThisRound {
+    fn default() -> StreakIndicatorThisRound {
+        StreakIndicatorThisRound { streak_length: 1 }
+    }
+}
+
+/// Resource for tracking streaks (typing without mistakes and no enemy hitting the castle)
+#[derive(Reflect, Resource)]
+#[reflect(Resource)]
+pub struct DifficultyIndicator {
+    pub difficulty: Difficulty,
+}
+
+impl Default for DifficultyIndicator {
+    fn default() -> DifficultyIndicator {
+        DifficultyIndicator {
+            difficulty: Difficulty::default(),
+        }
+    }
+}
+
+#[derive(Default, Reflect)]
+pub enum Difficulty {
+    Easy,
+    #[default]
+    Medium,
+    Hard,
 }

@@ -1,11 +1,10 @@
-pub mod resources;
-use resources::*;
-
 mod systems;
 use systems::*;
 
 pub mod components;
 use components::*;
+
+use self::rounds_and_indicators::systems::update_score;
 
 use super::*;
 
@@ -15,18 +14,20 @@ impl Plugin for HUDPlugin {
     fn build(&self, app: &mut App) {
         app
             // Register types for debug
-            .register_type::<WordPerMinuteTypedIndicator>()
-            .register_type::<InRoundHudUiElement>()
-            // Initialize Resources
-            .init_resource::<WordPerMinuteTypedIndicator>()
-            // Add systems for entering rounds
-            .add_systems(OnEnter(super::RoundState::InRound), reset_wpm)
-            .add_systems(OnEnter(super::AppState::InGame), spawn_wpm_hud_element)
+            .register_type::<InGameHudUiElement>()
+            // Add systems for entering game
+            .add_systems(
+                OnEnter(super::AppState::InGame),
+                (spawn_wpm_hud_element, spawn_score_hud_element),
+            )
             // Add update systems
             .add_systems(
                 Update,
-                update_wpm.in_set(super::InputHandlingSystemSet::AfterInputHandling),
+                update_score_hud_element.after(super::rounds_and_indicators::systems::update_score),
             )
-            .add_systems(Update, update_wpm_hud_element.after(update_wpm));
+            .add_systems(
+                Update,
+                update_wpm_hud_element.after(super::rounds_and_indicators::systems::update_wpm),
+            );
     }
 }

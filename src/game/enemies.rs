@@ -32,6 +32,8 @@ impl Plugin for EnemiesPlugin {
             .register_type::<movement::components::EnemySpawnPoint>()
             .register_type::<movement::components::PathCheckpointNumber>()
             .register_type::<text::components::CollidingWith>()
+            // Add events
+            .add_event::<text::systems::EnemyTypedEvent>()
             // Initialize Resources
             .init_resource::<EnemiesBeingTyped>()
             .init_resource::<EnemySpawnTimer>()

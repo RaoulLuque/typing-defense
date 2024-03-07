@@ -3,7 +3,7 @@ use self::text::components::CollidingWith;
 
 use super::*;
 
-use crate::game::rounds::resources::*;
+use crate::game::rounds_and_indicators::resources::*;
 
 use bevy::window::PrimaryWindow;
 use rand::seq::SliceRandom;
@@ -51,7 +51,7 @@ pub fn randomly_spawn_enemies_over_time(
     mut last_enemy_spawn_point: ResMut<LastEnemySpawnPoint>,
     mut number_of_enemies_spawned_this_round: ResMut<NumberOfEnemiesSpawnedCurrentRound>,
     max_number_of_enemies_this_round: Res<MaxNumberOfEnemiesCurrentRound>,
-    number_of_enemies_typed_current_round: Res<NumberOfEnemiesTypedCurrentRound>,
+    number_of_enemies_unlived_current_round: Res<NumberOfEnemiesUnlivedThisRound>,
     enemy_base_speed_this_round: Res<EnemyBaseSpeedCurrentRound>,
     mut enemy_spawn_timer: ResMut<EnemySpawnTimer>,
     asset_server: Res<AssetServer>,
@@ -65,10 +65,10 @@ pub fn randomly_spawn_enemies_over_time(
         let mut rng = rand::thread_rng();
         if (enemy_spawn_timer.timer.finished() && rng.gen_bool(CHANCE_OF_SPAWNING_ENEMY))
             || (number_of_enemies_spawned_this_round.number
-                == number_of_enemies_typed_current_round.number)
+                == number_of_enemies_unlived_current_round.number)
         {
             if number_of_enemies_spawned_this_round.number
-                == number_of_enemies_typed_current_round.number
+                == number_of_enemies_unlived_current_round.number
             {
                 enemy_spawn_timer
                     .timer
