@@ -189,6 +189,14 @@ pub fn generate_sprite_information_from_enemy_type(
         EnemyType::Chicken => ("chicken".to_string(), 32.0, 34.0, 14),
         EnemyType::Mushroom => ("mushroom".to_string(), 32.0, 32.0, 16),
         EnemyType::Trunk => ("trunk".to_string(), 64.0, 32.0, 14),
+        EnemyType::BlueBird => ("bluebird".to_string(), 32.0, 32.0, 9),
+        EnemyType::Radish => ("radish".to_string(), 30.0, 38.0, 12),
+        EnemyType::Rino => ("rino".to_string(), 52.0, 34.0, 6),
+        EnemyType::RockOne => ("rock_one".to_string(), 38.0, 34.0, 14),
+        EnemyType::RockTwo => ("rock_two".to_string(), 32.0, 28.0, 14),
+        EnemyType::RockThree => ("rock_three".to_string(), 22.0, 18.0, 14),
+        EnemyType::Snail => ("snail".to_string(), 38.0, 24.0, 10),
+        EnemyType::Slime => ("slime".to_string(), 44.0, 30.0, 10),
     }
 }
 
