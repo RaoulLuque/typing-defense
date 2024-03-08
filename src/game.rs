@@ -4,7 +4,7 @@ use enemies::EnemiesPlugin;
 mod castle;
 use castle::CastlePlugin;
 
-mod rounds_and_indicators;
+pub mod rounds_and_indicators;
 use rounds_and_indicators::RoundsAndIndicatorsPlugin;
 
 mod hud;

@@ -1,6 +1,6 @@
 use super::*;
 
-// Tag component used to tag entities added on the main menu screen
+// Component used to tag entities added on the main menu screen
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub struct MainMenuScreenUiElement;
@@ -14,3 +14,29 @@ pub enum MenuButtonAction {
     HowToPlay,
     Quit,
 }
+
+// The different settings buttons for opening or closing the settings
+#[derive(Reflect, Component, Default)]
+#[reflect(Component)]
+pub enum SettingsButton {
+    #[default]
+    OpenSettings,
+    CloseSettings,
+    Plus,
+    Minus,
+}
+
+// Component used to tag the closed settings ui elements
+#[derive(Reflect, Component, Default)]
+#[reflect(Component)]
+pub struct DifficultySettingsText;
+
+// Component used to tag the closed settings ui elements
+#[derive(Reflect, Component, Default)]
+#[reflect(Component)]
+pub struct SettingsMenuClosed;
+
+// Component used to tag the opened settings ui elements
+#[derive(Reflect, Component, Default)]
+#[reflect(Component)]
+pub struct SettingsMenuOpened;

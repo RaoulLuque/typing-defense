@@ -1,4 +1,5 @@
 use super::*;
+use std::fmt;
 
 /// Initial speed of enemies at start of game
 pub const INITIAL_ENEMY_SPEED: f32 = 30.0;
@@ -165,4 +166,18 @@ pub enum Difficulty {
     #[default]
     Medium,
     Hard,
+}
+
+impl fmt::Display for Difficulty {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                Difficulty::Easy => "Easy",
+                Difficulty::Hard => "Hard",
+                Difficulty::Medium => "Medium",
+            }
+        )
+    }
 }

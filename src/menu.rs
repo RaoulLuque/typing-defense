@@ -15,14 +15,43 @@ impl Plugin for MenuPlugin {
             // Register types for debug
             .register_type::<MenuButtonAction>()
             .register_type::<MainMenuScreenUiElement>()
+            .register_type::<SettingsMenuClosed>()
+            .register_type::<SettingsMenuOpened>()
+            // Add events
+            .add_event::<DifficultyChangedEvent>()
             // Add menu States
             .add_state::<MenuState>()
-            // Despawn Main Menu if Main Menu State is exited
+            .add_state::<SettingsMenuState>()
+            // Despawn Menu's when other menus are opened or the are exited
             .add_systems(
                 OnExit(MenuState::Main),
                 despawn_screen::<MainMenuScreenUiElement>,
             )
+            .add_systems(
+                OnExit(SettingsMenuState::SettingsClosed),
+                despawn_screen::<SettingsMenuClosed>,
+            )
+            .add_systems(
+                OnExit(SettingsMenuState::SettingsOpened),
+                despawn_screen::<SettingsMenuOpened>,
+            )
             // Add systems
+            .add_systems(
+                OnEnter(SettingsMenuState::SettingsClosed),
+                spawn_settings_button,
+            )
+            .add_systems(
+                OnEnter(SettingsMenuState::SettingsOpened),
+                spawn_settings_menu,
+            )
+            .add_systems(
+                Update,
+                (
+                    settings_button_animations,
+                    settings_action,
+                    change_difficulty,
+                ),
+            )
             .add_systems(
                 Update,
                 transition_from_menu_to_in_game.run_if(in_state(AppState::Menu)),
@@ -43,4 +72,12 @@ enum MenuState {
     HowToPlay,
     #[default]
     NotInTheMenu,
+}
+
+// State of the settings menu
+#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
+enum SettingsMenuState {
+    #[default]
+    SettingsClosed,
+    SettingsOpened,
 }
