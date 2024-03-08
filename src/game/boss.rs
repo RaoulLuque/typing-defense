@@ -17,7 +17,9 @@ impl Plugin for BossPlugin {
             // Add systems for when entering round
             .add_systems(
                 OnEnter(RoundState::InRound),
-                spawn_boss.after(super::rounds_and_indicators::systems::increase_round_counter),
+                spawn_boss
+                    .after(super::rounds_and_indicators::systems::increase_round_counter)
+                    .after(super::rounds_and_indicators::systems::increase_round_difficulty),
             )
             // Add systems for when exiting rounds
             .add_systems(OnExit(RoundState::InRound), despawn_boss);
