@@ -33,16 +33,16 @@ pub struct Words {
 }
 
 #[derive(Bundle)]
-struct EnemyBundle {
-    sprite_sheet_bundle: SpriteSheetBundle,
-    entity_type: Enemy,
-    spawn_point: EnemySpawnPoint,
-    speed: Speed,
-    walking_animation: WalkingAnimation,
-    enemy_type: EnemyType,
-    path_checkpoint_number: PathCheckpointNumber,
-    text_collision: CollidingWith,
-    name: Name,
+pub struct EnemyBundle {
+    pub sprite_sheet_bundle: SpriteSheetBundle,
+    pub entity_type: Enemy,
+    pub spawn_point: EnemySpawnPoint,
+    pub speed: Speed,
+    pub walking_animation: WalkingAnimation,
+    pub enemy_type: EnemyType,
+    pub path_checkpoint_number: PathCheckpointNumber,
+    pub text_collision: CollidingWith,
+    pub name: Name,
 }
 
 pub fn randomly_spawn_enemies_over_time(
@@ -74,7 +74,7 @@ pub fn randomly_spawn_enemies_over_time(
                     .timer
                     .set_elapsed(std::time::Duration::from_secs_f32(0.0));
             }
-            let window = window_query.get_single().unwrap();
+            let window = window_query.get_single().expect("Window should exist");
 
             // Get a random spawn point
             let spawn_point = last_enemy_spawn_point
@@ -196,12 +196,11 @@ pub fn generate_sprite_information_from_enemy_type(
         EnemyType::RockTwo => ("rock_two".to_string(), 32.0, 28.0, 14),
         EnemyType::RockThree => ("rock_three".to_string(), 22.0, 18.0, 14),
         EnemyType::Snail => ("snail".to_string(), 38.0, 24.0, 10),
-        EnemyType::Slime => ("slime".to_string(), 44.0, 30.0, 10),
     }
 }
 
 // Turns a string literal into a vector of text sections each containing one character from the string literal
-fn turn_string_literal_into_vec_of_text_sections(
+pub fn turn_string_literal_into_vec_of_text_sections(
     string_literal: &str,
     color: Color,
 ) -> Vec<TextSection> {

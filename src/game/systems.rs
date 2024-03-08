@@ -10,6 +10,5 @@ pub fn toggle_simulation_state(
             &SimulationState::Paused => SimulationState::Running,
             &SimulationState::Running => SimulationState::Paused,
         });
-        println!("Switched SimulationState");
     }
 }

@@ -19,6 +19,9 @@ use systems::*;
 mod effects;
 use effects::EffectsPlugin;
 
+mod boss;
+use boss::BossPlugin;
+
 use bevy::prelude::*;
 
 use crate::AppState;
@@ -45,6 +48,7 @@ impl Plugin for GamePlugin {
             .add_plugins(EffectsPlugin)
             .add_plugins(DecorationsPlugin)
             .add_plugins(HUDPlugin)
+            .add_plugins(BossPlugin)
             // Configure System Sets
             .configure_sets(
                 Update,

@@ -52,14 +52,13 @@ pub enum EnemyType {
     RockOne,
     RockTwo,
     RockThree,
-    Slime,
     Snail,
 }
 
 impl Distribution<EnemyType> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> EnemyType {
         // match rng.gen_range(0, 3) { // rand 0.5, 0.6, 0.7
-        match rng.gen_range(0..=12) {
+        match rng.gen_range(0..=11) {
             0 => EnemyType::Pig,
             1 => EnemyType::Bat,
             2 => EnemyType::Bee,
@@ -74,8 +73,7 @@ impl Distribution<EnemyType> for Standard {
                 1 => EnemyType::RockTwo,
                 _ => EnemyType::RockThree,
             },
-            10 => EnemyType::Slime,
-            11 => EnemyType::Snail,
+            10 => EnemyType::Snail,
             _ => EnemyType::Trunk,
         }
     }

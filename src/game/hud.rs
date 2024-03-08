@@ -4,8 +4,6 @@ use systems::*;
 pub mod components;
 use components::*;
 
-use self::rounds_and_indicators::systems::update_score;
-
 use super::*;
 
 pub struct HUDPlugin;

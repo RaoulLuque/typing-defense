@@ -130,16 +130,13 @@ const LEFT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 2] = [Right, Right];
 const RIGHT_ROUTE_CHECKPOINTS: [(f32, f32); 2] = [(0.5, 0.01), (-1.0, 0.01)];
 const RIGHT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 2] = [Left, Left];
 
-pub fn update_position_of_enemies(
-    mut enemy_query: Query<
-        (
-            &Speed,
-            &EnemySpawnPoint,
-            &mut PathCheckpointNumber,
-            &mut Transform,
-        ),
-        With<Enemy>,
-    >,
+pub fn update_position_of_enemies_and_bosses(
+    mut enemy_query: Query<(
+        &Speed,
+        &EnemySpawnPoint,
+        &mut PathCheckpointNumber,
+        &mut Transform,
+    )>,
     window_query: Query<&Window, With<PrimaryWindow>>,
     time: Res<Time>,
 ) {

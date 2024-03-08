@@ -14,7 +14,6 @@ pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
         ..default()
     };
 
-    println!("Main Menu is getting spawned");
     commands
         .spawn((
             NodeBundle {
@@ -145,7 +144,6 @@ pub fn transition_from_menu_to_in_game(
             next_app_state.set(AppState::InGame);
             next_round_state.set(RoundState::InRound);
             next_menu_state.set(MenuState::NotInTheMenu);
-            println!("Entered AppState::Game and RoundState::InRound");
         }
     }
 }

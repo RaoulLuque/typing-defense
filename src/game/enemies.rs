@@ -1,4 +1,4 @@
-mod components;
+pub mod components;
 use components::*;
 
 pub mod resources;
@@ -46,7 +46,7 @@ impl Plugin for EnemiesPlugin {
                 Update,
                 (
                     // Reset colliding text if necessary
-                    text::systems::reset_text_height_when_colliding_enemy_is_removed,
+                    text::systems::lower_text_stepwise_when_colliding_enemy_is_removed,
                     text::systems::reset_text_height_when_enemies_passed_each_other,
                     text::systems::check_if_colliding_text_has_moved,
                 )
@@ -59,7 +59,7 @@ impl Plugin for EnemiesPlugin {
                     text::systems::update_text_from_enemies_on_button_press,
                     text::systems::handle_text_when_enemies_collide,
                     tick_enemy_spawn_timer,
-                    movement::systems::update_position_of_enemies,
+                    movement::systems::update_position_of_enemies_and_bosses,
                     animate_enemies,
                     movement::systems::enemy_collision_with_castle,
                     movement::systems::despawn_enemy_if_out_of_screen,

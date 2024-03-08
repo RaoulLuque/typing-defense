@@ -246,32 +246,36 @@ pub fn handle_text_when_enemies_collide(
             false,
         );
 
-        // If there is a collision, then change position of text
-        if let Some((text_collision_bool, colliding_text_new_translation)) =
-            text_collision_instructions
+        if !(text_colliding_with_first.entity_colliding_with == entity_second_enemy
+            || text_colliding_with_second.entity_colliding_with == entity_first_enemy)
         {
-            match text_collision_bool {
-                // First enemy's text will be moved up
-                true => {
-                    // Add component to enemy indicating that currently texts are colliding
-                    text_colliding_with_first.entity_colliding_with = entity_second_enemy;
-                    change_position_of_text(
-                        &mut q_child_with_text,
-                        children_first,
-                        colliding_text_new_translation,
-                    );
-                }
-                // Second enemy's text will be moved up
-                false => {
-                    // Add component to enemy indicating that currently texts are colliding
-                    text_colliding_with_second.entity_colliding_with = entity_first_enemy;
-                    change_position_of_text(
-                        &mut q_child_with_text,
-                        children_second,
-                        colliding_text_new_translation,
-                    );
-                }
-            };
+            // If there is a collision, then change position of text
+            if let Some((text_collision_bool, colliding_text_new_translation)) =
+                text_collision_instructions
+            {
+                match text_collision_bool {
+                    // First enemy's text will be moved up
+                    true => {
+                        // Add component to enemy indicating that currently texts are colliding
+                        text_colliding_with_first.entity_colliding_with = entity_second_enemy;
+                        change_position_of_text(
+                            &mut q_child_with_text,
+                            children_first,
+                            colliding_text_new_translation,
+                        );
+                    }
+                    // Second enemy's text will be moved up
+                    false => {
+                        // Add component to enemy indicating that currently texts are colliding
+                        text_colliding_with_second.entity_colliding_with = entity_first_enemy;
+                        change_position_of_text(
+                            &mut q_child_with_text,
+                            children_second,
+                            colliding_text_new_translation,
+                        );
+                    }
+                };
+            }
         }
     }
 }
@@ -614,24 +618,42 @@ fn handle_checking_collision_and_resetting_text(
     };
 }
 
-pub fn reset_text_height_when_colliding_enemy_is_removed(
-    mut removed: RemovedComponents<Enemy>,
+pub fn lower_text_stepwise_when_colliding_enemy_is_removed(
+    mut commands: Commands,
     mut enemies_with_colliding_text_query: Query<
         (Entity, &Transform, &Children, &mut CollidingWith),
         With<Enemy>,
     >,
     mut q_child_with_text: Query<(&mut Transform, &Text), Without<Enemy>>,
 ) {
-    for removed_enemy in removed.read() {
-        for (_, _, enemy_children, mut enemy_text_colliding_with) in
-            enemies_with_colliding_text_query.iter_mut()
-        {
-            if removed_enemy == enemy_text_colliding_with.entity_colliding_with {
-                reset_height_of_text(
-                    &mut q_child_with_text,
-                    enemy_children,
-                    &mut enemy_text_colliding_with,
-                );
+    for (_, _, enemy_children, mut enemy_text_colliding_with) in
+        enemies_with_colliding_text_query.iter_mut()
+    {
+        if let None = commands.get_entity(enemy_text_colliding_with.entity_colliding_with) {
+            lower_text_stepwise(
+                &mut q_child_with_text,
+                enemy_children,
+                &mut enemy_text_colliding_with,
+            );
+        }
+    }
+}
+
+fn lower_text_stepwise(
+    q_child_with_text: &mut Query<(&mut Transform, &Text), Without<Enemy>>,
+    children: &Children,
+    colliding_text_colliding_with: &mut CollidingWith,
+) {
+    let mut text_iter = q_child_with_text.iter_many_mut(children);
+    if let Some((mut text_transform, _)) = text_iter.fetch_next() {
+        if text_transform.translation.y > TEXT_HEIGHT {
+            text_transform.translation = Vec3::new(
+                0.0,
+                text_transform.translation.y - TEXT_HEIGHT,
+                TEXT_Z_VALUE,
+            );
+            if text_transform.translation.y == TEXT_HEIGHT {
+                colliding_text_colliding_with.entity_colliding_with = Entity::PLACEHOLDER;
             }
         }
     }
@@ -682,7 +704,6 @@ fn check_if_colliding_text_is_right_above_and_change_position_of_text_if_necessa
             if text_transform.translation.y
                 != y_translation_of_text_that_is_collided_with + TEXT_HEIGHT
             {
-                println!("Colliding Text was just moved down because source moved down");
                 text_transform.translation.y =
                     y_translation_of_text_that_is_collided_with + TEXT_HEIGHT;
             }

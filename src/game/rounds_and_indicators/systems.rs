@@ -22,13 +22,20 @@ const ENEMY_SPAWN_INTERVAL_DECREMENT_HARD_DIFFICULTY: f32 = 0.15;
 // Initial interval for spawning enemies
 use enemies::resources::INITIAL_ENEMY_SPAWN_INTERVAL;
 
+use super::boss::systems::BOSS_WORD_COUNT_MULTIPLIER;
+
 /// Resets the number of enemies spawned, unlived and typed current round
 pub fn reset_indicators(
     mut number_of_enemies_spawned_this_round: ResMut<NumberOfEnemiesSpawnedThisRound>,
     mut number_of_enemies_unlived_current_round: ResMut<NumberOfEnemiesUnlivedThisRound>,
     mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedThisRound>,
+    round_number: Res<RoundNumber>,
 ) {
-    number_of_enemies_spawned_this_round.number = 0;
+    number_of_enemies_spawned_this_round.number = if round_number.number % 10 != 0 {
+        0
+    } else {
+        BOSS_WORD_COUNT_MULTIPLIER * round_number.number
+    };
     number_of_enemies_unlived_current_round.number = 0;
     number_of_enemies_typed_current_round.number = 0;
 }
@@ -38,12 +45,12 @@ pub fn increase_round_difficulty(
     mut max_number_of_enemies_this_round: ResMut<MaxNumberOfEnemiesCurrentRound>,
     mut enemy_base_speed_this_round: ResMut<EnemyBaseSpeedCurrentRound>,
     mut enemy_spawn_timer: ResMut<EnemySpawnTimer>,
-    round_counter: Res<RoundNumber>,
+    round_number: Res<RoundNumber>,
     difficulty_indicator: Res<DifficultyIndicator>,
 ) {
     enemy_spawn_timer.timer = Timer::from_seconds(
         (INITIAL_ENEMY_SPAWN_INTERVAL
-            - round_counter.number as f32
+            - round_number.number as f32
                 * match difficulty_indicator.difficulty {
                     Difficulty::Easy => ENEMY_SPAWN_INTERVAL_DECREMENT_EASY_DIFFICULTY,
                     Difficulty::Medium => ENEMY_SPAWN_INTERVAL_DECREMENT_MEDIUM_DIFFICULTY,
@@ -52,20 +59,29 @@ pub fn increase_round_difficulty(
         .max(0.5),
         TimerMode::Repeating,
     );
-    max_number_of_enemies_this_round.number = INITIAL_MAX_NUMBER_OF_ENEMIES
-        + round_counter.number
-            * match difficulty_indicator.difficulty {
-                Difficulty::Easy => NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT_EASY_DIFFICULTY,
-                Difficulty::Medium => NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT_MEDIUM_DIFFICULTY,
-                Difficulty::Hard => NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT_HARD_DIFFICULTY,
-            };
-    enemy_base_speed_this_round.speed = INITIAL_ENEMY_SPEED
-        + round_counter.number as f32
-            * match difficulty_indicator.difficulty {
-                Difficulty::Easy => ENEMY_BASE_SPEED_INCREMENT_EASY_DIFFICULTY,
-                Difficulty::Medium => ENEMY_BASE_SPEED_INCREMENT_MEDIUM_DIFFICULTY,
-                Difficulty::Hard => ENEMY_BASE_SPEED_INCREMENT_HARD_DIFFICULTY,
-            };
+    // Every 10 rounds is boss round and no enemies should be spawned
+    max_number_of_enemies_this_round.number = if round_number.number % 10 != 0 {
+        INITIAL_MAX_NUMBER_OF_ENEMIES
+            + round_number.number
+                * match difficulty_indicator.difficulty {
+                    Difficulty::Easy => NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT_EASY_DIFFICULTY,
+                    Difficulty::Medium => NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT_MEDIUM_DIFFICULTY,
+                    Difficulty::Hard => NUMBER_OF_ENEMIES_PER_ROUND_INCREMENT_HARD_DIFFICULTY,
+                }
+    } else {
+        BOSS_WORD_COUNT_MULTIPLIER * round_number.number
+    };
+    enemy_base_speed_this_round.speed = if round_number.number % 10 != 0 {
+        INITIAL_ENEMY_SPEED
+            + round_number.number as f32
+                * match difficulty_indicator.difficulty {
+                    Difficulty::Easy => ENEMY_BASE_SPEED_INCREMENT_EASY_DIFFICULTY,
+                    Difficulty::Medium => ENEMY_BASE_SPEED_INCREMENT_MEDIUM_DIFFICULTY,
+                    Difficulty::Hard => ENEMY_BASE_SPEED_INCREMENT_HARD_DIFFICULTY,
+                }
+    } else {
+        INITIAL_ENEMY_SPEED * 0.5
+    };
 }
 
 /// Increases the round_counter by one at the start of each round.
