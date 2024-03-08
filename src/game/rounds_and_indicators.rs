@@ -67,7 +67,9 @@ impl Plugin for RoundsAndIndicatorsPlugin {
             // Score needs to be updated after wpm and other indicators
             .add_systems(
                 Update,
-                update_score.after(super::InputHandlingSystemSet::AfterInputHandling),
+                update_score
+                    .after(super::InputHandlingSystemSet::AfterInputHandling)
+                    .run_if(in_state(LoosingState::NotLost)),
             );
     }
 }

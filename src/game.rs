@@ -41,6 +41,7 @@ impl Plugin for GamePlugin {
             // Initialize App States
             .add_state::<SimulationState>()
             .add_state::<RoundState>()
+            .add_state::<LoosingState>()
             // Add own plugins
             .add_plugins(EnemiesPlugin)
             .add_plugins(CastlePlugin)
@@ -93,4 +94,12 @@ pub enum RoundState {
     #[default]
     InBetweenRounds,
     InRound,
+}
+
+/// Starts not lost and is set to lost if the castle is destroyed.
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
+pub enum LoosingState {
+    #[default]
+    NotLost,
+    Lost,
 }

@@ -28,12 +28,14 @@ pub fn despawn_castle_if_all_lives_are_gone_and_spawn_destroyed_castle(
     asset_server: Res<AssetServer>,
     mut castle_query: Query<(Entity, &mut Handle<Image>), With<Castle>>,
     number_of_lives_left: Res<NumberOfLivesLeft>,
+    mut next_is_lost_state: ResMut<NextState<LoosingState>>,
 ) {
     if number_of_lives_left.number == 0 {
         if let Ok((castle_entity, mut castle_image)) = castle_query.get_single_mut() {
             commands.entity(castle_entity).remove::<Castle>();
             commands.entity(castle_entity).insert(DestroyedCastle {});
             *castle_image = asset_server.load("sprites/castle/castleDestroyed.png");
+            next_is_lost_state.set(LoosingState::Lost);
         }
     }
 }
