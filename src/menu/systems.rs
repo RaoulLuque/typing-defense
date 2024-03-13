@@ -1,4 +1,4 @@
-use bevy::app::AppExit;
+use bevy::{app::AppExit, render::settings};
 
 use super::*;
 use crate::game::{
@@ -371,7 +371,14 @@ pub fn spawn_settings_menu(
                                         aspect_ratio: Some(1.0),
                                         ..default()
                                     },
-                                    image: UiImage::new(asset_server.load("ui/settings/minus.png")),
+                                    image: match difficulty.difficulty {
+                                        Difficulty::Easy => UiImage::new(
+                                            asset_server.load("ui/settings/minus_pressed.png"),
+                                        ),
+                                        _ => {
+                                            UiImage::new(asset_server.load("ui/settings/minus.png"))
+                                        }
+                                    },
                                     ..default()
                                 },
                                 SettingsButton::Minus,
@@ -411,7 +418,14 @@ pub fn spawn_settings_menu(
                                         aspect_ratio: Some(1.0),
                                         ..default()
                                     },
-                                    image: UiImage::new(asset_server.load("ui/settings/plus.png")),
+                                    image: match difficulty.difficulty {
+                                        Difficulty::Hard => UiImage::new(
+                                            asset_server.load("ui/settings/plus_pressed.png"),
+                                        ),
+                                        _ => {
+                                            UiImage::new(asset_server.load("ui/settings/plus.png"))
+                                        }
+                                    },
                                     ..default()
                                 },
                                 SettingsButton::Plus,
@@ -454,6 +468,7 @@ pub fn settings_button_animations(
         (Changed<Interaction>, With<Button>),
     >,
     asset_server: Res<AssetServer>,
+    difficulty: Res<DifficultyIndicator>,
 ) {
     for (interaction, mut ui_image, settings_button) in &mut interaction_query {
         *ui_image = match (*interaction, settings_button) {
@@ -487,8 +502,17 @@ pub fn settings_button_animations(
             (_, SettingsButton::CloseSettings) => {
                 UiImage::new(asset_server.load("ui/settings/close.png"))
             }
-            (_, SettingsButton::Plus) => UiImage::new(asset_server.load("ui/settings/plus.png")),
-            (_, SettingsButton::Minus) => UiImage::new(asset_server.load("ui/settings/minus.png")),
+            // Check if button needs to be "permanently pressed" in ui
+            (_, SettingsButton::Minus) => match difficulty.difficulty {
+                Difficulty::Easy => {
+                    UiImage::new(asset_server.load("ui/settings/minus_pressed.png"))
+                }
+                _ => UiImage::new(asset_server.load("ui/settings/minus.png")),
+            },
+            (_, SettingsButton::Plus) => match difficulty.difficulty {
+                Difficulty::Hard => UiImage::new(asset_server.load("ui/settings/plus_pressed.png")),
+                _ => UiImage::new(asset_server.load("ui/settings/plus.png")),
+            },
         }
     }
 }
@@ -497,6 +521,8 @@ pub fn change_difficulty(
     mut difficulty_changed_event_reader: EventReader<DifficultyChangedEvent>,
     mut difficulty: ResMut<DifficultyIndicator>,
     mut query_text_in_settings_menu: Query<&mut Text, With<DifficultySettingsText>>,
+    mut button_query: Query<(&mut UiImage, &SettingsButton), With<Button>>,
+    asset_server: Res<AssetServer>,
 ) {
     for difficulty_changed_event in difficulty_changed_event_reader.read() {
         difficulty.difficulty = match (difficulty_changed_event.0, &difficulty.difficulty) {
@@ -509,6 +535,19 @@ pub fn change_difficulty(
         };
         for mut text in query_text_in_settings_menu.iter_mut() {
             text.sections[0].value = difficulty.difficulty.to_string();
+        }
+
+        // Check if button needs to be "unpressed" in ui
+        for (mut ui_image, settings_button) in &mut button_query {
+            if settings_button == &SettingsButton::Minus {
+                if difficulty_changed_event.0 && difficulty.difficulty == Difficulty::Medium {
+                    *ui_image = UiImage::new(asset_server.load("ui/settings/minus.png"));
+                }
+            } else if settings_button == &SettingsButton::Plus {
+                if !difficulty_changed_event.0 && difficulty.difficulty == Difficulty::Medium {
+                    *ui_image = UiImage::new(asset_server.load("ui/settings/plus.png"));
+                }
+            }
         }
     }
 }

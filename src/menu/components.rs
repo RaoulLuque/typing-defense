@@ -16,7 +16,7 @@ pub enum MenuButtonAction {
 }
 
 // The different settings buttons for opening or closing the settings
-#[derive(Reflect, Component, Default)]
+#[derive(Reflect, Component, Default, PartialEq, Eq, Debug)]
 #[reflect(Component)]
 pub enum SettingsButton {
     #[default]
