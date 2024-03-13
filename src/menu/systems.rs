@@ -203,7 +203,7 @@ pub fn menu_button_animations(
                 UiImage::new(asset_server.load("ui/menu/mainMenuButtonPressed.png"))
             }
             Interaction::Hovered => {
-                UiImage::new(asset_server.load("ui/menu/mainMenuButtonHover.png"))
+                UiImage::new(asset_server.load("ui/menu/mainMenuButtonPressed.png"))
             }
             Interaction::None => UiImage::new(asset_server.load("ui/menu/mainMenuButton.png")),
         }
