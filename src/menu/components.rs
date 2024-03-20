@@ -12,7 +12,7 @@ pub enum MenuButtonAction {
     #[default]
     Play,
     HowToPlay,
-    Quit,
+    Resume,
 }
 
 // The different settings buttons for opening or closing the settings

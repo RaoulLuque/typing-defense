@@ -13,6 +13,10 @@ impl Plugin for HUDPlugin {
         app
             // Register types for debug
             .register_type::<InGameHudUiElement>()
+            .register_type::<InGameHudParent>()
+            .register_type::<UiFixedZ>()
+            .register_type::<ScoreText>()
+            .register_type::<WpmText>()
             // Add systems for entering game
             .add_systems(
                 OnEnter(super::AppState::InGame),
@@ -23,6 +27,7 @@ impl Plugin for HUDPlugin {
                 ),
             )
             // Add update systems
+            .add_systems(Startup, spawn_hud)
             .add_systems(
                 Update,
                 update_score_hud_element.after(super::rounds_and_indicators::systems::update_score),

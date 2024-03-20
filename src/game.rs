@@ -60,15 +60,6 @@ impl Plugin for GamePlugin {
                     .run_if(in_state(RoundState::InRound))
                     .run_if(in_state(AppState::InGame))
                     .run_if(in_state(SimulationState::Running)),
-            )
-            // Add system for changing simulation states - only possible if:
-            // 1. InGame
-            // 2. InRound (in order not to confuse when in between rounds since pausing seems uneccessary)
-            .add_systems(
-                Update,
-                toggle_simulation_state
-                    .run_if(in_state(AppState::InGame))
-                    .run_if(in_state(RoundState::InRound)),
             );
     }
 }

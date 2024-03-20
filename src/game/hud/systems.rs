@@ -4,7 +4,7 @@ use super::enemies::systems::ENEMY_TEXT_FONT_SIZE;
 use super::rounds_and_indicators::resources::{ScoreIndicator, WordPerMinuteTypedIndicator};
 use super::*;
 
-pub const UI_TEXT_FONT_SIZE: f32 = ENEMY_TEXT_FONT_SIZE;
+pub const UI_TEXT_FONT_SIZE: f32 = ENEMY_TEXT_FONT_SIZE * 0.50;
 pub const UI_TEXT_COLOR: Color = Color::DARK_GRAY;
 pub const UI_NUMBER_TEXT_COLOR: Color = Color::WHITE;
 
@@ -156,4 +156,138 @@ pub fn update_score_hud_element(
         }
         text.sections[1].value = score;
     }
+}
+
+pub fn spawn_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands
+        .spawn((
+            NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(100.0),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::FlexStart,
+                    ..default()
+                },
+                z_index: ZIndex::Global(0),
+                ..default()
+            },
+            InGameHudParent,
+            Name::new("Hud Banner parent"),
+        ))
+        .with_children(|parent| {
+            parent
+                .spawn((
+                    NodeBundle {
+                        style: Style {
+                            width: Val::Percent(48.0),
+                            height: Val::Percent(10.0),
+                            flex_direction: FlexDirection::Row,
+                            justify_content: JustifyContent::SpaceBetween,
+                            align_items: AlignItems::Center,
+                            margin: UiRect::top(Val::Percent(0.5)),
+                            ..default()
+                        },
+                        background_color: Color::WHITE.into(),
+                        ..default()
+                    },
+                    UiImage::new(asset_server.load("ui/hud/hud_banner.png")),
+                ))
+                .with_children(|parent| {
+                    parent.spawn((
+                        // Create a TextBundle that has a Text with a list of sections.
+                        TextBundle::from_sections([
+                            TextSection::new(
+                                "Score: ",
+                                TextStyle {
+                                    color: UI_TEXT_COLOR,
+                                    font_size: UI_TEXT_FONT_SIZE,
+                                    ..default()
+                                },
+                            ),
+                            TextSection::new(
+                                "0",
+                                TextStyle {
+                                    font_size: UI_TEXT_FONT_SIZE,
+                                    color: UI_NUMBER_TEXT_COLOR,
+                                    ..default()
+                                },
+                            ),
+                        ])
+                        .with_style(Style {
+                            width: Val::Percent(20.0),
+                            margin: UiRect::new(
+                                Val::Percent(5.0),
+                                Val::Percent(0.0),
+                                Val::Percent(0.0),
+                                Val::Percent(3.8),
+                            ),
+                            ..default()
+                        }),
+                        ScoreText,
+                        InGameHudUiElement,
+                    ));
+                    parent.spawn((
+                        // Create a TextBundle that has a Text with a list of sections.
+                        TextBundle::from_sections([
+                            TextSection::new(
+                                "Streak: ",
+                                TextStyle {
+                                    color: UI_TEXT_COLOR,
+                                    font_size: UI_TEXT_FONT_SIZE,
+                                    ..default()
+                                },
+                            ),
+                            TextSection::new(
+                                "0",
+                                TextStyle {
+                                    font_size: UI_TEXT_FONT_SIZE,
+                                    color: UI_NUMBER_TEXT_COLOR,
+                                    ..default()
+                                },
+                            ),
+                        ])
+                        .with_style(Style {
+                            width: Val::Percent(20.0),
+                            margin: UiRect::bottom(Val::Percent(3.8)),
+                            ..default()
+                        }),
+                        StreakText,
+                        InGameHudUiElement,
+                    ));
+                    parent.spawn((
+                        // Create a TextBundle that has a Text with a list of sections.
+                        TextBundle::from_sections([
+                            TextSection::new(
+                                "WPM: ",
+                                TextStyle {
+                                    color: UI_TEXT_COLOR,
+                                    font_size: UI_TEXT_FONT_SIZE,
+                                    ..default()
+                                },
+                            ),
+                            TextSection::new(
+                                "0",
+                                TextStyle {
+                                    font_size: UI_TEXT_FONT_SIZE,
+                                    color: UI_NUMBER_TEXT_COLOR,
+                                    ..default()
+                                },
+                            ),
+                        ])
+                        .with_style(Style {
+                            width: Val::Percent(20.0),
+                            margin: UiRect::new(
+                                Val::Percent(0.0),
+                                Val::Percent(5.0),
+                                Val::Percent(0.0),
+                                Val::Percent(3.8),
+                            ),
+                            ..default()
+                        }),
+                        WpmText,
+                        InGameHudUiElement,
+                    ));
+                });
+        });
 }

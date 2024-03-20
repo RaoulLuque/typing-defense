@@ -126,41 +126,47 @@ pub fn randomly_spawn_enemies_over_time(
                     .choose(&mut rng)
                     .expect("The list of words shouldn't be empty");
                 commands
-                    .spawn(EnemyBundle {
-                        sprite_sheet_bundle: SpriteSheetBundle {
-                            transform: spawn_point_transform,
-                            sprite: TextureAtlasSprite {
-                                flip_x: flip_on_y_axis,
-                                index: 0,
-                                custom_size: custom_sprite_size,
+                    .spawn((
+                        EnemyBundle {
+                            sprite_sheet_bundle: SpriteSheetBundle {
+                                transform: spawn_point_transform,
+                                sprite: TextureAtlasSprite {
+                                    flip_x: flip_on_y_axis,
+                                    index: 0,
+                                    custom_size: custom_sprite_size,
+                                    ..default()
+                                },
+                                texture_atlas: texture_atlas_handle,
                                 ..default()
                             },
-                            texture_atlas: texture_atlas_handle,
-                            ..default()
+                            entity_type: Enemy {},
+                            spawn_point,
+                            speed: Speed { speed: speed },
+                            walking_animation,
+                            enemy_type,
+                            path_checkpoint_number: PathCheckpointNumber::default(),
+                            text_collision: CollidingWith::default(),
+                            name: Name::new(word_for_enemy.clone()),
                         },
-                        entity_type: Enemy {},
-                        spawn_point,
-                        speed: Speed { speed: speed },
-                        walking_animation,
-                        enemy_type,
-                        path_checkpoint_number: PathCheckpointNumber::default(),
-                        text_collision: CollidingWith::default(),
-                        name: Name::new(word_for_enemy.clone()),
-                    })
+                        ZIndex::Local(10),
+                    ))
                     .with_children(|parent| {
-                        parent.spawn(Text2dBundle {
-                            text: Text {
-                                sections: turn_string_literal_into_vec_of_text_sections(
-                                    word_for_enemy,
-                                    STANDARD_TEXT_COLOR,
-                                ),
-                                alignment: TextAlignment::Center,
-                                linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
+                        parent.spawn((
+                            Text2dBundle {
+                                text: Text {
+                                    sections: turn_string_literal_into_vec_of_text_sections(
+                                        word_for_enemy,
+                                        STANDARD_TEXT_COLOR,
+                                    ),
+                                    alignment: TextAlignment::Center,
+                                    linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
+                                },
+                                // ensure the text is drawn on top of the box
+                                transform: Transform::from_xyz(0.0, TEXT_HEIGHT, TEXT_Z_VALUE),
+                                ..default()
                             },
-                            // ensure the text is drawn on top of the box
-                            transform: Transform::from_xyz(0.0, TEXT_HEIGHT, TEXT_Z_VALUE),
-                            ..default()
-                        });
+                            ZIndex::Local(10),
+                        ));
                     });
             }
             number_of_enemies_spawned_this_round.number += 1;

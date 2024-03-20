@@ -3,11 +3,16 @@ use bevy::{app::AppExit, render::settings};
 use super::*;
 use crate::game::{
     rounds_and_indicators::resources::{Difficulty, DifficultyIndicator},
-    RoundState,
+    RoundState, SimulationState,
 };
 
 #[derive(Event)]
 pub struct DifficultyChangedEvent(bool);
+
+pub enum MenuType {
+    MainMenu,
+    InGameMenu,
+}
 
 pub fn setup_menu(mut next_menu_state: ResMut<NextState<MenuState>>) {
     next_menu_state.set(MenuState::Main);
@@ -15,6 +20,10 @@ pub fn setup_menu(mut next_menu_state: ResMut<NextState<MenuState>>) {
 }
 
 pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
+    spawn_menu(commands, asset_server, MenuType::MainMenu);
+}
+
+fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_menu: MenuType) {
     let button_text_style = TextStyle {
         font_size: 40.0,
         ..default()
@@ -86,12 +95,18 @@ pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                                         ),
                                         ..default()
                                     },
-                                    MenuButtonAction::Play,
+                                    match type_of_menu {
+                                        MenuType::MainMenu => MenuButtonAction::Play,
+                                        MenuType::InGameMenu => MenuButtonAction::Resume,
+                                    },
                                 ))
                                 .with_children(|parent| {
                                     parent.spawn(TextBundle {
                                         text: Text::from_section(
-                                            "Start Game",
+                                            match type_of_menu {
+                                                MenuType::MainMenu => "Start Game",
+                                                MenuType::InGameMenu => "Resume Game",
+                                            },
                                             button_text_style.clone(),
                                         ),
                                         style: Style {
@@ -167,15 +182,17 @@ pub fn menu_action(
         (&Interaction, &MenuButtonAction),
         (Changed<Interaction>, With<Button>),
     >,
-    mut app_exit_events: EventWriter<AppExit>,
     mut next_menu_state: ResMut<NextState<MenuState>>,
     mut next_game_state: ResMut<NextState<AppState>>,
     mut next_round_state: ResMut<NextState<RoundState>>,
+    mut simulation_state_next_state: ResMut<NextState<SimulationState>>,
 ) {
     for (interaction, menu_button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match menu_button_action {
-                MenuButtonAction::Quit => app_exit_events.send(AppExit),
+                MenuButtonAction::Resume => {
+                    simulation_state_next_state.set(SimulationState::Running)
+                }
                 MenuButtonAction::Play => {
                     next_game_state.set(AppState::InGame);
                     next_menu_state.set(MenuState::NotInTheMenu);
@@ -549,5 +566,23 @@ pub fn change_difficulty(
                 }
             }
         }
+    }
+}
+
+pub fn check_if_in_game_menu_is_opened(
+    asset_server: Res<AssetServer>,
+    mut commands: Commands,
+    keyboard_input: Res<Input<KeyCode>>,
+    simulation_state: Res<State<SimulationState>>,
+    mut simulation_state_next_state: ResMut<NextState<SimulationState>>,
+) {
+    if keyboard_input.just_pressed(KeyCode::Escape) {
+        match simulation_state.get() {
+            &SimulationState::Running => {
+                simulation_state_next_state.set(SimulationState::Paused);
+                spawn_menu(commands, asset_server, MenuType::InGameMenu);
+            }
+            _ => (),
+        };
     }
 }
