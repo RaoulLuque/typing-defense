@@ -160,7 +160,7 @@ impl Default for DifficultyIndicator {
     }
 }
 
-#[derive(Default, Reflect)]
+#[derive(Default, Reflect, PartialEq, Eq)]
 pub enum Difficulty {
     Easy,
     #[default]

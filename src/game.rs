@@ -13,9 +13,6 @@ use hud::HUDPlugin;
 mod decorations;
 use decorations::DecorationsPlugin;
 
-mod systems;
-use systems::*;
-
 mod effects;
 use effects::EffectsPlugin;
 
@@ -80,7 +77,7 @@ impl Plugin for GamePlugin {
 ///
 /// Switches when ctrl is pressed. In Paused, enemies don't move and are not typeable.
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
-enum SimulationState {
+pub enum SimulationState {
     Paused,
     #[default]
     Running,

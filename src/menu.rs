@@ -1,4 +1,4 @@
-use crate::AppState;
+use crate::{game::SimulationState, AppState};
 
 use bevy::prelude::*;
 
@@ -22,9 +22,13 @@ impl Plugin for MenuPlugin {
             // Add menu States
             .add_state::<MenuState>()
             .add_state::<SettingsMenuState>()
-            // Despawn Menu's when other menus are opened or the are exited
+            // Despawn Menu's when other menus are opened or they are exited
             .add_systems(
                 OnExit(MenuState::Main),
+                despawn_screen::<MainMenuScreenUiElement>,
+            )
+            .add_systems(
+                OnExit(SimulationState::Paused),
                 despawn_screen::<MainMenuScreenUiElement>,
             )
             .add_systems(
@@ -44,12 +48,14 @@ impl Plugin for MenuPlugin {
                 OnEnter(SettingsMenuState::SettingsOpened),
                 spawn_settings_menu,
             )
+            // Add update systems
             .add_systems(
                 Update,
                 (
                     settings_button_animations,
                     settings_action,
                     change_difficulty,
+                    check_if_in_game_menu_is_opened,
                 ),
             )
             .add_systems(
@@ -60,7 +66,8 @@ impl Plugin for MenuPlugin {
             .add_systems(OnEnter(MenuState::Main), spawn_main_menu)
             .add_systems(
                 Update,
-                (menu_action, menu_button_animations).run_if(in_state(AppState::Menu)),
+                (menu_action, menu_button_animations)
+                    .run_if(in_state(AppState::Menu).or_else(in_state(SimulationState::Paused))),
             );
     }
 }
