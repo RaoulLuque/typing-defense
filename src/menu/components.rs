@@ -15,6 +15,11 @@ pub enum MenuButtonAction {
     Resume,
 }
 
+// Component used to tag text entities on the main menu screen
+#[derive(Reflect, Component, Default)]
+#[reflect(Component)]
+pub struct MainMenuText;
+
 // The different settings buttons for opening or closing the settings
 #[derive(Reflect, Component, Default, PartialEq, Eq, Debug)]
 #[reflect(Component)]

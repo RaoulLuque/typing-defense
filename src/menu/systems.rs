@@ -99,20 +99,23 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
                                     },
                                 ))
                                 .with_children(|parent| {
-                                    parent.spawn(TextBundle {
-                                        text: Text::from_section(
-                                            match type_of_menu {
-                                                MenuType::MainMenu => "Start Game",
-                                                MenuType::InGameMenu => "Resume Game",
+                                    parent.spawn((
+                                        TextBundle {
+                                            text: Text::from_section(
+                                                match type_of_menu {
+                                                    MenuType::MainMenu => "Start Game",
+                                                    MenuType::InGameMenu => "Resume Game",
+                                                },
+                                                button_text_style.clone(),
+                                            ),
+                                            style: Style {
+                                                margin: UiRect::bottom(Val::Percent(5.0)),
+                                                ..default()
                                             },
-                                            button_text_style.clone(),
-                                        ),
-                                        style: Style {
-                                            margin: UiRect::bottom(Val::Percent(5.0)),
                                             ..default()
                                         },
-                                        ..default()
-                                    });
+                                        MainMenuText,
+                                    ));
                                 });
                             parent
                                 .spawn((
@@ -134,17 +137,20 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
                                     MenuButtonAction::HowToPlay,
                                 ))
                                 .with_children(|parent| {
-                                    parent.spawn(TextBundle {
-                                        text: Text::from_section(
-                                            "How to play",
-                                            button_text_style.clone(),
-                                        ),
-                                        style: Style {
-                                            margin: UiRect::bottom(Val::Percent(5.0)),
+                                    parent.spawn((
+                                        TextBundle {
+                                            text: Text::from_section(
+                                                "How to play",
+                                                button_text_style.clone(),
+                                            ),
+                                            style: Style {
+                                                margin: UiRect::bottom(Val::Percent(5.0)),
+                                                ..default()
+                                            },
                                             ..default()
                                         },
-                                        ..default()
-                                    });
+                                        MainMenuText,
+                                    ));
                                 });
                         });
                 });
@@ -207,20 +213,35 @@ pub fn menu_action(
 // This system handles changing all buttons color based on mouse interaction
 pub fn menu_button_animations(
     mut interaction_query: Query<
-        (&Interaction, &mut UiImage),
+        (&Interaction, &mut UiImage, &Children),
         (Changed<Interaction>, With<Button>, With<MenuButtonAction>),
     >,
+    mut text_query: Query<&mut Style, (With<Text>, With<MainMenuText>)>,
     asset_server: Res<AssetServer>,
 ) {
-    for (interaction, mut ui_image) in &mut interaction_query {
+    for (interaction, mut ui_image, children) in &mut interaction_query {
         *ui_image = match *interaction {
             Interaction::Pressed => {
+                let mut text_iter = text_query.iter_many_mut(children);
+                if let Some(mut text_style) = text_iter.fetch_next() {
+                    text_style.margin.bottom = Val::Percent(2.5);
+                };
                 UiImage::new(asset_server.load("ui/menu/mainMenuButtonPressed.png"))
             }
             Interaction::Hovered => {
+                let mut text_iter = text_query.iter_many_mut(children);
+                if let Some(mut text_style) = text_iter.fetch_next() {
+                    text_style.margin.bottom = Val::Percent(2.5);
+                };
                 UiImage::new(asset_server.load("ui/menu/mainMenuButtonPressed.png"))
             }
-            Interaction::None => UiImage::new(asset_server.load("ui/menu/mainMenuButton.png")),
+            Interaction::None => {
+                let mut text_iter = text_query.iter_many_mut(children);
+                if let Some(mut text_style) = text_iter.fetch_next() {
+                    text_style.margin.bottom = Val::Percent(5.0);
+                };
+                UiImage::new(asset_server.load("ui/menu/mainMenuButton.png"))
+            }
         }
     }
 }
