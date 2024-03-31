@@ -1,9 +1,7 @@
-use bevy::{app::AppExit, render::settings};
-
 use super::*;
 use crate::game::{
     rounds_and_indicators::resources::{Difficulty, DifficultyIndicator},
-    RoundState, SimulationState,
+    RoundState,
 };
 
 #[derive(Event)]
@@ -19,7 +17,7 @@ pub fn setup_menu(mut next_menu_state: ResMut<NextState<MenuState>>) {
     println!("You are in the menu!");
 }
 
-pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn spawn_main_menu(commands: Commands, asset_server: Res<AssetServer>) {
     spawn_menu(commands, asset_server, MenuType::MainMenu);
 }
 
@@ -571,18 +569,15 @@ pub fn change_difficulty(
 
 pub fn check_if_in_game_menu_is_opened(
     asset_server: Res<AssetServer>,
-    mut commands: Commands,
+    commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     simulation_state: Res<State<SimulationState>>,
     mut simulation_state_next_state: ResMut<NextState<SimulationState>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Escape) {
-        match simulation_state.get() {
-            &SimulationState::Running => {
-                simulation_state_next_state.set(SimulationState::Paused);
-                spawn_menu(commands, asset_server, MenuType::InGameMenu);
-            }
-            _ => (),
+        if simulation_state.get() == &SimulationState::Running {
+            simulation_state_next_state.set(SimulationState::Paused);
+            spawn_menu(commands, asset_server, MenuType::InGameMenu);
         };
     }
 }

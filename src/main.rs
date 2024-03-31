@@ -14,7 +14,8 @@ pub const WINDOW_WIDTH: f32 = 1920.0;
 pub const WINDOW_HEIGHT: f32 = 1080.0;
 
 fn main() {
-    App::new()
+    let mut app = App::new();
+    app
         // Add default plugin and tweak ImagePlugin for smoother Animations with SpriteSheets and
         // window plugin
         .add_plugins(
@@ -32,8 +33,6 @@ fn main() {
                     ..default()
                 }),
         )
-        // Add Debugging info in game
-        .add_plugins(WorldInspectorPlugin::new())
         // Initialize AppState
         .add_state::<AppState>()
         // Spawn camera and add background
@@ -41,8 +40,14 @@ fn main() {
         .add_systems(Startup, spawn_camera)
         .add_systems(Update, toggle_borderless_fullscreen)
         // Add game and menu plugins
-        .add_plugins((GamePlugin, MenuPlugin))
-        .run();
+        .add_plugins((GamePlugin, MenuPlugin));
+
+    if cfg!(debug_assertions) {
+        // Add Debugging info in game
+        app.add_plugins(WorldInspectorPlugin::new());
+    }
+
+    app.run()
 }
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
