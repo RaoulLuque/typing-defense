@@ -86,11 +86,10 @@ jobs:
       - name: Prepare release
         run: |
           mkdir target/dist/assets && cp -r assets target/dist/assets
-          mkdir target/dist/credits && cp -r credits target/dist/credits
       - name: Zip release
         uses: vimtor/action-zip@v1.1
         with:
-          files: target/dist/assets/ target/dist/credits/ target/dist/${{ env.GAME_EXECUTABLE_NAME }}.exe
+          files: target/dist/assets/ target/dist/${{ env.GAME_EXECUTABLE_NAME }}.exe
           dest: ${{ env.GAME_EXECUTABLE_NAME }}_windows.zip
     #   - name: Create Installer
     #     if: ${{ env.BUILD_INSTALLER }}
