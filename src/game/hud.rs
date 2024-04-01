@@ -19,6 +19,14 @@ impl Plugin for HUDPlugin {
             .register_type::<WpmText>()
             // Add startup systems
             .add_systems(Startup, spawn_hud)
+            .add_systems(
+                OnEnter(RoundState::InBetweenRounds),
+                spawn_in_between_rounds_text.run_if(in_state(AppState::InGame)),
+            )
+            .add_systems(
+                OnExit(RoundState::InBetweenRounds),
+                crate::menu::systems::despawn_screen::<InBetweenRoundsHudUiElement>,
+            )
             // Add update systems
             .add_systems(
                 Update,

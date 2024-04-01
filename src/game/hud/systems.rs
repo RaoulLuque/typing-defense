@@ -291,3 +291,26 @@ pub fn spawn_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
                 });
         });
 }
+
+pub fn spawn_in_between_rounds_text(mut commands: Commands) {
+    commands.spawn((
+        // Create a TextBundle that has a Text with a list of sections.
+        TextBundle::from_section(
+            "You are currently in between rounds.\nPress 'Space' to start the next round",
+            TextStyle {
+                font_size: 60.0,
+                color: Color::BLACK,
+                ..default()
+            },
+        )
+        .with_style(Style {
+            position_type: PositionType::Absolute,
+            align_self: AlignSelf::Center,
+            justify_self: JustifySelf::Center,
+            margin: UiRect::bottom(Val::Percent(32.5)),
+            ..default()
+        })
+        .with_text_alignment(TextAlignment::Center),
+        InBetweenRoundsHudUiElement,
+    ));
+}

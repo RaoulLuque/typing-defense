@@ -5,6 +5,11 @@ use super::*;
 #[reflect(Component)]
 pub struct InGameHudUiElement;
 
+// Tag component used to tag entities in the in game hud
+#[derive(Reflect, Component, Default)]
+#[reflect(Component)]
+pub struct InBetweenRoundsHudUiElement;
+
 // Tag component used to tag the text that displays the current wpm counter
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]

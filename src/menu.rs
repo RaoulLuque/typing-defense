@@ -2,7 +2,7 @@ use crate::{game::SimulationState, AppState};
 
 use bevy::prelude::*;
 
-mod systems;
+pub mod systems;
 use systems::*;
 
 mod components;
@@ -91,7 +91,7 @@ impl Plugin for MenuPlugin {
 
 // State used for the current menu screen
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
-enum MenuState {
+pub enum MenuState {
     Main,
     HowToPlay,
     // State to transition to how to play. Workaround for being able to 'respawn' the how to play screen
@@ -103,7 +103,7 @@ enum MenuState {
 
 // State of the settings menu
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
-enum SettingsMenuState {
+pub enum SettingsMenuState {
     #[default]
     SettingsClosed,
     SettingsOpened,
