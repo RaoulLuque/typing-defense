@@ -8,38 +8,6 @@ pub const UI_TEXT_FONT_SIZE: f32 = ENEMY_TEXT_FONT_SIZE * 0.50;
 pub const UI_TEXT_COLOR: Color = Color::DARK_GRAY;
 pub const UI_NUMBER_TEXT_COLOR: Color = Color::WHITE;
 
-pub fn spawn_wpm_hud_element(mut commands: Commands) {
-    commands.spawn((
-        // Create a TextBundle that has a Text with a list of sections.
-        TextBundle::from_sections([
-            TextSection::new(
-                "WPM: ",
-                TextStyle {
-                    color: UI_TEXT_COLOR,
-                    font_size: UI_TEXT_FONT_SIZE,
-                    ..default()
-                },
-            ),
-            TextSection::new(
-                "0",
-                TextStyle {
-                    font_size: UI_TEXT_FONT_SIZE,
-                    color: UI_NUMBER_TEXT_COLOR,
-                    ..default()
-                },
-            ),
-        ])
-        .with_style(Style {
-            position_type: PositionType::Absolute,
-            bottom: Val::Percent(10.0),
-            right: Val::Percent(1.5),
-            ..default()
-        }),
-        WpmText,
-        InGameHudUiElement,
-    ));
-}
-
 pub fn update_wpm_hud_element(
     wpm: Res<WordPerMinuteTypedIndicator>,
     mut wpm_hud_text_query: Query<&mut Text, With<WpmText>>,
@@ -56,38 +24,6 @@ pub fn update_wpm_hud_element(
         }
         text.sections[1].value = value;
     }
-}
-
-pub fn spawn_streak_hud_element(mut commands: Commands) {
-    commands.spawn((
-        // Create a TextBundle that has a Text with a list of sections.
-        TextBundle::from_sections([
-            TextSection::new(
-                "Streak: ",
-                TextStyle {
-                    color: UI_TEXT_COLOR,
-                    font_size: UI_TEXT_FONT_SIZE,
-                    ..default()
-                },
-            ),
-            TextSection::new(
-                "0",
-                TextStyle {
-                    font_size: UI_TEXT_FONT_SIZE,
-                    color: UI_NUMBER_TEXT_COLOR,
-                    ..default()
-                },
-            ),
-        ])
-        .with_style(Style {
-            position_type: PositionType::Absolute,
-            bottom: Val::Percent(5.5),
-            right: Val::Percent(1.5),
-            ..default()
-        }),
-        StreakText,
-        InGameHudUiElement,
-    ));
 }
 
 pub fn update_streak_hud_element(
@@ -124,38 +60,6 @@ pub fn update_round_number_hud_element(
         }
         text.sections[1].value = round_number;
     }
-}
-
-pub fn spawn_score_hud_element(mut commands: Commands) {
-    commands.spawn((
-        // Create a TextBundle that has a Text with a list of sections.
-        TextBundle::from_sections([
-            TextSection::new(
-                "Score: ",
-                TextStyle {
-                    color: UI_TEXT_COLOR,
-                    font_size: UI_TEXT_FONT_SIZE,
-                    ..default()
-                },
-            ),
-            TextSection::new(
-                "0",
-                TextStyle {
-                    font_size: UI_TEXT_FONT_SIZE,
-                    color: UI_NUMBER_TEXT_COLOR,
-                    ..default()
-                },
-            ),
-        ])
-        .with_style(Style {
-            position_type: PositionType::Absolute,
-            bottom: Val::Percent(1.0),
-            right: Val::Percent(1.5),
-            ..default()
-        }),
-        ScoreText,
-        InGameHudUiElement,
-    ));
 }
 
 pub fn update_score_hud_element(

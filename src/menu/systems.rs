@@ -1,5 +1,4 @@
 use rand::seq::SliceRandom;
-use rand::Rng;
 
 use super::*;
 use crate::game::{
