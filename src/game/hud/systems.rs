@@ -239,7 +239,7 @@ pub fn spawn_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 },
                             ),
                             TextSection::new(
-                                "0",
+                                "  0",
                                 TextStyle {
                                     font_size: UI_TEXT_FONT_SIZE,
                                     color: UI_NUMBER_TEXT_COLOR,
