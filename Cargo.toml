@@ -20,6 +20,20 @@ opt-level = 1
 [profile.dev.package."*"]
 opt-level = 3
 
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+
+# Profile for distribution
+[profile.dist]
+inherits = "release"
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
 [dependencies]
 rand = { version = "0.8.5" }
 bevy_common_assets = { version ="0.9", features = ["toml"] }
