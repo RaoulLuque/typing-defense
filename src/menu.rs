@@ -23,9 +23,20 @@ impl Plugin for MenuPlugin {
             .add_state::<MenuState>()
             .add_state::<SettingsMenuState>()
             // Despawn Menu's when other menus are opened or they are exited
+            .add_systems(OnEnter(AppState::Menu), setup_menu)
+            .add_systems(OnEnter(MenuState::Main), spawn_main_menu)
+            .add_systems(OnEnter(MenuState::HowToPlay), spawn_how_to_play_screen)
+            .add_systems(
+                OnEnter(MenuState::HowToPlayTransition),
+                transition_to_how_to_play,
+            )
             .add_systems(
                 OnExit(MenuState::Main),
                 despawn_screen::<MainMenuScreenUiElement>,
+            )
+            .add_systems(
+                OnExit(MenuState::HowToPlay),
+                despawn_screen::<HowToPlayScreenUiElement>,
             )
             .add_systems(
                 OnExit(SimulationState::Paused),
@@ -62,8 +73,14 @@ impl Plugin for MenuPlugin {
                 Update,
                 transition_from_menu_to_in_game.run_if(in_state(AppState::Menu)),
             )
-            .add_systems(OnEnter(AppState::Menu), setup_menu)
-            .add_systems(OnEnter(MenuState::Main), spawn_main_menu)
+            .add_systems(
+                Update,
+                (
+                    animate_enemies_in_how_to_play,
+                    crate::game::enemies::text::systems::update_text_from_enemies_on_button_press,
+                )
+                    .run_if(in_state(MenuState::HowToPlay)),
+            )
             .add_systems(
                 Update,
                 (menu_action, menu_button_animations)
@@ -77,6 +94,9 @@ impl Plugin for MenuPlugin {
 enum MenuState {
     Main,
     HowToPlay,
+    // State to transition to how to play. Workaround for being able to 'respawn' the how to play screen
+    // from the screen itself in order to spawn enemies after having typed one
+    HowToPlayTransition,
     #[default]
     NotInTheMenu,
 }

@@ -5,6 +5,11 @@ use super::*;
 #[reflect(Component)]
 pub struct MainMenuScreenUiElement;
 
+// Component used to tag entities added on the main menu screen
+#[derive(Reflect, Component, Default)]
+#[reflect(Component)]
+pub struct HowToPlayScreenUiElement;
+
 // All actions that can be triggered from a button click
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
@@ -13,6 +18,7 @@ pub enum MenuButtonAction {
     Play,
     HowToPlay,
     Resume,
+    Main,
 }
 
 // Component used to tag text entities on the main menu screen

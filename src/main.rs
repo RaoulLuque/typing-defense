@@ -1,7 +1,7 @@
 mod systems;
 use systems::*;
 
-mod game;
+pub mod game;
 use game::GamePlugin;
 
 mod menu;

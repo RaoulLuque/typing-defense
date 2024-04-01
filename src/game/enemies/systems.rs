@@ -46,7 +46,7 @@ pub struct EnemyBundle {
 }
 
 pub fn randomly_spawn_enemies_over_time(
-    mut commands: Commands,
+    commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     mut last_enemy_spawn_point: ResMut<LastEnemySpawnPoint>,
     mut number_of_enemies_spawned_this_round: ResMut<NumberOfEnemiesSpawnedThisRound>,
@@ -99,6 +99,7 @@ pub fn randomly_spawn_enemies_over_time(
                 None,
             );
             let texture_atlas_handle: Handle<TextureAtlas> = texture_atlases.add(texture_atlas);
+
             // Set speed of enemy randomly in range of 0.625 to 1.375 times the enemy base speed this round
             let speed = (rng.gen::<f32>() * 0.75 + 0.625) * enemy_base_speed_this_round.speed;
             let walking_animation: WalkingAnimation = WalkingAnimation {
@@ -125,53 +126,79 @@ pub fn randomly_spawn_enemies_over_time(
                     .vec_of_words
                     .choose(&mut rng)
                     .expect("The list of words shouldn't be empty");
-                commands
-                    .spawn((
-                        EnemyBundle {
-                            sprite_sheet_bundle: SpriteSheetBundle {
-                                transform: spawn_point_transform,
-                                sprite: TextureAtlasSprite {
-                                    flip_x: flip_on_y_axis,
-                                    index: 0,
-                                    custom_size: custom_sprite_size,
-                                    ..default()
-                                },
-                                texture_atlas: texture_atlas_handle,
-                                ..default()
-                            },
-                            entity_type: Enemy {},
-                            spawn_point,
-                            speed: Speed { speed: speed },
-                            walking_animation,
-                            enemy_type,
-                            path_checkpoint_number: PathCheckpointNumber::default(),
-                            text_collision: CollidingWith::default(),
-                            name: Name::new(word_for_enemy.clone()),
-                        },
-                        ZIndex::Local(10),
-                    ))
-                    .with_children(|parent| {
-                        parent.spawn((
-                            Text2dBundle {
-                                text: Text {
-                                    sections: turn_string_literal_into_vec_of_text_sections(
-                                        word_for_enemy,
-                                        STANDARD_TEXT_COLOR,
-                                    ),
-                                    alignment: TextAlignment::Center,
-                                    linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
-                                },
-                                // ensure the text is drawn on top of the box
-                                transform: Transform::from_xyz(0.0, TEXT_HEIGHT, TEXT_Z_VALUE),
-                                ..default()
-                            },
-                            ZIndex::Local(10),
-                        ));
-                    });
+                spawn_enemy(
+                    commands,
+                    spawn_point_transform,
+                    flip_on_y_axis,
+                    custom_sprite_size,
+                    texture_atlas_handle,
+                    spawn_point,
+                    speed,
+                    walking_animation,
+                    enemy_type,
+                    word_for_enemy,
+                );
             }
             number_of_enemies_spawned_this_round.number += 1;
         }
     }
+}
+
+pub fn spawn_enemy(
+    mut commands: Commands,
+    spawn_point_transform: Transform,
+    flip_on_y_axis: bool,
+    custom_sprite_size: Option<Vec2>,
+    texture_atlas_handle: Handle<TextureAtlas>,
+    spawn_point: EnemySpawnPoint,
+    speed: f32,
+    walking_animation: WalkingAnimation,
+    enemy_type: EnemyType,
+    word_for_enemy: &String,
+) {
+    commands
+        .spawn((
+            EnemyBundle {
+                sprite_sheet_bundle: SpriteSheetBundle {
+                    transform: spawn_point_transform,
+                    sprite: TextureAtlasSprite {
+                        flip_x: flip_on_y_axis,
+                        index: 0,
+                        custom_size: custom_sprite_size,
+                        ..default()
+                    },
+                    texture_atlas: texture_atlas_handle,
+                    ..default()
+                },
+                entity_type: Enemy {},
+                spawn_point,
+                speed: Speed { speed: speed },
+                walking_animation,
+                enemy_type,
+                path_checkpoint_number: PathCheckpointNumber::default(),
+                text_collision: CollidingWith::default(),
+                name: Name::new(word_for_enemy.clone()),
+            },
+            ZIndex::Local(10),
+        ))
+        .with_children(|parent| {
+            parent.spawn((
+                Text2dBundle {
+                    text: Text {
+                        sections: turn_string_literal_into_vec_of_text_sections(
+                            word_for_enemy,
+                            STANDARD_TEXT_COLOR,
+                        ),
+                        alignment: TextAlignment::Center,
+                        linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
+                    },
+                    // ensure the text is drawn on top of the box
+                    transform: Transform::from_xyz(0.0, TEXT_HEIGHT, TEXT_Z_VALUE),
+                    ..default()
+                },
+                ZIndex::Local(10),
+            ));
+        });
 }
 
 /// Returns the necessary info in order to generate a spritesheet for each enemy type

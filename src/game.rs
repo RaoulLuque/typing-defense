@@ -1,4 +1,4 @@
-mod enemies;
+pub mod enemies;
 use enemies::EnemiesPlugin;
 
 mod castle;
