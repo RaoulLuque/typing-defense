@@ -39,6 +39,11 @@ impl Plugin for HUDPlugin {
             .add_systems(
                 Update,
                 update_wpm_hud_element.after(super::rounds_and_indicators::systems::update_wpm),
+            )
+            .add_systems(
+                Update,
+                update_round_number_hud_element
+                    .after(super::rounds_and_indicators::systems::increase_round_counter),
             );
     }
 }

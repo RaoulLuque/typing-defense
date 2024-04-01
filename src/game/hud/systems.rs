@@ -1,4 +1,4 @@
-use self::rounds_and_indicators::resources::StreakIndicator;
+use self::rounds_and_indicators::resources::{RoundNumber, StreakIndicator};
 
 use super::enemies::systems::ENEMY_TEXT_FONT_SIZE;
 use super::rounds_and_indicators::resources::{ScoreIndicator, WordPerMinuteTypedIndicator};
@@ -105,6 +105,24 @@ pub fn update_streak_hud_element(
             }
         }
         text.sections[1].value = streak_number;
+    }
+}
+
+pub fn update_round_number_hud_element(
+    round_number: Res<RoundNumber>,
+    mut round_number_hud_text_query: Query<&mut Text, With<RoundNumberText>>,
+) {
+    for mut text in &mut round_number_hud_text_query {
+        let round_number = round_number.number;
+        let mut round_number = format!("{round_number:.0}");
+        if round_number.len() < 3 {
+            for _ in round_number.len()..3 {
+                let mut tmp = " ".to_string();
+                tmp.push_str(&round_number);
+                round_number = tmp;
+            }
+        }
+        text.sections[1].value = round_number;
     }
 }
 
@@ -279,13 +297,47 @@ pub fn spawn_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
                             width: Val::Percent(20.0),
                             margin: UiRect::new(
                                 Val::Percent(0.0),
-                                Val::Percent(5.0),
+                                Val::Percent(0.0),
                                 Val::Percent(0.0),
                                 Val::Percent(3.8),
                             ),
                             ..default()
                         }),
                         WpmText,
+                        InGameHudUiElement,
+                    ));
+
+                    parent.spawn((
+                        // Create a TextBundle that has a Text with a list of sections.
+                        TextBundle::from_sections([
+                            TextSection::new(
+                                "Round: ",
+                                TextStyle {
+                                    color: UI_TEXT_COLOR,
+                                    font_size: UI_TEXT_FONT_SIZE,
+                                    ..default()
+                                },
+                            ),
+                            TextSection::new(
+                                "  0",
+                                TextStyle {
+                                    font_size: UI_TEXT_FONT_SIZE,
+                                    color: UI_NUMBER_TEXT_COLOR,
+                                    ..default()
+                                },
+                            ),
+                        ])
+                        .with_style(Style {
+                            width: Val::Percent(20.0),
+                            margin: UiRect::new(
+                                Val::Percent(0.0),
+                                Val::Percent(5.0),
+                                Val::Percent(0.0),
+                                Val::Percent(3.8),
+                            ),
+                            ..default()
+                        }),
+                        RoundNumberText,
                         InGameHudUiElement,
                     ));
                 });
