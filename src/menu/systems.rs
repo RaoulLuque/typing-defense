@@ -166,6 +166,33 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
                         });
                 });
         });
+    commands.spawn((
+        ButtonBundle {
+            style: Style {
+                position_type: PositionType::Absolute,
+                align_self: AlignSelf::FlexStart,
+                justify_self: JustifySelf::Start,
+                width: Val::Percent(10.0),
+                aspect_ratio: Some(230.0 / 225.0),
+                // Vertical align of menu banner
+                margin: UiRect {
+                    left: Val::Percent(2.),
+                    right: Val::Percent(0.),
+                    top: Val::Percent(2.),
+                    bottom: Val::Percent(0.),
+                },
+                align_items: AlignItems::Center,
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            background_color: Color::WHITE.into(),
+            image: UiImage::new(asset_server.load("icon/github.png")),
+            ..default()
+        },
+        MenuButtonAction::OpenLink("https://github.com/RaoulLuque/typing-defense".to_string()),
+        MainMenuScreenUiElement,
+        GitHubButton,
+    ));
 }
 
 pub fn transition_from_menu_to_in_game(
@@ -219,6 +246,11 @@ pub fn menu_action(
                 MenuButtonAction::Main => {
                     next_menu_state.set(MenuState::Main);
                 }
+                MenuButtonAction::OpenLink(link) => {
+                    if let Err(error) = webbrowser::open(link) {
+                        warn!("Failed to open link {error:?}");
+                    }
+                }
             }
         }
     }
@@ -255,6 +287,24 @@ pub fn menu_button_animations(
                     text_style.margin.bottom = Val::Percent(5.0);
                 };
                 UiImage::new(asset_server.load("ui/menu/mainMenuButton.png"))
+            }
+        }
+    }
+}
+
+pub fn github_button_animation(
+    mut interaction_query: Query<
+        (&Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<GitHubButton>),
+    >,
+) {
+    for (interaction, mut color) in &mut interaction_query {
+        match *interaction {
+            Interaction::None => {
+                *color = Color::WHITE.into();
+            }
+            _ => {
+                *color = Color::rgb(0.25, 0.25, 0.25).into();
             }
         }
     }

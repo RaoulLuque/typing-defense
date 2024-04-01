@@ -83,7 +83,7 @@ impl Plugin for MenuPlugin {
             )
             .add_systems(
                 Update,
-                (menu_action, menu_button_animations)
+                (menu_action, menu_button_animations, github_button_animation)
                     .run_if(in_state(AppState::Menu).or_else(in_state(SimulationState::Paused))),
             );
     }
