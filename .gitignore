@@ -10,3 +10,4 @@ fly.toml
 /KingsandPigs
 /additionalAssets
 *.xcf
+/.cargo
