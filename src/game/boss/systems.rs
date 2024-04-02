@@ -1,6 +1,8 @@
 use bevy::window::PrimaryWindow;
 use rand::seq::SliceRandom;
 
+use crate::menu::systems::Restart;
+
 use super::enemies::components::{Enemy, Speed, WalkingAnimation};
 use super::enemies::movement::components::{EnemySpawnPoint, PathCheckpointNumber};
 use super::enemies::resources::WordsHandle;
@@ -145,7 +147,18 @@ pub fn spawn_boss(
 
 pub fn despawn_boss(mut commands: Commands, boss_query: Query<Entity, With<Boss>>) {
     if let Ok(boss_entity) = boss_query.get_single() {
-        println!("Test");
         commands.entity(boss_entity).despawn_recursive();
+    }
+}
+
+pub fn despawn_boss_on_restart(
+    mut commands: Commands,
+    boss_query: Query<Entity, With<Boss>>,
+    mut restart_event_reader: EventReader<Restart>,
+) {
+    for _ in restart_event_reader.read() {
+        if let Ok(boss_entity) = boss_query.get_single() {
+            commands.entity(boss_entity).despawn_recursive();
+        }
     }
 }

@@ -65,6 +65,7 @@ impl Plugin for EnemiesPlugin {
                     movement::systems::despawn_enemy_if_out_of_screen,
                 )
                     .in_set(super::InputHandlingSystemSet::InputHandling),
-            );
+            )
+            .add_systems(Update, movement::systems::despawn_enemies_on_restart);
     }
 }

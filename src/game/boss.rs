@@ -22,6 +22,7 @@ impl Plugin for BossPlugin {
                     .after(super::rounds_and_indicators::systems::increase_round_difficulty),
             )
             // Add systems for when exiting rounds
-            .add_systems(OnExit(RoundState::InRound), despawn_boss);
+            .add_systems(OnExit(RoundState::InRound), despawn_boss)
+            .add_systems(Update, despawn_boss_on_restart);
     }
 }

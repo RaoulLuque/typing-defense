@@ -51,7 +51,7 @@ fn main() {
 }
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
-enum AppState {
+pub enum AppState {
     #[default]
     Menu,
     InGame,

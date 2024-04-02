@@ -19,6 +19,7 @@ impl Plugin for MenuPlugin {
             .register_type::<SettingsMenuOpened>()
             // Add events
             .add_event::<DifficultyChangedEvent>()
+            .add_event::<Restart>()
             // Add menu States
             .add_state::<MenuState>()
             .add_state::<SettingsMenuState>()
@@ -34,23 +35,27 @@ impl Plugin for MenuPlugin {
             .add_systems(OnEnter(MenuState::InGameMainMenu), spawn_in_game_menu)
             .add_systems(
                 OnExit(MenuState::Main),
-                despawn_screen::<MainMenuScreenUiElement>,
+                despawn_entities_with_specific_component::<MainMenuScreenUiElement>,
+            )
+            .add_systems(
+                OnExit(MenuState::InGameMainMenu),
+                despawn_entities_with_specific_component::<MainMenuScreenUiElement>,
             )
             .add_systems(
                 OnExit(MenuState::HowToPlay),
-                despawn_screen::<HowToPlayScreenUiElement>,
+                despawn_entities_with_specific_component::<HowToPlayScreenUiElement>,
             )
             .add_systems(
                 OnExit(SimulationState::Paused),
-                despawn_screen::<MainMenuScreenUiElement>,
+                despawn_entities_with_specific_component::<MainMenuScreenUiElement>,
             )
             .add_systems(
                 OnExit(SettingsMenuState::SettingsClosed),
-                despawn_screen::<SettingsMenuClosed>,
+                despawn_entities_with_specific_component::<SettingsMenuClosed>,
             )
             .add_systems(
                 OnExit(SettingsMenuState::SettingsOpened),
-                despawn_screen::<SettingsMenuOpened>,
+                despawn_entities_with_specific_component::<SettingsMenuOpened>,
             )
             // Add systems
             .add_systems(
@@ -68,12 +73,11 @@ impl Plugin for MenuPlugin {
                     settings_button_animations,
                     settings_action,
                     change_difficulty,
-                    check_if_in_game_menu_is_opened,
                 ),
             )
             .add_systems(
                 Update,
-                transition_from_menu_to_in_game.run_if(in_state(AppState::Menu)),
+                check_if_in_game_menu_is_opened.run_if(in_state(GameStartedState::GameHasStarted)),
             )
             .add_systems(
                 Update,

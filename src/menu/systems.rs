@@ -18,14 +18,18 @@ use crate::game::{
 #[derive(Event)]
 pub struct DifficultyChangedEvent(bool);
 
+#[derive(Event)]
+pub struct Restart;
+
 pub enum MenuType {
     MainMenu,
     InGameMenu,
 }
 
+const BUTTON_HEIGHT: f32 = 15.0;
+
 pub fn setup_menu(mut next_menu_state: ResMut<NextState<MenuState>>) {
     next_menu_state.set(MenuState::Main);
-    println!("You are in the menu!");
 }
 
 pub fn spawn_main_menu(commands: Commands, asset_server: Res<AssetServer>) {
@@ -72,12 +76,10 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
                             NodeBundle {
                                 style: Style {
                                     width: Val::Percent(65.0),
-                                    height: Val::Percent(80.0),
-                                    // Vertical align of menu banner
-                                    margin: UiRect::top(Val::VMin(10.)),
+                                    height: Val::Percent(110.0),
                                     align_items: AlignItems::Center,
                                     flex_direction: FlexDirection::Column,
-                                    row_gap: Val::Percent(4.0),
+                                    row_gap: Val::Percent(2.0),
                                     ..default()
                                 },
                                 background_color: Color::WHITE.into(),
@@ -91,11 +93,11 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
                                     ButtonBundle {
                                         style: Style {
                                             width: Val::Percent(45.0),
-                                            height: Val::Percent(20.0),
+                                            height: Val::Percent(BUTTON_HEIGHT),
                                             align_items: AlignItems::Center,
                                             justify_content: JustifyContent::Center,
                                             flex_direction: FlexDirection::Column,
-                                            margin: UiRect::top(Val::VMin(20.)),
+                                            margin: UiRect::top(Val::VMin(25.0)),
                                             ..default()
                                         },
                                         background_color: Color::WHITE.into(),
@@ -128,12 +130,13 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
                                         MainMenuText,
                                     ));
                                 });
+
                             parent
                                 .spawn((
                                     ButtonBundle {
                                         style: Style {
                                             width: Val::Percent(45.0),
-                                            height: Val::Percent(20.0),
+                                            height: Val::Percent(BUTTON_HEIGHT),
                                             align_items: AlignItems::Center,
                                             justify_content: JustifyContent::Center,
                                             flex_direction: FlexDirection::Column,
@@ -152,6 +155,47 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
                                         TextBundle {
                                             text: Text::from_section(
                                                 "How to play",
+                                                button_text_style.clone(),
+                                            ),
+                                            style: Style {
+                                                margin: UiRect::bottom(Val::Percent(5.0)),
+                                                ..default()
+                                            },
+                                            ..default()
+                                        },
+                                        MainMenuText,
+                                    ));
+                                });
+                            parent
+                                .spawn((
+                                    ButtonBundle {
+                                        style: Style {
+                                            width: Val::Percent(45.0),
+                                            height: Val::Percent(BUTTON_HEIGHT),
+                                            align_items: AlignItems::Center,
+                                            justify_content: JustifyContent::Center,
+                                            flex_direction: FlexDirection::Column,
+                                            ..default()
+                                        },
+                                        background_color: Color::WHITE.into(),
+                                        image: UiImage::new(
+                                            asset_server.load("ui/menu/mainMenuButton.png"),
+                                        ),
+                                        ..default()
+                                    },
+                                    match type_of_menu {
+                                        MenuType::MainMenu => MenuButtonAction::Exit,
+                                        MenuType::InGameMenu => MenuButtonAction::Restart,
+                                    },
+                                ))
+                                .with_children(|parent| {
+                                    parent.spawn((
+                                        TextBundle {
+                                            text: Text::from_section(
+                                                match type_of_menu {
+                                                    MenuType::MainMenu => "Exit",
+                                                    MenuType::InGameMenu => "Restart",
+                                                },
                                                 button_text_style.clone(),
                                             ),
                                             style: Style {
@@ -195,24 +239,11 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
     ));
 }
 
-pub fn transition_from_menu_to_in_game(
-    keyboard_input: Res<Input<KeyCode>>,
-    app_state: Res<State<AppState>>,
-    mut next_app_state: ResMut<NextState<AppState>>,
-    mut next_round_state: ResMut<NextState<RoundState>>,
-    mut next_menu_state: ResMut<NextState<MenuState>>,
-) {
-    if keyboard_input.just_pressed(KeyCode::Space) {
-        if app_state.get() != &AppState::InGame {
-            next_app_state.set(AppState::InGame);
-            next_round_state.set(RoundState::InRound);
-            next_menu_state.set(MenuState::NotInTheMenu);
-        }
-    }
-}
-
 // Generic system that takes a component as a parameter, and will despawn all entities with that component
-pub fn despawn_screen<T: Component>(to_despawn: Query<Entity, With<T>>, mut commands: Commands) {
+pub fn despawn_entities_with_specific_component<T: Component>(
+    to_despawn: Query<Entity, With<T>>,
+    mut commands: Commands,
+) {
     for entity in &to_despawn {
         commands.entity(entity).despawn_recursive();
     }
@@ -230,6 +261,8 @@ pub fn menu_action(
     game_started_state: Res<State<GameStartedState>>,
     mut next_game_started_state: ResMut<NextState<GameStartedState>>,
     mut simulation_state_next_state: ResMut<NextState<SimulationState>>,
+    mut app_exit_events: ResMut<Events<bevy::app::AppExit>>,
+    mut restart_event_writer: EventWriter<Restart>,
 ) {
     for (interaction, menu_button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
@@ -263,6 +296,12 @@ pub fn menu_action(
                         next_menu_state.set(MenuState::InGameMainMenu);
                     }
                 },
+                MenuButtonAction::Exit => {
+                    app_exit_events.send(bevy::app::AppExit);
+                }
+                MenuButtonAction::Restart => {
+                    restart_event_writer.send(Restart);
+                }
             }
         }
     }

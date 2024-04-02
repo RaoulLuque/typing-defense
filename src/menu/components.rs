@@ -26,6 +26,8 @@ pub enum MenuButtonAction {
     Main,
     OpenLink(String),
     Back,
+    Exit,
+    Restart,
 }
 
 // Component used to tag text entities on the main menu screen

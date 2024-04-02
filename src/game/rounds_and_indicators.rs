@@ -76,6 +76,10 @@ impl Plugin for RoundsAndIndicatorsPlugin {
                             .and_then(in_state(AppState::InGame))
                             .and_then(in_state(MenuState::NotInTheMenu)),
                     ),
+            )
+            .add_systems(
+                Update,
+                (set_states_on_restart, reset_score_and_indicators_on_restart),
             );
     }
 }

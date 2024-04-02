@@ -4,6 +4,8 @@ use systems::*;
 pub mod components;
 use components::*;
 
+use crate::menu::{GameStartedState, MenuState};
+
 use super::*;
 
 pub struct HUDPlugin;
@@ -21,11 +23,16 @@ impl Plugin for HUDPlugin {
             .add_systems(Startup, spawn_hud)
             .add_systems(
                 OnEnter(RoundState::InBetweenRounds),
-                spawn_in_between_rounds_text.run_if(in_state(AppState::InGame)),
+                spawn_in_between_rounds_text.run_if(
+                    in_state(GameStartedState::GameHasStarted)
+                        .and_then(in_state(MenuState::NotInTheMenu)),
+                ),
             )
             .add_systems(
                 OnExit(RoundState::InBetweenRounds),
-                crate::menu::systems::despawn_screen::<InBetweenRoundsHudUiElement>,
+                crate::menu::systems::despawn_entities_with_specific_component::<
+                    InBetweenRoundsHudUiElement,
+                >,
             )
             // Add update systems
             .add_systems(

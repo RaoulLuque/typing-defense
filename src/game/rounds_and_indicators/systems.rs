@@ -1,6 +1,9 @@
 use enemies::resources::EnemySpawnTimer;
 use enemies::text::systems::EnemyTypedEvent;
 
+use crate::menu::systems::Restart;
+use crate::menu::GameStartedState;
+
 use super::*;
 
 // Increments and decrements of game values each round for the different difficulties:
@@ -99,7 +102,6 @@ pub fn check_if_round_is_over(
 ) {
     if max_number_of_enemies_this_round.number == number_of_enemies_typed_this_round.number {
         round_state_next_state.set(RoundState::InBetweenRounds);
-        println!("Round is over: Entered InBetweenRounds State");
     }
 }
 
@@ -112,7 +114,6 @@ pub fn proceed_to_next_round_from_in_between_rounds(
         && round_state.get() == &RoundState::InBetweenRounds
     {
         round_state_next_state.set(RoundState::InRound);
-        println!("Round was started: Entered InRound State");
     }
 }
 
@@ -165,5 +166,37 @@ pub fn update_score_and_number_of_enemies_typed(
             * (round_number.number as f64 / 10.0 + 1.0)) as u64;
         number_of_enemies_unlived_current_round.number += 1;
         number_of_enemies_typed_current_round.number += 1;
+    }
+}
+
+pub fn set_states_on_restart(
+    mut restart_event_reader: EventReader<Restart>,
+    mut round_state_next_state: ResMut<NextState<RoundState>>,
+    mut game_started_state_next_state: ResMut<NextState<GameStartedState>>,
+    mut app_state_next_state: ResMut<NextState<AppState>>,
+    mut simulation_state_next_state: ResMut<NextState<SimulationState>>,
+) {
+    for _ in restart_event_reader.read() {
+        game_started_state_next_state.set(GameStartedState::GameHasNotStarted);
+        round_state_next_state.set(RoundState::InBetweenRounds);
+        app_state_next_state.set(AppState::Menu);
+        simulation_state_next_state.set(SimulationState::Running);
+    }
+}
+
+pub fn reset_score_and_indicators_on_restart(
+    mut restart_event_reader: EventReader<Restart>,
+    mut number_of_enemies_unlived_current_round: ResMut<NumberOfEnemiesUnlivedThisRound>,
+    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedThisRound>,
+    mut round_number: ResMut<RoundNumber>,
+    mut score: ResMut<ScoreIndicator>,
+    mut streak: ResMut<StreakIndicator>,
+) {
+    for _ in restart_event_reader.read() {
+        round_number.number = 0;
+        score.score = 0;
+        streak.number = 0;
+        number_of_enemies_unlived_current_round.number = 0;
+        number_of_enemies_typed_current_round.number = 0;
     }
 }

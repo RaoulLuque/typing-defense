@@ -1,6 +1,8 @@
 use effects::components::{Explosion, ExplosionAnimation};
 use enemies::rounds_and_indicators::resources::{NumberOfEnemiesUnlivedThisRound, StreakIndicator};
 
+use crate::menu::systems::Restart;
+
 use super::*;
 
 // The movement is calculated relatively to the screen height/width in order to work for multiple resolutions
@@ -374,6 +376,18 @@ pub fn enemy_collision_with_castle(
                     number_of_lives_left.number = val;
                 }
             }
+        }
+    }
+}
+
+pub fn despawn_enemies_on_restart(
+    mut commands: Commands,
+    enemy_query: Query<Entity, With<Enemy>>,
+    mut restart_event_reader: EventReader<Restart>,
+) {
+    for _ in restart_event_reader.read() {
+        for enemy_entity in enemy_query.iter() {
+            commands.entity(enemy_entity).despawn_recursive();
         }
     }
 }
