@@ -144,9 +144,11 @@ pub fn reset_wpm(mut wpm: ResMut<WordPerMinuteTypedIndicator>) {
 ///
 /// Where the difficulty multiplier is 1 for easy, 2 for medium and 3 for hard and operations are
 /// done as f64 and converted to u64 at the end.
-pub fn update_score(
+pub fn update_score_and_number_of_enemies_typed(
     mut score: ResMut<ScoreIndicator>,
     mut enemy_typed_event: EventReader<EnemyTypedEvent>,
+    mut number_of_enemies_unlived_current_round: ResMut<NumberOfEnemiesUnlivedThisRound>,
+    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedThisRound>,
     wpm: Res<WordPerMinuteTypedIndicator>,
     streak_counter: Res<StreakIndicator>,
     round_number: Res<RoundNumber>,
@@ -161,5 +163,7 @@ pub fn update_score(
             * wpm.wpm
             * (streak_counter.number as f64 / 50.0 + 1.0)
             * (round_number.number as f64 / 10.0 + 1.0)) as u64;
+        number_of_enemies_unlived_current_round.number += 1;
+        number_of_enemies_typed_current_round.number += 1;
     }
 }

@@ -22,6 +22,7 @@ impl Plugin for MenuPlugin {
             // Add menu States
             .add_state::<MenuState>()
             .add_state::<SettingsMenuState>()
+            .add_state::<GameStartedState>()
             // Despawn Menu's when other menus are opened or they are exited
             .add_systems(OnEnter(AppState::Menu), setup_menu)
             .add_systems(OnEnter(MenuState::Main), spawn_main_menu)
@@ -30,6 +31,7 @@ impl Plugin for MenuPlugin {
                 OnEnter(MenuState::HowToPlayTransition),
                 transition_to_how_to_play,
             )
+            .add_systems(OnEnter(MenuState::InGameMainMenu), spawn_in_game_menu)
             .add_systems(
                 OnExit(MenuState::Main),
                 despawn_screen::<MainMenuScreenUiElement>,
@@ -97,6 +99,7 @@ pub enum MenuState {
     // State to transition to how to play. Workaround for being able to 'respawn' the how to play screen
     // from the screen itself in order to spawn enemies after having typed one
     HowToPlayTransition,
+    InGameMainMenu,
     #[default]
     NotInTheMenu,
 }
@@ -107,4 +110,12 @@ pub enum SettingsMenuState {
     #[default]
     SettingsClosed,
     SettingsOpened,
+}
+
+// State tracking if the game has started
+#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
+pub enum GameStartedState {
+    #[default]
+    GameHasNotStarted,
+    GameHasStarted,
 }

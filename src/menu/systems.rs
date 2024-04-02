@@ -227,18 +227,22 @@ pub fn menu_action(
     mut next_menu_state: ResMut<NextState<MenuState>>,
     mut next_game_state: ResMut<NextState<AppState>>,
     mut next_round_state: ResMut<NextState<RoundState>>,
+    game_started_state: Res<State<GameStartedState>>,
+    mut next_game_started_state: ResMut<NextState<GameStartedState>>,
     mut simulation_state_next_state: ResMut<NextState<SimulationState>>,
 ) {
     for (interaction, menu_button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match menu_button_action {
                 MenuButtonAction::Resume => {
-                    simulation_state_next_state.set(SimulationState::Running)
+                    simulation_state_next_state.set(SimulationState::Running);
+                    next_menu_state.set(MenuState::NotInTheMenu);
                 }
                 MenuButtonAction::Play => {
                     next_game_state.set(AppState::InGame);
                     next_menu_state.set(MenuState::NotInTheMenu);
                     next_round_state.set(RoundState::InRound);
+                    next_game_started_state.set(GameStartedState::GameHasStarted);
                 }
                 MenuButtonAction::HowToPlay => {
                     next_menu_state.set(MenuState::HowToPlayTransition);
@@ -251,9 +255,35 @@ pub fn menu_action(
                         warn!("Failed to open link {error:?}");
                     }
                 }
+                MenuButtonAction::Back => match game_started_state.get() {
+                    GameStartedState::GameHasNotStarted => {
+                        next_menu_state.set(MenuState::Main);
+                    }
+                    GameStartedState::GameHasStarted => {
+                        next_menu_state.set(MenuState::InGameMainMenu);
+                    }
+                },
             }
         }
     }
+}
+
+pub fn check_if_in_game_menu_is_opened(
+    keyboard_input: Res<Input<KeyCode>>,
+    simulation_state: Res<State<SimulationState>>,
+    mut simulation_state_next_state: ResMut<NextState<SimulationState>>,
+    mut menu_state_next_state: ResMut<NextState<MenuState>>,
+) {
+    if keyboard_input.just_pressed(KeyCode::Escape) {
+        if simulation_state.get() == &SimulationState::Running {
+            simulation_state_next_state.set(SimulationState::Paused);
+            menu_state_next_state.set(MenuState::InGameMainMenu);
+        };
+    }
+}
+
+pub fn spawn_in_game_menu(commands: Commands, asset_server: Res<AssetServer>) {
+    spawn_menu(commands, asset_server, MenuType::InGameMenu);
 }
 
 // This system handles changing all buttons color based on mouse interaction
@@ -651,21 +681,6 @@ pub fn change_difficulty(
     }
 }
 
-pub fn check_if_in_game_menu_is_opened(
-    asset_server: Res<AssetServer>,
-    commands: Commands,
-    keyboard_input: Res<Input<KeyCode>>,
-    simulation_state: Res<State<SimulationState>>,
-    mut simulation_state_next_state: ResMut<NextState<SimulationState>>,
-) {
-    if keyboard_input.just_pressed(KeyCode::Escape) {
-        if simulation_state.get() == &SimulationState::Running {
-            simulation_state_next_state.set(SimulationState::Paused);
-            spawn_menu(commands, asset_server, MenuType::InGameMenu);
-        };
-    }
-}
-
 pub fn spawn_how_to_play_screen(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -892,7 +907,7 @@ pub fn spawn_how_to_play_screen(
                                     ),
                                     ..default()
                                 },
-                                MenuButtonAction::Main,
+                                MenuButtonAction::Back,
                             ))
                             .with_children(|parent| {
                                 parent.spawn((

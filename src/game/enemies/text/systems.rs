@@ -1,8 +1,6 @@
 use bevy::input::{keyboard::KeyboardInput, ButtonState};
 
-use enemies::rounds_and_indicators::resources::{
-    NumberOfEnemiesTypedThisRound, NumberOfEnemiesUnlivedThisRound, StreakIndicator,
-};
+use enemies::rounds_and_indicators::resources::StreakIndicator;
 
 use self::enemies::movement::{
     components::{EnemySpawnPoint, PathCheckpointNumber},
@@ -17,8 +15,6 @@ use super::*;
 pub fn update_text_from_enemies_on_button_press(
     mut commands: Commands,
     mut enemies_being_typed: ResMut<EnemiesBeingTyped>,
-    mut number_of_enemies_unlived_current_round: ResMut<NumberOfEnemiesUnlivedThisRound>,
-    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedThisRound>,
     mut streak_indicator: ResMut<StreakIndicator>,
     mut keyboard_input_events: EventReader<KeyboardInput>,
     mut q_parent_with_enemy: Query<
@@ -35,7 +31,7 @@ pub fn update_text_from_enemies_on_button_press(
             // Case where key is being pressed
             if let Some(pressed_key) = key_event.key_code {
                 // Check if esc or backspace was just pressed and reset all enemies if so
-                if pressed_key == KeyCode::Escape || pressed_key == KeyCode::Back {
+                if pressed_key == KeyCode::Back {
                     for (entity_id, currently_being_typed, child) in q_parent_with_enemy.iter_mut()
                     {
                         if let Some(_) = currently_being_typed {
@@ -71,8 +67,6 @@ pub fn update_text_from_enemies_on_button_press(
                                             // Enemy only consists of one letter - You got "typed"
                                             // Despawn entity and remove entity from list of enemies that are currently being typed
                                             commands.entity(entity_id).despawn_recursive();
-                                            number_of_enemies_unlived_current_round.number += 1;
-                                            number_of_enemies_typed_current_round.number += 1;
                                             enemy_typed_event.send(EnemyTypedEvent {});
                                         } else {
                                             // Player is starting to type this enemy
@@ -115,8 +109,6 @@ pub fn update_text_from_enemies_on_button_press(
                                                     // Check if there are no more enemies being typed
                                                     enemies_being_typed.indicator = false;
                                                 }
-                                                number_of_enemies_unlived_current_round.number += 1;
-                                                number_of_enemies_typed_current_round.number += 1;
                                                 enemy_typed_event.send(EnemyTypedEvent {});
                                             }
                                         } else {

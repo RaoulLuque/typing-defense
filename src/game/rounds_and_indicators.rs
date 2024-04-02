@@ -4,6 +4,8 @@ use resources::*;
 pub mod systems;
 use systems::*;
 
+use crate::menu::MenuState;
+
 use super::*;
 
 pub struct RoundsAndIndicatorsPlugin;
@@ -67,9 +69,13 @@ impl Plugin for RoundsAndIndicatorsPlugin {
             // Score needs to be updated after wpm and other indicators
             .add_systems(
                 Update,
-                update_score
+                update_score_and_number_of_enemies_typed
                     .after(super::InputHandlingSystemSet::AfterInputHandling)
-                    .run_if(in_state(LoosingState::NotLost)),
+                    .run_if(
+                        in_state(LoosingState::NotLost)
+                            .and_then(in_state(AppState::InGame))
+                            .and_then(in_state(MenuState::NotInTheMenu)),
+                    ),
             );
     }
 }

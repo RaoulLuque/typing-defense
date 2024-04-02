@@ -30,7 +30,9 @@ impl Plugin for HUDPlugin {
             // Add update systems
             .add_systems(
                 Update,
-                update_score_hud_element.after(super::rounds_and_indicators::systems::update_score),
+                update_score_hud_element.after(
+                    super::rounds_and_indicators::systems::update_score_and_number_of_enemies_typed,
+                ),
             )
             .add_systems(
                 Update,
