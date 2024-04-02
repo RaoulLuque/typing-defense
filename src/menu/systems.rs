@@ -689,7 +689,7 @@ pub fn spawn_how_to_play_screen(
     words: Res<Assets<Words>>,
 ) {
     let how_to_play_text_style = TextStyle {
-        font_size: 25.0,
+        font_size: 22.0,
         ..default()
     };
 
@@ -724,7 +724,7 @@ pub fn spawn_how_to_play_screen(
                             margin: UiRect::top(Val::VMin(10.)),
                             align_items: AlignItems::Center,
                             flex_direction: FlexDirection::Column,
-                            row_gap: Val::Percent(2.0),
+                            row_gap: Val::Percent(1.5),
                             ..default()
                         },
                         background_color: Color::WHITE.into(),
@@ -742,7 +742,7 @@ pub fn spawn_how_to_play_screen(
                             style: Style {
                                 margin: UiRect::top(Val::Percent(24.0)),
                                 width: Val::Percent(30.0),
-                                height: Val::Percent(15.0),
+                                height: Val::Percent(13.5),
                                 ..default()
                             },
                             ..default()
@@ -929,12 +929,11 @@ pub fn spawn_how_to_play_screen(
                         parent.spawn((
                             TextBundle {
                                 text: Text::from_section(
-                                    "Hint: Try using backspace or intentionally typing wrong letters",
+                                    "Hint: Try using backspace or intentionally typing wrong letters\nAlso: Esc Pauses the game",
                                     how_to_play_text_style.clone(),
                                 ),
                                 style: Style {
                                     width: Val::Percent(30.0),
-                                    height: Val::Percent(2.5),
                                     ..default()
                                 },
                                 ..default()
