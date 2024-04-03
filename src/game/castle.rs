@@ -28,6 +28,8 @@ impl Plugin for CastlePlugin {
                 despawn_castle_if_all_lives_are_gone_and_spawn_destroyed_castle
                     .run_if(in_state(RoundState::InRound))
                     .after(enemies::movement::systems::enemy_collision_with_castle),
-            );
+            )
+            .add_systems(Update,
+            despawn_castle_and_reset_lives_on_restart);
     }
 }

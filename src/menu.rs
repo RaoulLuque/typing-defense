@@ -1,4 +1,4 @@
-use crate::{game::SimulationState, AppState};
+use crate::{game::{LoosingState, SimulationState}, AppState};
 
 use bevy::prelude::*;
 
@@ -33,6 +33,7 @@ impl Plugin for MenuPlugin {
                 transition_to_how_to_play,
             )
             .add_systems(OnEnter(MenuState::InGameMainMenu), spawn_in_game_menu)
+            .add_systems(OnEnter(LoosingState::Lost), spawn_lost_menu)
             .add_systems(
                 OnExit(MenuState::Main),
                 despawn_entities_with_specific_component::<MainMenuScreenUiElement>,
@@ -104,6 +105,7 @@ pub enum MenuState {
     // from the screen itself in order to spawn enemies after having typed one
     HowToPlayTransition,
     InGameMainMenu,
+    LostMenu,
     #[default]
     NotInTheMenu,
 }

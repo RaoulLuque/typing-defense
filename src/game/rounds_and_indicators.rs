@@ -69,13 +69,19 @@ impl Plugin for RoundsAndIndicatorsPlugin {
             // Score needs to be updated after wpm and other indicators
             .add_systems(
                 Update,
-                update_score_and_number_of_enemies_typed
+                update_score
                     .after(super::InputHandlingSystemSet::AfterInputHandling)
                     .run_if(
                         in_state(LoosingState::NotLost)
                             .and_then(in_state(AppState::InGame))
                             .and_then(in_state(MenuState::NotInTheMenu)),
                     ),
+            )
+            .add_systems(
+                Update,
+                update_number_of_enemies_typed
+                    .after(super::InputHandlingSystemSet::AfterInputHandling)
+                    .run_if(in_state(AppState::InGame).and_then(in_state(MenuState::NotInTheMenu))),
             )
             .add_systems(
                 Update,

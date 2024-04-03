@@ -4,6 +4,8 @@ use enemies::text::systems::EnemyTypedEvent;
 use crate::menu::systems::Restart;
 use crate::menu::GameStartedState;
 
+use self::castle::resources::NumberOfLivesLeft;
+
 use super::*;
 
 // Increments and decrements of game values each round for the different difficulties:
@@ -145,11 +147,9 @@ pub fn reset_wpm(mut wpm: ResMut<WordPerMinuteTypedIndicator>) {
 ///
 /// Where the difficulty multiplier is 1 for easy, 2 for medium and 3 for hard and operations are
 /// done as f64 and converted to u64 at the end.
-pub fn update_score_and_number_of_enemies_typed(
+pub fn update_score(
     mut score: ResMut<ScoreIndicator>,
     mut enemy_typed_event: EventReader<EnemyTypedEvent>,
-    mut number_of_enemies_unlived_current_round: ResMut<NumberOfEnemiesUnlivedThisRound>,
-    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedThisRound>,
     wpm: Res<WordPerMinuteTypedIndicator>,
     streak_counter: Res<StreakIndicator>,
     round_number: Res<RoundNumber>,
@@ -164,6 +164,15 @@ pub fn update_score_and_number_of_enemies_typed(
             * wpm.wpm
             * (streak_counter.number as f64 / 50.0 + 1.0)
             * (round_number.number as f64 / 10.0 + 1.0)) as u64;
+    }
+}
+
+pub fn update_number_of_enemies_typed(
+    mut enemy_typed_event: EventReader<EnemyTypedEvent>,
+    mut number_of_enemies_unlived_current_round: ResMut<NumberOfEnemiesUnlivedThisRound>,
+    mut number_of_enemies_typed_current_round: ResMut<NumberOfEnemiesTypedThisRound>,
+) {
+    for _ in enemy_typed_event.read() {
         number_of_enemies_unlived_current_round.number += 1;
         number_of_enemies_typed_current_round.number += 1;
     }
@@ -175,12 +184,14 @@ pub fn set_states_on_restart(
     mut game_started_state_next_state: ResMut<NextState<GameStartedState>>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
     mut simulation_state_next_state: ResMut<NextState<SimulationState>>,
+    mut loosing_state_next_state: ResMut<NextState<LoosingState>>,
 ) {
     for _ in restart_event_reader.read() {
         game_started_state_next_state.set(GameStartedState::GameHasNotStarted);
         round_state_next_state.set(RoundState::InBetweenRounds);
         app_state_next_state.set(AppState::Menu);
         simulation_state_next_state.set(SimulationState::Running);
+        loosing_state_next_state.set(LoosingState::NotLost);
     }
 }
 

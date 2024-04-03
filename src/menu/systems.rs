@@ -24,6 +24,7 @@ pub struct Restart;
 pub enum MenuType {
     MainMenu,
     InGameMenu,
+    LostMenu,
 }
 
 const BUTTON_HEIGHT: f32 = 15.0;
@@ -39,6 +40,11 @@ pub fn spawn_main_menu(commands: Commands, asset_server: Res<AssetServer>) {
 fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_menu: MenuType) {
     let button_text_style = TextStyle {
         font_size: 40.0,
+        ..default()
+    };
+
+    let game_lost_text_style = TextStyle {
+        font_size: 22.0,
         ..default()
     };
 
@@ -88,48 +94,79 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
                             UiImage::new(asset_server.load("ui/menu/mainMenuBanner.png")),
                         ))
                         .with_children(|parent| {
-                            parent
-                                .spawn((
-                                    ButtonBundle {
+
+                            match type_of_menu {
+                                MenuType::LostMenu => {
+                                    parent
+                                        .spawn(
+                                    TextBundle {
+                                        text: Text::from_section(
+                                            "Unfortunately you've lost. You may continue playing without increasing your score or restart the game. You can restart anytime whilst continuing by going to the menu with 'esc'",
+                                            game_lost_text_style.clone(),
+                                        ),
                                         style: Style {
-                                            width: Val::Percent(45.0),
-                                            height: Val::Percent(BUTTON_HEIGHT),
-                                            align_items: AlignItems::Center,
-                                            justify_content: JustifyContent::Center,
-                                            flex_direction: FlexDirection::Column,
-                                            margin: UiRect::top(Val::VMin(25.0)),
+                                            margin: UiRect {
+                                                top: Val::Percent(22.0),
+                                                bottom: Val::Percent(4.0),
+                                                left: Val::Percent(0.0),
+                                                right: Val::Percent(0.0),
+                                            },
+                                            width: Val::Percent(30.0),
+                                            height: Val::Percent(10.0),
                                             ..default()
                                         },
-                                        background_color: Color::WHITE.into(),
-                                        image: UiImage::new(
-                                            asset_server.load("ui/menu/mainMenuButton.png"),
-                                        ),
                                         ..default()
-                                    },
-                                    match type_of_menu {
-                                        MenuType::MainMenu => MenuButtonAction::Play,
-                                        MenuType::InGameMenu => MenuButtonAction::Resume,
-                                    },
-                                ))
-                                .with_children(|parent| {
-                                    parent.spawn((
-                                        TextBundle {
-                                            text: Text::from_section(
-                                                match type_of_menu {
-                                                    MenuType::MainMenu => "Start Game",
-                                                    MenuType::InGameMenu => "Resume Game",
+                                    });
+                                }
+                                MenuType::InGameMenu | MenuType::MainMenu => {
+                                    parent
+                                        .spawn((
+                                            ButtonBundle {
+                                                style: Style {
+                                                    width: Val::Percent(45.0),
+                                                    height: Val::Percent(BUTTON_HEIGHT),
+                                                    align_items: AlignItems::Center,
+                                                    justify_content: JustifyContent::Center,
+                                                    flex_direction: FlexDirection::Column,
+                                                    margin: UiRect::top(Val::VMin(25.0)),
+                                                    ..default()
                                                 },
-                                                button_text_style.clone(),
-                                            ),
-                                            style: Style {
-                                                margin: UiRect::bottom(Val::Percent(5.0)),
+                                                background_color: Color::WHITE.into(),
+                                                image: UiImage::new(
+                                                    asset_server.load("ui/menu/mainMenuButton.png"),
+                                                ),
                                                 ..default()
                                             },
-                                            ..default()
-                                        },
-                                        MainMenuText,
-                                    ));
-                                });
+                                            match type_of_menu {
+                                                MenuType::MainMenu => MenuButtonAction::Play,
+                                                MenuType::InGameMenu | _ => {
+                                                    MenuButtonAction::Resume
+                                                }
+                                            },
+                                        ))
+                                        .with_children(|parent| {
+                                            parent.spawn((
+                                                TextBundle {
+                                                    text: Text::from_section(
+                                                        match type_of_menu {
+                                                            MenuType::MainMenu => "Start Game",
+                                                            MenuType::InGameMenu | _ => {
+                                                                "Resume Game"
+                                                            }
+                                                        },
+                                                        button_text_style.clone(),
+                                                    ),
+                                                    style: Style {
+                                                        margin: UiRect::bottom(Val::Percent(5.0)),
+                                                        ..default()
+                                                    },
+                                                    ..default()
+                                                },
+                                                MainMenuText,
+                                            ));
+                                        });
+                                }
+                            }
 
                             parent
                                 .spawn((
@@ -148,13 +185,23 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
                                         ),
                                         ..default()
                                     },
-                                    MenuButtonAction::HowToPlay,
+                                    match type_of_menu {
+                                        MenuType::MainMenu | MenuType::InGameMenu => MenuButtonAction::HowToPlay,
+                                         MenuType::LostMenu => {
+                                            MenuButtonAction::Resume
+                                        }
+                                    },
                                 ))
                                 .with_children(|parent| {
                                     parent.spawn((
                                         TextBundle {
                                             text: Text::from_section(
-                                                "How to play",
+                                                match type_of_menu {
+                                                    MenuType::MainMenu | MenuType::InGameMenu => "How to play",
+                                                    MenuType::LostMenu => {
+                                                        "Continue"
+                                                    }
+                                                },
                                                 button_text_style.clone(),
                                             ),
                                             style: Style {
@@ -185,7 +232,9 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
                                     },
                                     match type_of_menu {
                                         MenuType::MainMenu => MenuButtonAction::Exit,
-                                        MenuType::InGameMenu => MenuButtonAction::Restart,
+                                        MenuType::InGameMenu | MenuType::LostMenu => {
+                                            MenuButtonAction::Restart
+                                        }
                                     },
                                 ))
                                 .with_children(|parent| {
@@ -194,7 +243,9 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
                                             text: Text::from_section(
                                                 match type_of_menu {
                                                     MenuType::MainMenu => "Exit",
-                                                    MenuType::InGameMenu => "Restart",
+                                                    MenuType::InGameMenu | MenuType::LostMenu => {
+                                                        "Restart"
+                                                    }
                                                 },
                                                 button_text_style.clone(),
                                             ),
@@ -323,6 +374,10 @@ pub fn check_if_in_game_menu_is_opened(
 
 pub fn spawn_in_game_menu(commands: Commands, asset_server: Res<AssetServer>) {
     spawn_menu(commands, asset_server, MenuType::InGameMenu);
+}
+
+pub fn spawn_lost_menu(commands: Commands, asset_server: Res<AssetServer>) {
+    spawn_menu(commands, asset_server, MenuType::LostMenu);
 }
 
 // This system handles changing all buttons color based on mouse interaction
