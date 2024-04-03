@@ -11,3 +11,4 @@ fly.toml
 /additionalAssets
 *.xcf
 /.cargo
+/dist

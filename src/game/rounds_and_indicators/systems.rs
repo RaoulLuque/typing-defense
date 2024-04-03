@@ -4,8 +4,6 @@ use enemies::text::systems::EnemyTypedEvent;
 use crate::menu::systems::Restart;
 use crate::menu::GameStartedState;
 
-use self::castle::resources::NumberOfLivesLeft;
-
 use super::*;
 
 // Increments and decrements of game values each round for the different difficulties:

@@ -898,12 +898,15 @@ pub fn spawn_how_to_play_screen(
                                     // flex_grow: 0.5,
                                     ..default()
                                 },
-                                texture_atlas_image: UiTextureAtlasImage {
-                                    flip_x: true,
+                                texture_atlas: TextureAtlas {
+                                    layout: texture_atlas_handle,
                                     index: 0,
                                     ..default()
                                 },
-                                texture_atlas: texture_atlas_handle,
+                                image: UiImage {
+                                    flip_x: true,
+                                    ..default()
+                                },
                                 ..default()
                             },
                             Enemy {},
@@ -922,7 +925,7 @@ pub fn spawn_how_to_play_screen(
                                             word_for_enemy,
                                             STANDARD_TEXT_COLOR,
                                         ),
-                                        alignment: TextAlignment::Center,
+                                        justify: JustifyText::Center,
                                         linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
                                     },
                                     // ensure the text is drawn on top of the box

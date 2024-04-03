@@ -16,6 +16,8 @@ pub const WINDOW_HEIGHT: f32 = 1080.0;
 fn main() {
     let mut app = App::new();
     app
+        // Workaround for some wasm stuff
+        .insert_resource(bevy::asset::AssetMetaCheck::Never)
         // Add default plugin and tweak ImagePlugin for smoother Animations with SpriteSheets and
         // window plugin
         .add_plugins(
