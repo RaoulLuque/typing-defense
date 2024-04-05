@@ -70,6 +70,7 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
                         style: Style {
                             width: Val::Percent(65.0),
                             height: Val::Percent(110.0),
+                            align_self: AlignSelf::Center,
                             align_items: AlignItems::Center,
                             flex_direction: FlexDirection::Column,
                             row_gap: Val::Percent(2.0),
@@ -274,6 +275,27 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
         MenuButtonAction::OpenLink("https://github.com/RaoulLuque/typing-defense".to_string()),
         MainMenuScreenUiElement,
         GitHubButton,
+    ));
+
+    commands.spawn((
+        // Create a TextBundle that has a Text with a list of sections.
+        TextBundle::from_section(
+            "Press F11 for full screen. Even in browser",
+            TextStyle {
+                font_size: 60.0,
+                color: Color::WHITE,
+                ..default()
+            },
+        )
+        .with_style(Style {
+            position_type: PositionType::Absolute,
+            align_self: AlignSelf::FlexEnd,
+            justify_self: JustifySelf::Center,
+            margin: UiRect::bottom(Val::Percent(2.0)),
+            ..default()
+        })
+        .with_text_justify(JustifyText::Center),
+        MainMenuScreenUiElement,
     ));
 }
 

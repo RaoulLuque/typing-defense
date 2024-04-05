@@ -1,5 +1,7 @@
 [build]
 public_url = "./"
+# Build in release mode.
+release = false
 
 [serve]
 port = 8080

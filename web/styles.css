@@ -1,6 +1,8 @@
 /* From: https://github.com/NiklasEi/bevy_game_template */
 body, html {
-    height: 100%;
+    margin: 0;
+    display: flex;
+    overflow: hidden;
 }
 
 body {
@@ -12,24 +14,25 @@ body {
 }
 
 .game-container {
-    width: 800px;
-    height: 600px;
     display: flex;
     justify-content: center;
     align-items: center;
+    /* position: fixed;
+    width: 100%;
+    height: 100%; */
+    /* left: 0;
+    top: 0; */
 }
 
 .lds-dual-ring {
-    display: inline-block;
-    position: absolute;
+    /* position: absolute; */
     left: 0;
     right: 0;
-    margin: auto;
-    width: 80px;
-    height: 80px;
+    /* width: 80px;
+    height: 80px; */
 }
 
-.lds-dual-ring:after {
+/* .lds-dual-ring:after {
     content: " ";
     display: block;
     width: 64px;
@@ -38,7 +41,7 @@ body {
     border: 6px solid #fff;
     border-color: #fff transparent #fff transparent;
     animation: lds-dual-ring 1.2s linear infinite;
-}
+} */
 
 @keyframes lds-dual-ring {
     0% {

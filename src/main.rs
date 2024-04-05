@@ -7,7 +7,10 @@ use game::GamePlugin;
 mod menu;
 use menu::MenuPlugin;
 
-use bevy::{prelude::*, window::WindowTheme};
+use bevy::{
+    prelude::*,
+    window::{PresentMode, WindowTheme},
+};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 pub const WINDOW_WIDTH: f32 = 1920.0;
@@ -25,11 +28,16 @@ fn main() {
                 .set(ImagePlugin::default_nearest())
                 .set(WindowPlugin {
                     primary_window: Some(Window {
+                        present_mode: PresentMode::AutoNoVsync, // Reduces input lag.
                         resolution: (WINDOW_WIDTH, WINDOW_HEIGHT).into(),
                         title: "Typing Defense".to_string(),
                         resizable: true,
                         window_theme: Some(WindowTheme::Dark),
                         // mode: bevy::window::WindowMode::BorderlessFullscreen,
+                        // Bind to canvas included in `index.html`
+                        canvas: Some("#bevy".to_owned()),
+                        // Tells wasm not to override default event handling, like F5 and Ctrl+R
+                        prevent_default_event_handling: false,
                         ..Default::default()
                     }),
                     ..default()
