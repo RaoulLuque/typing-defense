@@ -89,9 +89,9 @@ pub fn spawn_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
                     height: Val::Percent(100.0),
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::FlexStart,
+                    position_type: PositionType::Absolute,
                     ..default()
                 },
-                z_index: ZIndex::Global(0),
                 ..default()
             },
             InGameHudParent,
@@ -104,6 +104,8 @@ pub fn spawn_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
                         style: Style {
                             width: Val::Percent(48.0),
                             height: Val::Percent(10.0),
+                            justify_self: JustifySelf::Center,
+                            align_self: AlignSelf::FlexStart,
                             flex_direction: FlexDirection::Row,
                             justify_content: JustifyContent::SpaceBetween,
                             align_items: AlignItems::Center,
@@ -114,6 +116,8 @@ pub fn spawn_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..default()
                     },
                     UiImage::new(asset_server.load("ui/hud/hud_banner.png")),
+                    InGameHudParent,
+                    Name::new("Hud Banner"),
                 ))
                 .with_children(|parent| {
                     parent.spawn((

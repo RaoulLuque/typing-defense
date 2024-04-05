@@ -28,8 +28,6 @@ impl Plugin for MenuPlugin {
             .init_state::<SettingsMenuState>()
             .init_state::<GameStartedState>()
             // Despawn Menu's when other menus are opened or they are exited
-            .add_systems(Startup, setup_menu)
-            .add_systems(Startup, spawn_main_menu)
             .add_systems(OnEnter(AppState::Menu), setup_menu)
             .add_systems(OnEnter(MenuState::Main), spawn_main_menu)
             .add_systems(OnEnter(MenuState::HowToPlay), spawn_how_to_play_screen)
