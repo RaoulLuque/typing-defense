@@ -7,6 +7,7 @@ rust-version = "1.76"
 authors = ["Raoul Luque <raoulsluque@gmail.com>"]
 description = "A typing defense game written in rust using the bevy game engine"
 repository = "https://github.com/RaoulLuque/typing-defense"
+exclude = ["dist", "build", "assets", "credits"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -20,6 +21,8 @@ opt-level = 1
 [profile.dev.package."*"]
 opt-level = 3
 
+# This is used by trunk as it doesn't support custom profiles: https://github.com/trunk-rs/trunk/issues/605
+# xbuild also uses this profile for building android AABs because I couldn't find a configuration for it
 [profile.release]
 opt-level = "s"
 lto = true
@@ -36,13 +39,13 @@ strip = true
 
 [dependencies]
 rand = { version = "0.8.5" }
-bevy_common_assets = { version ="0.9", features = ["toml"] }
-bevy-inspector-egui = "0.22.1"
+bevy_common_assets = { version ="0.10", features = ["toml"] }
+bevy-inspector-egui = "0.23.4"
 serde = { version = "1.0", features = ["derive"] }
 webbrowser = { version = "0.8", features = ["hardened"] }
 
 [dependencies.bevy]
-version = "0.12.1"
+version = "0.13.1"
 # Disable the default features if there are any that you do not want
 default-features = false
 features = [

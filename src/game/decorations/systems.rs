@@ -1,5 +1,4 @@
 use bevy::window::PrimaryWindow;
-use rand::Rng;
 
 use super::*;
 
@@ -44,7 +43,7 @@ pub fn spawn_trees(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     let window = window_query
         .get_single()
@@ -55,8 +54,8 @@ pub fn spawn_trees(
 
         let texture_handle: Handle<Image> = asset_server.load("sprites/decorations/tree.png");
         let texture_atlas =
-            TextureAtlas::from_grid(texture_handle, Vec2::new(192.0, 192.0), 4, 1, None, None);
-        let texture_atlas_handle: Handle<TextureAtlas> = texture_atlases.add(texture_atlas);
+            TextureAtlasLayout::from_grid(Vec2::new(192.0, 192.0), 4, 1, None, None);
+        let texture_atlas_handle: Handle<TextureAtlasLayout> = texture_atlases.add(texture_atlas);
 
         let mut tree_wiggle_animation: TreeWiggleAnimation = TreeWiggleAnimation {
             length_of_animation: 4,
@@ -71,11 +70,12 @@ pub fn spawn_trees(
         commands.spawn((
             SpriteSheetBundle {
                 transform: tree_spawnpoint,
-                sprite: TextureAtlasSprite {
-                    index: rand::thread_rng().gen_range(0..4),
+                atlas: TextureAtlas {
+                    layout: texture_atlas_handle,
+                    index: 0,
                     ..default()
                 },
-                texture_atlas: texture_atlas_handle,
+                texture: texture_handle,
                 ..default()
             },
             tree_wiggle_animation,
@@ -86,7 +86,7 @@ pub fn spawn_trees(
 
 pub fn animate_trees(
     time: Res<Time>,
-    mut tree_query: Query<(&mut TreeWiggleAnimation, &mut TextureAtlasSprite)>,
+    mut tree_query: Query<(&mut TreeWiggleAnimation, &mut TextureAtlas)>,
 ) {
     for (mut tree_animation, mut atlas_sprite) in &mut tree_query {
         tree_animation.animation_timer.tick(time.delta());

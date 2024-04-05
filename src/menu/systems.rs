@@ -62,6 +62,7 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
                 ..default()
             },
             MainMenuScreenUiElement,
+            Name::new("Menu".to_string()),
         ))
         .with_children(|parent| {
             parent
@@ -359,7 +360,7 @@ pub fn menu_action(
 }
 
 pub fn check_if_in_game_menu_is_opened(
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     simulation_state: Res<State<SimulationState>>,
     mut simulation_state_next_state: ResMut<NextState<SimulationState>>,
     mut menu_state_next_state: ResMut<NextState<MenuState>>,
@@ -778,7 +779,7 @@ pub fn change_difficulty(
 pub fn spawn_how_to_play_screen(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
     words_handle: Res<WordsHandle>,
     words: Res<Assets<Words>>,
 ) {
@@ -851,15 +852,14 @@ pub fn spawn_how_to_play_screen(
                         generate_sprite_information_from_enemy_type(&enemy_type);
                     let texture_handle: Handle<Image> =
                         asset_server.load(format!("sprites/enemies/{}.png", enemy_name));
-                    let texture_atlas = TextureAtlas::from_grid(
-                        texture_handle,
+                    let texture_atlas = TextureAtlasLayout::from_grid(
                         Vec2::new(sprite_width, sprite_height),
                         animation_length,
                         1,
                         None,
                         None,
                     );
-                    let texture_atlas_handle: Handle<TextureAtlas> =
+                    let texture_atlas_handle: Handle<TextureAtlasLayout> =
                         texture_atlases.add(texture_atlas);
 
                     // Set speed of enemy randomly in range of 0.625 to 1.375 times the enemy base speed this round
@@ -904,6 +904,7 @@ pub fn spawn_how_to_play_screen(
                                     ..default()
                                 },
                                 image: UiImage {
+                                    texture: texture_handle,
                                     flip_x: true,
                                     ..default()
                                 },
@@ -1042,7 +1043,7 @@ pub fn spawn_how_to_play_screen(
 
 pub fn animate_enemies_in_how_to_play(
     time: Res<Time>,
-    mut enemy_query: Query<(&mut WalkingAnimation, &mut UiTextureAtlasImage)>,
+    mut enemy_query: Query<(&mut WalkingAnimation, &mut TextureAtlas)>,
 ) {
     for (mut walking_animation, mut atlas_sprite) in &mut enemy_query {
         walking_animation.animation_timer.tick(time.delta());

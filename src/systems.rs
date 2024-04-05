@@ -14,7 +14,7 @@ pub fn spawn_background(mut commands: Commands, asset_server: Res<AssetServer>) 
 
 pub fn toggle_borderless_fullscreen(
     mut window_query: Query<&mut Window, With<PrimaryWindow>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::F11) {
         let mut window = window_query

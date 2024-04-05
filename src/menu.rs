@@ -1,4 +1,7 @@
-use crate::{game::{LoosingState, SimulationState}, AppState};
+use crate::{
+    game::{LoosingState, SimulationState},
+    AppState,
+};
 
 use bevy::prelude::*;
 
@@ -21,10 +24,12 @@ impl Plugin for MenuPlugin {
             .add_event::<DifficultyChangedEvent>()
             .add_event::<Restart>()
             // Add menu States
-            .add_state::<MenuState>()
-            .add_state::<SettingsMenuState>()
-            .add_state::<GameStartedState>()
+            .init_state::<MenuState>()
+            .init_state::<SettingsMenuState>()
+            .init_state::<GameStartedState>()
             // Despawn Menu's when other menus are opened or they are exited
+            .add_systems(Startup, setup_menu)
+            .add_systems(Startup, spawn_main_menu)
             .add_systems(OnEnter(AppState::Menu), setup_menu)
             .add_systems(OnEnter(MenuState::Main), spawn_main_menu)
             .add_systems(OnEnter(MenuState::HowToPlay), spawn_how_to_play_screen)

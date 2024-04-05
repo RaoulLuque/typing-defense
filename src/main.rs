@@ -36,7 +36,7 @@ fn main() {
                 }),
         )
         // Initialize AppState
-        .add_state::<AppState>()
+        .init_state::<AppState>()
         // Spawn camera and add background
         .add_systems(Startup, spawn_background)
         .add_systems(Startup, spawn_camera)

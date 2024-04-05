@@ -3,7 +3,7 @@ use super::*;
 pub fn animate_explosions(
     time: Res<Time>,
     mut commands: Commands,
-    mut explosion_query: Query<(Entity, &mut ExplosionAnimation, &mut TextureAtlasSprite)>,
+    mut explosion_query: Query<(Entity, &mut ExplosionAnimation, &mut TextureAtlas)>,
 ) {
     for (entity_id, mut explosion_animation, mut atlas_sprite) in &mut explosion_query {
         explosion_animation.animation_timer.tick(time.delta());

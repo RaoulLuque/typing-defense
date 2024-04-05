@@ -55,7 +55,7 @@ pub fn randomly_spawn_enemies_over_time(
     enemy_base_speed_this_round: Res<EnemyBaseSpeedCurrentRound>,
     mut enemy_spawn_timer: ResMut<EnemySpawnTimer>,
     asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
     words_handle: Res<WordsHandle>,
     words: Res<Assets<Words>>,
 ) {
@@ -90,15 +90,15 @@ pub fn randomly_spawn_enemies_over_time(
                 generate_sprite_information_from_enemy_type(&enemy_type);
             let texture_handle: Handle<Image> =
                 asset_server.load(format!("sprites/enemies/{}.png", enemy_name));
-            let texture_atlas = TextureAtlas::from_grid(
-                texture_handle,
+            let texture_atlas = TextureAtlasLayout::from_grid(
                 Vec2::new(sprite_width, sprite_height),
                 animation_length,
                 1,
                 None,
                 None,
             );
-            let texture_atlas_handle: Handle<TextureAtlas> = texture_atlases.add(texture_atlas);
+            let texture_atlas_handle: Handle<TextureAtlasLayout> =
+                texture_atlases.add(texture_atlas);
 
             // Set speed of enemy randomly in range of 0.625 to 1.375 times the enemy base speed this round
             let speed = (rng.gen::<f32>() * 0.75 + 0.625) * enemy_base_speed_this_round.speed;
@@ -132,6 +132,7 @@ pub fn randomly_spawn_enemies_over_time(
                     flip_on_y_axis,
                     custom_sprite_size,
                     texture_atlas_handle,
+                    texture_handle,
                     spawn_point,
                     speed,
                     walking_animation,
@@ -149,7 +150,8 @@ pub fn spawn_enemy(
     spawn_point_transform: Transform,
     flip_on_y_axis: bool,
     custom_sprite_size: Option<Vec2>,
-    texture_atlas_handle: Handle<TextureAtlas>,
+    texture_atlas_handle: Handle<TextureAtlasLayout>,
+    texture_handle: Handle<Image>,
     spawn_point: EnemySpawnPoint,
     speed: f32,
     walking_animation: WalkingAnimation,
@@ -161,13 +163,17 @@ pub fn spawn_enemy(
             EnemyBundle {
                 sprite_sheet_bundle: SpriteSheetBundle {
                     transform: spawn_point_transform,
-                    sprite: TextureAtlasSprite {
-                        flip_x: flip_on_y_axis,
+                    atlas: TextureAtlas {
+                        layout: texture_atlas_handle,
                         index: 0,
+                        ..default()
+                    },
+                    texture: texture_handle,
+                    sprite: Sprite {
+                        flip_x: flip_on_y_axis,
                         custom_size: custom_sprite_size,
                         ..default()
                     },
-                    texture_atlas: texture_atlas_handle,
                     ..default()
                 },
                 entity_type: Enemy {},
@@ -189,7 +195,7 @@ pub fn spawn_enemy(
                             word_for_enemy,
                             STANDARD_TEXT_COLOR,
                         ),
-                        alignment: TextAlignment::Center,
+                        justify: JustifyText::Center,
                         linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
                     },
                     // ensure the text is drawn on top of the box
@@ -258,7 +264,7 @@ pub fn tick_enemy_spawn_timer(mut enemy_spawn_timer: ResMut<EnemySpawnTimer>, ti
 
 pub fn animate_enemies(
     time: Res<Time>,
-    mut enemy_query: Query<(&mut WalkingAnimation, &mut TextureAtlasSprite)>,
+    mut enemy_query: Query<(&mut WalkingAnimation, &mut TextureAtlas)>,
 ) {
     for (mut walking_animation, mut atlas_sprite) in &mut enemy_query {
         walking_animation.animation_timer.tick(time.delta());

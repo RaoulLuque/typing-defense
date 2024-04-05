@@ -299,7 +299,7 @@ pub fn enemy_collision_with_castle(
     mut streak_indicator: ResMut<StreakIndicator>,
     mut number_of_lives_left: ResMut<castle::resources::NumberOfLivesLeft>,
     asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
     mut enemies_being_typed: ResMut<EnemiesBeingTyped>,
 ) {
     if let Ok(_) = castle_query.get_single() {
@@ -329,15 +329,9 @@ pub fn enemy_collision_with_castle(
                     // Spawn explosion/death animation
                     let texture_handle: Handle<Image> =
                         asset_server.load("sprites/effects/explosion.png");
-                    let texture_atlas = TextureAtlas::from_grid(
-                        texture_handle,
-                        Vec2::new(192.0, 192.0),
-                        9,
-                        1,
-                        None,
-                        None,
-                    );
-                    let texture_atlas_handle: Handle<TextureAtlas> =
+                    let texture_atlas =
+                        TextureAtlasLayout::from_grid(Vec2::new(192.0, 192.0), 9, 1, None, None);
+                    let texture_atlas_handle: Handle<TextureAtlasLayout> =
                         texture_atlases.add(texture_atlas);
 
                     let explosion_animation: ExplosionAnimation = ExplosionAnimation {
@@ -351,11 +345,12 @@ pub fn enemy_collision_with_castle(
                     commands.spawn((
                         SpriteSheetBundle {
                             transform: explosion_transform,
-                            sprite: TextureAtlasSprite {
+                            atlas: TextureAtlas {
+                                layout: texture_atlas_handle,
                                 index: 0,
                                 ..default()
                             },
-                            texture_atlas: texture_atlas_handle,
+                            texture: texture_handle,
                             ..default()
                         },
                         Explosion {},

@@ -266,7 +266,7 @@ pub fn spawn_in_between_rounds_text(mut commands: Commands) {
             margin: UiRect::bottom(Val::Percent(32.5)),
             ..default()
         })
-        .with_text_alignment(TextAlignment::Center),
+        .with_text_justify(JustifyText::Center),
         InBetweenRoundsHudUiElement,
     ));
 }

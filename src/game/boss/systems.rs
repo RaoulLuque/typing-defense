@@ -23,7 +23,7 @@ pub fn spawn_boss(
     words_handle: Res<WordsHandle>,
     words: Res<Assets<Words>>,
     asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     // Spawn boss if round number is multiple of 10
     if round_number.number % 10 == 0 {
@@ -41,9 +41,8 @@ pub fn spawn_boss(
 
         // Get slime texture handle
         let texture_handle: Handle<Image> = asset_server.load(format!("sprites/enemies/slime.png"));
-        let texture_atlas =
-            TextureAtlas::from_grid(texture_handle, Vec2::new(44.0, 30.0), 10, 1, None, None);
-        let texture_atlas_handle: Handle<TextureAtlas> = texture_atlases.add(texture_atlas);
+        let texture_atlas = TextureAtlasLayout::from_grid(Vec2::new(44.0, 30.0), 10, 1, None, None);
+        let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
         // Setup slime walking animation
         let walking_animation: WalkingAnimation = WalkingAnimation {
@@ -58,16 +57,20 @@ pub fn spawn_boss(
         commands.spawn((
             SpriteSheetBundle {
                 transform: spawn_point_transform,
-                sprite: TextureAtlasSprite {
-                    flip_x: true,
+                atlas: TextureAtlas {
+                    layout: texture_atlas_handle,
                     index: 0,
+                    ..default()
+                },
+                texture: texture_handle,
+                sprite: Sprite {
+                    flip_x: true,
                     custom_size: Some(Vec2::new(
                         super::enemies::systems::ENEMY_SPRITE_SCALE_FACTOR * 30.0,
                         super::enemies::systems::ENEMY_SPRITE_SCALE_FACTOR * 30.0,
                     )),
                     ..default()
                 },
-                texture_atlas: texture_atlas_handle,
                 ..default()
             },
             walking_animation,
@@ -93,28 +96,30 @@ pub fn spawn_boss(
                 // Get ghost texture handle
                 let texture_handle: Handle<Image> =
                     asset_server.load(format!("sprites/enemies/ghost.png"));
-                let texture_atlas = TextureAtlas::from_grid(
-                    texture_handle,
-                    Vec2::new(30.0, 30.0),
-                    1,
-                    1,
-                    None,
-                    None,
-                );
-                let texture_atlas_handle: Handle<TextureAtlas> = texture_atlases.add(texture_atlas);
+                let texture_atlas =
+                    TextureAtlasLayout::from_grid(Vec2::new(30.0, 30.0), 1, 1, None, None);
+                let texture_atlas_handle: Handle<TextureAtlasLayout> =
+                    texture_atlases.add(texture_atlas);
 
                 commands
                     .spawn((
                         SpriteSheetBundle {
                             transform: spawn_point_transform,
-                            sprite: TextureAtlasSprite {
-                                flip_x: false,
-                                index: 0,
-                                custom_size: Some(Vec2::new(super::enemies::systems::ENEMY_SPRITE_SCALE_FACTOR * 30.0, super::enemies::systems::ENEMY_SPRITE_SCALE_FACTOR * 30.0)),
-                                ..default()
-                            },
-                            texture_atlas: texture_atlas_handle,
-                            ..default()
+                atlas: TextureAtlas {
+                    layout: texture_atlas_handle,
+                    index: 0,
+                    ..default()
+                },
+                texture: texture_handle,
+                sprite: Sprite {
+                    flip_x: true,
+                    custom_size: Some(Vec2::new(
+                        super::enemies::systems::ENEMY_SPRITE_SCALE_FACTOR * 30.0,
+                        super::enemies::systems::ENEMY_SPRITE_SCALE_FACTOR * 30.0,
+                    )),
+                    ..default()
+                },
+                ..default()
                         },
                         Enemy {},
                         spawn_point,
@@ -132,7 +137,7 @@ pub fn spawn_boss(
                                     word_for_enemy,
                                     super::enemies::systems::STANDARD_TEXT_COLOR,
                                 ),
-                                alignment: TextAlignment::Center,
+                                justify: JustifyText::Center,
                                 linebreak_behavior: bevy::text::BreakLineOn::NoWrap,
                             },
                             // ensure the text is drawn on top of the box
