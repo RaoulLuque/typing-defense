@@ -5,16 +5,20 @@ use rand::{
 
 use super::*;
 
+/// Component used to tag enemies
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub struct Enemy {}
 
+/// Component used to track the speed of an enemy.
+/// Is set as 0.625 to 1.375 times the enemy base speed this round
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub struct Speed {
     pub speed: f32,
 }
 
+/// Component used to track the size of a sprite
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub struct SpriteSize {
@@ -22,6 +26,7 @@ pub struct SpriteSize {
     pub height: f32,
 }
 
+/// Component used to enable animations of enemies
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub struct WalkingAnimation {
@@ -29,12 +34,14 @@ pub struct WalkingAnimation {
     pub animation_timer: Timer,
 }
 
+/// Component used to tag entities that are currently being typed
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub struct CurrentlyBeingTyped {
     pub index: usize,
 }
 
+/// Component used to track the type of an enemy
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub enum EnemyType {

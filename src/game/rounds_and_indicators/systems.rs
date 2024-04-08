@@ -105,6 +105,7 @@ pub fn check_if_round_is_over(
     }
 }
 
+/// Checks if space is pressed and proceeds to the next round if so
 pub fn proceed_to_next_round_from_in_between_rounds(
     round_state: Res<State<RoundState>>,
     mut round_state_next_state: ResMut<NextState<RoundState>>,
@@ -117,14 +118,17 @@ pub fn proceed_to_next_round_from_in_between_rounds(
     }
 }
 
+/// Ticks the stopwatch for each round tracking the duration of the current round
 pub fn tick_round_stopwatch(mut round_stopwatch: ResMut<RoundStopwatch>, time: Res<Time>) {
     round_stopwatch.stopwatch.tick(time.delta());
 }
 
+/// Resets the stopwatch for each round tracking the duration of the current round
 pub fn reset_round_stopwatch(mut round_stopwatch: ResMut<RoundStopwatch>) {
     round_stopwatch.stopwatch.reset();
 }
 
+/// Updates the wpm according to the duration of the round and number of enemies typed current round
 pub fn update_wpm(
     mut wpm: ResMut<WordPerMinuteTypedIndicator>,
     round_stopwatch: Res<RoundStopwatch>,
@@ -165,6 +169,7 @@ pub fn update_score(
     }
 }
 
+/// Updates the number of enemies typed given an enemy typed event
 pub fn update_number_of_enemies_typed(
     mut enemy_typed_event: EventReader<EnemyTypedEvent>,
     mut number_of_enemies_unlived_current_round: ResMut<NumberOfEnemiesUnlivedThisRound>,
@@ -176,6 +181,7 @@ pub fn update_number_of_enemies_typed(
     }
 }
 
+/// Sets the states of the game accordingly on a restart event
 pub fn set_states_on_restart(
     mut restart_event_reader: EventReader<Restart>,
     mut round_state_next_state: ResMut<NextState<RoundState>>,
@@ -193,6 +199,7 @@ pub fn set_states_on_restart(
     }
 }
 
+/// Sets the score and indicators of the game accordingly on a restart event
 pub fn reset_score_and_indicators_on_restart(
     mut restart_event_reader: EventReader<Restart>,
     mut number_of_enemies_unlived_current_round: ResMut<NumberOfEnemiesUnlivedThisRound>,

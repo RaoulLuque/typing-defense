@@ -60,6 +60,8 @@ fn main() {
     app.run()
 }
 
+/// State for tracking the general state of the game. 
+/// Is in state Menu at the start of the game and then swaps into state InGame until game is restarted
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum AppState {
     #[default]

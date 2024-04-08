@@ -66,7 +66,7 @@ impl Plugin for GamePlugin {
 
 /// Starts in Running.
 ///
-/// Switches when ctrl is pressed. In Paused, enemies don't move and are not typeable.
+/// Switches when Esc is pressed. In Paused, enemies don't move and are not typeable.
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum SimulationState {
     Paused,

@@ -15,13 +15,17 @@ use crate::game::{
     RoundState,
 };
 
+/// Event that is sent when the difficulty is changed in the settings. Bool is true if difficulty is
+/// increased and is false otherwise
 #[derive(Event)]
 pub struct DifficultyChangedEvent(bool);
 
+/// Event that is sent when restart button is pressed in order to reset indicators and states
 #[derive(Event)]
 pub struct Restart;
 
-pub enum MenuType {
+/// Enum for tracking the different menu types
+enum MenuType {
     MainMenu,
     InGameMenu,
     LostMenu,
@@ -29,14 +33,18 @@ pub enum MenuType {
 
 const BUTTON_HEIGHT: f32 = 15.0;
 
+/// Sets up the menu by transition to the menu state main
 pub fn setup_menu(mut next_menu_state: ResMut<NextState<MenuState>>) {
     next_menu_state.set(MenuState::Main);
 }
 
+/// Spawns the main menu
 pub fn spawn_main_menu(commands: Commands, asset_server: Res<AssetServer>) {
     spawn_menu(commands, asset_server, MenuType::MainMenu);
 }
 
+/// Spawns the menu according to the MenuType given. Used for the main menu, how to play and the menu
+/// that appears when the player has lost
 fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_menu: MenuType) {
     let button_text_style = TextStyle {
         font_size: 40.0,
@@ -299,7 +307,7 @@ fn spawn_menu(mut commands: Commands, asset_server: Res<AssetServer>, type_of_me
     ));
 }
 
-// Generic system that takes a component as a parameter, and will despawn all entities with that component
+/// Generic system that takes a component as a parameter, and will despawn all entities with that component
 pub fn despawn_entities_with_specific_component<T: Component>(
     to_despawn: Query<Entity, With<T>>,
     mut commands: Commands,
@@ -309,7 +317,7 @@ pub fn despawn_entities_with_specific_component<T: Component>(
     }
 }
 
-// Function for handling the buttons in the main menu
+/// System for handling the buttons in the main menu
 pub fn menu_action(
     interaction_query: Query<
         (&Interaction, &MenuButtonAction),
@@ -367,6 +375,7 @@ pub fn menu_action(
     }
 }
 
+/// Checks if esc is pressed and if so opens the in game menu
 pub fn check_if_in_game_menu_is_opened(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     simulation_state: Res<State<SimulationState>>,
@@ -381,15 +390,17 @@ pub fn check_if_in_game_menu_is_opened(
     }
 }
 
+/// Spawns the in game menu
 pub fn spawn_in_game_menu(commands: Commands, asset_server: Res<AssetServer>) {
     spawn_menu(commands, asset_server, MenuType::InGameMenu);
 }
 
+/// Spawns the game lost menu
 pub fn spawn_lost_menu(commands: Commands, asset_server: Res<AssetServer>) {
     spawn_menu(commands, asset_server, MenuType::LostMenu);
 }
 
-// This system handles changing all buttons color based on mouse interaction
+/// Handles changing all menu button colors based on mouse interaction
 pub fn menu_button_animations(
     mut interaction_query: Query<
         (&Interaction, &mut UiImage, &Children),
@@ -425,6 +436,7 @@ pub fn menu_button_animations(
     }
 }
 
+/// Handles the interaction animations of the github button
 pub fn github_button_animation(
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor),
@@ -443,7 +455,7 @@ pub fn github_button_animation(
     }
 }
 
-/// Spawns the settings button at the top right of the screen
+/// Spawns the settings button at the top right of the screen (settings button referring to the cog that can be pressed to open the settings menu)
 pub fn spawn_settings_button(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn((
@@ -497,7 +509,7 @@ pub fn spawn_settings_button(mut commands: Commands, asset_server: Res<AssetServ
         });
 }
 
-/// Spawns the settings menu at the top right of the screen
+/// Spawns the settings menu at the top right of the screen (menu referring to the open menu)
 pub fn spawn_settings_menu(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -669,7 +681,7 @@ pub fn spawn_settings_menu(
         });
 }
 
-/// Handling the buttons in the settings menu
+/// Handling the actions of the buttons in the settings menu
 pub fn settings_action(
     interaction_query: Query<(&Interaction, &SettingsButton), (Changed<Interaction>, With<Button>)>,
     mut next_settings_state: ResMut<NextState<SettingsMenuState>>,
@@ -695,7 +707,7 @@ pub fn settings_action(
     }
 }
 
-/// Handles changing settings button based on mouse interactions
+/// Handles animations of the buttons in the settings menu
 pub fn settings_button_animations(
     mut interaction_query: Query<
         (&Interaction, &mut UiImage, &SettingsButton),
@@ -751,6 +763,7 @@ pub fn settings_button_animations(
     }
 }
 
+/// Changes difficulty on difficulty changed events according to the event
 pub fn change_difficulty(
     mut difficulty_changed_event_reader: EventReader<DifficultyChangedEvent>,
     mut difficulty: ResMut<DifficultyIndicator>,
@@ -786,6 +799,7 @@ pub fn change_difficulty(
     }
 }
 
+/// Spawns the how to play screen
 pub fn spawn_how_to_play_screen(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -1051,6 +1065,7 @@ pub fn spawn_how_to_play_screen(
         });
 }
 
+/// Animates the enemy (mushroom) in the how to play screen
 pub fn animate_enemies_in_how_to_play(
     time: Res<Time>,
     mut enemy_query: Query<(&mut WalkingAnimation, &mut TextureAtlas)>,
@@ -1068,6 +1083,8 @@ pub fn animate_enemies_in_how_to_play(
     }
 }
 
+/// Function to have an intermediate state between the main menu and the how to play screen to be able
+/// to respawn the how to play screen in order to be able to respawn the enemy on the how to play screen
 pub fn transition_to_how_to_play(mut next_menu_state: ResMut<NextState<MenuState>>) {
     next_menu_state.set(MenuState::HowToPlay);
 }

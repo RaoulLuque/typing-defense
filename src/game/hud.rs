@@ -16,7 +16,6 @@ impl Plugin for HUDPlugin {
             // Register types for debug
             .register_type::<InGameHudUiElement>()
             .register_type::<InGameHudParent>()
-            .register_type::<UiFixedZ>()
             .register_type::<ScoreText>()
             .register_type::<WpmText>()
             // Add startup systems

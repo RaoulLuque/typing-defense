@@ -7,11 +7,13 @@ use self::enemies::movement::{
     systems::TurnInstruction,
 };
 
+use super::*;
+
+/// Event that used whenever an enemy was typed
 #[derive(Event)]
 pub struct EnemyTypedEvent();
 
-use super::*;
-
+/// System that updates which enemies are being typed
 pub fn update_text_from_enemies_on_button_press(
     mut commands: Commands,
     mut enemies_being_typed: ResMut<EnemiesBeingTyped>,
@@ -145,7 +147,7 @@ pub fn update_text_from_enemies_on_button_press(
     }
 }
 
-// Maps keys to letters and returns none if the key is not needed
+/// Maps keys to letters and returns none if the key is not needed
 fn key_to_letter(key: KeyCode) -> Option<String> {
     match key {
         KeyCode::KeyA => Some("a".to_string()),
@@ -179,12 +181,15 @@ fn key_to_letter(key: KeyCode) -> Option<String> {
     }
 }
 
+/// Sets up the asset list of words used for typing
 pub fn setup_list_of_words_asset(mut commands: Commands, asset_server: Res<AssetServer>) {
     let words_handle =
         WordsHandle(asset_server.load("words/thousand_most_frequent_words.words.toml"));
     commands.insert_resource(words_handle);
 }
 
+/// System that handles the movement of text when enemies collide.
+/// Moves the text of the approaching enemy upward
 pub fn handle_text_when_enemies_collide(
     mut q_parent_with_enemy: Query<
         (
@@ -485,6 +490,7 @@ fn check_if_text_is_colliding(
     None
 }
 
+/// Changes the position of text according to the given new translation
 fn change_position_of_text(
     q_child_with_text: &mut Query<(&mut Transform, &Text), Without<Enemy>>,
     children: &Children,
@@ -496,6 +502,7 @@ fn change_position_of_text(
     }
 }
 
+/// Resets the height of text
 fn reset_height_of_text(
     q_child_with_text: &mut Query<(&mut Transform, &Text), Without<Enemy>>,
     children: &Children,
@@ -508,6 +515,7 @@ fn reset_height_of_text(
     }
 }
 
+/// Resets text height when enemies passed each other
 pub fn reset_text_height_when_enemies_passed_each_other(
     mut q_parent_with_enemy: Query<
         (
@@ -571,6 +579,7 @@ pub fn reset_text_height_when_enemies_passed_each_other(
     }
 }
 
+/// Handles checking collisions and resetting text
 fn handle_checking_collision_and_resetting_text(
     colliding_enemy_child: &Children,
     colliding_enemy_transform: &Transform,
@@ -603,6 +612,7 @@ fn handle_checking_collision_and_resetting_text(
     };
 }
 
+/// Lowers text stepwise when colliding enemy is removed instead of resetting text height
 pub fn lower_text_stepwise_when_colliding_enemy_is_removed(
     mut commands: Commands,
     mut enemies_with_colliding_text_query: Query<
@@ -624,6 +634,7 @@ pub fn lower_text_stepwise_when_colliding_enemy_is_removed(
     }
 }
 
+/// Lower text stepwise
 fn lower_text_stepwise(
     q_child_with_text: &mut Query<(&mut Transform, &Text), Without<Enemy>>,
     children: &Children,
@@ -644,6 +655,7 @@ fn lower_text_stepwise(
     }
 }
 
+/// Check if the text of the colliding enemy has moved
 pub fn check_if_colliding_text_has_moved(
     q_parent_with_enemy: Query<(Entity, &Children, &CollidingWith), With<Enemy>>,
     mut q_child_with_text: Query<(&mut Transform, &Text), Without<Enemy>>,
@@ -669,6 +681,7 @@ pub fn check_if_colliding_text_has_moved(
     }
 }
 
+/// Checks if the text of the colliding enemy has moved and adjusts position accordingly if necessary
 fn check_if_colliding_text_is_right_above_and_change_position_of_text_if_necessary(
     q_child_with_text: &mut Query<(&mut Transform, &Text), Without<Enemy>>,
     child_text_that_is_moved_above: &Children,

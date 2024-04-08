@@ -15,7 +15,7 @@ pub struct GitHubButton;
 #[reflect(Component)]
 pub struct HowToPlayScreenUiElement;
 
-// All actions that can be triggered from a button click
+/// All menu actions that can be triggered from a button click
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub enum MenuButtonAction {
@@ -30,12 +30,12 @@ pub enum MenuButtonAction {
     Restart,
 }
 
-// Component used to tag text entities on the main menu screen
+/// Component used to tag text entities on the main menu screen
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub struct MainMenuText;
 
-// The different settings buttons for opening or closing the settings
+/// The different settings buttons for opening or closing the settings
 #[derive(Reflect, Component, Default, PartialEq, Eq, Debug)]
 #[reflect(Component)]
 pub enum SettingsButton {
@@ -46,17 +46,17 @@ pub enum SettingsButton {
     Minus,
 }
 
-// Component used to tag the closed settings ui elements
+/// Component used to tag the closed settings ui elements
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub struct DifficultySettingsText;
 
-// Component used to tag the closed settings ui elements
+/// Component used to tag the closed settings ui elements
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub struct SettingsMenuClosed;
 
-// Component used to tag the opened settings ui elements
+/// Component used to tag the opened settings ui elements
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub struct SettingsMenuOpened;

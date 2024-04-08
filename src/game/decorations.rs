@@ -13,7 +13,6 @@ impl Plugin for DecorationsPlugin {
         app
             // Register types for debug
             .register_type::<Tree>()
-            .register_type::<StaticDecorationType>()
             // Initialize Resources
             // Add systems for startup into the game
             .add_systems(Startup, spawn_trees)

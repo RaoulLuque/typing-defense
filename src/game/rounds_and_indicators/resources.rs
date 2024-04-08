@@ -160,6 +160,8 @@ impl Default for DifficultyIndicator {
     }
 }
 
+/// Resource for tracking the current difficulty setting which influences the number of enemies
+/// spawned per round / speed / spawn interval and score calculations
 #[derive(Default, Reflect, PartialEq, Eq)]
 pub enum Difficulty {
     Easy,

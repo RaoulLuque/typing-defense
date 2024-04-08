@@ -2,6 +2,7 @@ use super::*;
 
 use rand::{seq::SliceRandom, Rng};
 
+/// Component used to track where an enemy entity was spawned
 #[derive(Reflect, Component, Debug, Default, PartialEq, Copy, Clone)]
 #[reflect(Component)]
 pub enum EnemySpawnPoint {
@@ -14,6 +15,7 @@ pub enum EnemySpawnPoint {
     BottomRight,
 }
 
+/// Component used to tag the number of turns an enemy entity made so far (for pathfinding)
 #[derive(Reflect, Component, Default, Debug, PartialEq, Copy, Clone)]
 #[reflect(Component)]
 pub struct PathCheckpointNumber {

@@ -2,7 +2,10 @@ use bevy::window::PrimaryWindow;
 
 use super::*;
 
+/// The animation speed of the tree wiggle animation
 const TREE_ANIMATION_SPEED: f32 = 0.1;
+
+/// The coordinates in ratios of screen width and height of the trees that are in the background
 const TREE_SPAWN_POINTS_SCALES: [(f32, f32); 33] = [
     (-0.477083333, 0.436111111),
     (-0.4375, 0.127777778),
@@ -39,6 +42,7 @@ const TREE_SPAWN_POINTS_SCALES: [(f32, f32); 33] = [
     (0.413020833, -0.12037037),
 ];
 
+/// Spawns the trees
 pub fn spawn_trees(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -84,6 +88,7 @@ pub fn spawn_trees(
     }
 }
 
+/// Animates the trees (wiggle wiggle)
 pub fn animate_trees(
     time: Res<Time>,
     mut tree_query: Query<(&mut TreeWiggleAnimation, &mut TextureAtlas)>,
@@ -100,6 +105,7 @@ pub fn animate_trees(
     }
 }
 
+/// Returns a transform given coordinates in ratio of width and height of screen
 fn generate_spawn_point_transform_from_x_y(
     x_scale: f32,
     y_scale: f32,

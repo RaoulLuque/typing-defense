@@ -5,6 +5,7 @@ use crate::menu::{systems::Restart, MenuState};
 
 use super::*;
 
+/// Spawns the castle in the middle of the screen
 pub fn spawn_castle(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -25,6 +26,7 @@ pub fn spawn_castle(
     ));
 }
 
+/// Despawns the castle if all lives are gone and spawns the destroyed castle
 pub fn despawn_castle_if_all_lives_are_gone_and_spawn_destroyed_castle(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -46,6 +48,7 @@ pub fn despawn_castle_if_all_lives_are_gone_and_spawn_destroyed_castle(
     }
 }
 
+/// Despawns the castle and resets lives on restart event
 pub fn despawn_castle_and_reset_lives_on_restart(
     mut commands: Commands,
     mut number_of_lives_left: ResMut<NumberOfLivesLeft>,

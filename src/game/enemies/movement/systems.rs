@@ -5,10 +5,10 @@ use crate::menu::systems::Restart;
 
 use super::*;
 
-// The movement is calculated relatively to the screen height/width in order to work for multiple resolutions
-// One grid block on the background corresponds to:
-// In width: 0.03333
-// In height: 0.05263
+/// The movement is calculated relatively to the screen height/width in order to work for multiple resolutions
+/// One grid block on the background corresponds to:
+/// In width: 0.03333
+/// In height: 0.05263
 #[derive(PartialEq, Eq)]
 pub enum TurnInstruction {
     Left,
@@ -20,63 +20,12 @@ pub enum TurnInstruction {
 use bevy::window::PrimaryWindow;
 use TurnInstruction::*;
 
-// Checkpoints are given in percent * 100 of the screen width/height respectively.
-// E.g.: 540 is 0.5 in height if the screen height is 1080 (Full HD)
-// The last checkpoint is always far enough out of the screen such that enemies have despawned before
-
-// Configuration for screen without Taskbar at the side (left)
-// const TOP_LEFT_ROUTE_CHECKPOINTS: [(f32, f32); 6] = [
-//     (-0.30, 0.5),
-//     (-0.30, 0.31578),
-//     (0.0, 0.31578),
-//     (0.0, -0.30178),
-//     (0.20099, -0.30178),
-//     (0.20099, -1.0),
-// ];
-// const TOP_LEFT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 6] =
-//     [Down, Right, Down, Right, Down, Down];
-
-// const BOTTOM_RIGHT_ROUTE_CHECKPOINTS: [(f32, f32); 6] = [
-//     (0.20099, -0.5),
-//     (0.20099, -0.30178),
-//     (0.0, -0.30178),
-//     (0.0, 0.31578),
-//     (-0.30, 0.31578),
-//     (-0.30, 1.0),
-// ];
-// const BOTTOM_RIGHT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 6] = [Up, Left, Up, Left, Up, Up];
-
-// const TOP_RIGHT_ROUTE_CHECKPOINTS: [(f32, f32); 9] = [
-//     (0.26764, 0.5),
-//     (0.26764, 0.19252),
-//     (0.09999, 0.19252),
-//     (0.09999, 0.31778),
-//     (0.0, 0.31778),
-//     (0.0, -0.18552),
-//     (-0.19998, -0.18552),
-//     (-0.19998, -0.36841),
-//     (-1.0, -0.36841),
-// ];
-// const TOP_RIGHT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 9] =
-//     [Down, Left, Up, Left, Down, Left, Down, Left, Left];
-
-// const BOTTOM_LEFT_ROUTE_CHECKPOINTS: [(f32, f32); 9] = [
-//     (-0.5, -0.36841),
-//     (-0.19998, -0.36841),
-//     (-0.19998, -0.18552),
-//     (0.0, -0.18552),
-//     (0.0, 0.31778),
-//     (0.09999, 0.31778),
-//     (0.09999, 0.19252),
-//     (0.26764, 0.19252),
-//     (0.26764, 1.0),
-// ];
-// const BOTTOM_LEFT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 9] =
-//     [Right, Up, Right, Up, Right, Down, Right, Up, Up];
-
+/// Window width in dev
 const WINDOW_WIDTH_IN_DEV: f32 = 1856.0;
+/// Window height in dev
 const WINDOW_HEIGHT_IN_DEV: f32 = 1018.0;
 
+/// Checkpoints for the route of the enemies coming from the top left of the screen in ratio of screen width / height coordinates
 const TOP_LEFT_ROUTE_CHECKPOINTS: [(f32, f32); 6] = [
     (-0.31, 0.5),
     (-0.31, 0.31578),
@@ -85,9 +34,11 @@ const TOP_LEFT_ROUTE_CHECKPOINTS: [(f32, f32); 6] = [
     (0.20899, -0.31178),
     (0.20899, -1.0),
 ];
+/// Turn instructions of the enemies coming from the top left of the screen
 const TOP_LEFT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 6] =
     [Down, Right, Down, Right, Down, Down];
 
+/// Checkpoints for the route of the enemies coming from the bottom right of the screen in ratio of screen width / height coordinates
 const BOTTOM_RIGHT_ROUTE_CHECKPOINTS: [(f32, f32); 6] = [
     (0.20899, -0.5),
     (0.20899, -0.31178),
@@ -96,8 +47,10 @@ const BOTTOM_RIGHT_ROUTE_CHECKPOINTS: [(f32, f32); 6] = [
     (-0.31, 0.31578),
     (-0.31, 1.0),
 ];
+/// Turn instructions of the enemies coming from the bottom right of the screen
 const BOTTOM_RIGHT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 6] = [Up, Left, Up, Left, Up, Up];
 
+/// Checkpoints for the route of the enemies coming from the top right of the screen in ratio of screen width / height coordinates
 const TOP_RIGHT_ROUTE_CHECKPOINTS: [(f32, f32); 9] = [
     (0.27664, 0.5),
     (0.27664, 0.20252),
@@ -109,9 +62,11 @@ const TOP_RIGHT_ROUTE_CHECKPOINTS: [(f32, f32); 9] = [
     (-0.20698, -0.36841),
     (-1.0, -0.36841),
 ];
+/// Turn instructions of the enemies coming from the top right of the screen
 const TOP_RIGHT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 9] =
     [Down, Left, Up, Left, Down, Left, Down, Left, Left];
 
+/// Checkpoints for the route of the enemies coming from the bottom left of the screen in ratio of screen width / height coordinates
 const BOTTOM_LEFT_ROUTE_CHECKPOINTS: [(f32, f32); 9] = [
     (-0.5, -0.36841),
     (-0.20698, -0.36841),
@@ -123,15 +78,21 @@ const BOTTOM_LEFT_ROUTE_CHECKPOINTS: [(f32, f32); 9] = [
     (0.27664, 0.20252),
     (0.27664, 1.0),
 ];
+/// Turn instructions of the enemies coming from the bottom left of the screen
 const BOTTOM_LEFT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 9] =
     [Right, Up, Right, Up, Right, Down, Right, Up, Up];
 
+/// Checkpoints for the route of the enemies coming from the left of the screen in ratio of screen width / height coordinates
 const LEFT_ROUTE_CHECKPOINTS: [(f32, f32); 2] = [(-0.5, 0.01), (1.0, 0.01)];
+/// Turn instructions of the enemies coming from the left of the screen
 const LEFT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 2] = [Right, Right];
 
+/// Checkpoints for the route of the enemies coming from the right of the screen in ratio of screen width / height coordinates
 const RIGHT_ROUTE_CHECKPOINTS: [(f32, f32); 2] = [(0.5, 0.01), (-1.0, 0.01)];
+/// Turn instructions of the enemies coming from the right of the screen
 const RIGHT_ROUTE_TURN_INSTRUCTIONS: [TurnInstruction; 2] = [Left, Left];
 
+/// System for the movement of enemies and bosses based on the checkpoints and turn instructions
 pub fn update_position_of_enemies_and_bosses(
     mut enemy_query: Query<(
         &Speed,
@@ -183,6 +144,7 @@ pub fn update_position_of_enemies_and_bosses(
     }
 }
 
+/// Translates the spawn point enum to a transform
 pub fn generate_spawn_point_transform_from_enum(
     enemy_spawn_point_enum: EnemySpawnPoint,
     window: &Window,
@@ -191,6 +153,7 @@ pub fn generate_spawn_point_transform_from_enum(
     Transform::from_xyz(window.width() * x_scale, window.height() * y_scale, 0.0)
 }
 
+/// Returns bool with whether sprite needs to be flipped from spawnpoint depending if spawn point is towards left or right of screen
 pub fn check_if_sprite_needs_to_be_flipped_from_spawnpoint(spawn_point: EnemySpawnPoint) -> bool {
     match spawn_point {
         EnemySpawnPoint::TopLeft => true,
@@ -202,6 +165,7 @@ pub fn check_if_sprite_needs_to_be_flipped_from_spawnpoint(spawn_point: EnemySpa
     }
 }
 
+/// Returns a translation vector with the direction to go in based on the given turn instruction
 fn get_translation_from_turn_instruction(turn_instruction: &TurnInstruction) -> Vec3 {
     use TurnInstruction::*;
     match turn_instruction {
@@ -212,6 +176,7 @@ fn get_translation_from_turn_instruction(turn_instruction: &TurnInstruction) -> 
     }
 }
 
+/// Returns the xy scale of checkpoints given the spawn point and checkpoint number an enemy has reached
 fn get_x_y_scale_of_checkpoint(
     spawn_point: &EnemySpawnPoint,
     check_point_number: usize,
@@ -243,6 +208,7 @@ fn get_x_y_scale_of_checkpoint(
     )
 }
 
+/// Returns the current turn instruction based on the spawn point and current check point number of an enemy
 pub fn get_current_turn_instruction(
     spawn_point: &EnemySpawnPoint,
     check_point_number: usize,
@@ -269,6 +235,7 @@ pub fn get_current_turn_instruction(
     }
 }
 
+/// System for despawning enemies when they are out of screen
 pub fn despawn_enemy_if_out_of_screen(
     mut commands: Commands,
     enemy_query: Query<(Entity, &Transform), With<Enemy>>,
@@ -291,6 +258,7 @@ pub fn despawn_enemy_if_out_of_screen(
     }
 }
 
+/// System for tracking the collision of enemies with the castle
 pub fn enemy_collision_with_castle(
     mut commands: Commands,
     mut enemy_query: Query<(Entity, &Transform), With<Enemy>>,
@@ -375,6 +343,7 @@ pub fn enemy_collision_with_castle(
     }
 }
 
+/// Despawn the enemies on restart event
 pub fn despawn_enemies_on_restart(
     mut commands: Commands,
     enemy_query: Query<Entity, With<Enemy>>,

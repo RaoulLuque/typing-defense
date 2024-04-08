@@ -8,6 +8,7 @@ pub const UI_TEXT_FONT_SIZE: f32 = ENEMY_TEXT_FONT_SIZE * 0.50;
 pub const UI_TEXT_COLOR: Color = Color::DARK_GRAY;
 pub const UI_NUMBER_TEXT_COLOR: Color = Color::WHITE;
 
+/// Updates the wpm text in the hud
 pub fn update_wpm_hud_element(
     wpm: Res<WordPerMinuteTypedIndicator>,
     mut wpm_hud_text_query: Query<&mut Text, With<WpmText>>,
@@ -26,6 +27,7 @@ pub fn update_wpm_hud_element(
     }
 }
 
+/// Updates the streak text in the hud
 pub fn update_streak_hud_element(
     streak_indicator: Res<StreakIndicator>,
     mut streak_hud_text_query: Query<&mut Text, With<StreakText>>,
@@ -44,6 +46,7 @@ pub fn update_streak_hud_element(
     }
 }
 
+/// Updates the round number text in the hud
 pub fn update_round_number_hud_element(
     round_number: Res<RoundNumber>,
     mut round_number_hud_text_query: Query<&mut Text, With<RoundNumberText>>,
@@ -62,6 +65,7 @@ pub fn update_round_number_hud_element(
     }
 }
 
+/// Updates the score text in the hud
 pub fn update_score_hud_element(
     score: Res<ScoreIndicator>,
     mut score_hud_text_query: Query<&mut Text, With<ScoreText>>,
@@ -80,6 +84,7 @@ pub fn update_score_hud_element(
     }
 }
 
+/// Spawns the hud
 pub fn spawn_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn((
@@ -252,6 +257,7 @@ pub fn spawn_hud(mut commands: Commands, asset_server: Res<AssetServer>) {
         });
 }
 
+/// Spawns the text in between rounds indicating that it's in between rounds and how to continue
 pub fn spawn_in_between_rounds_text(mut commands: Commands) {
     commands.spawn((
         // Create a TextBundle that has a Text with a list of sections.

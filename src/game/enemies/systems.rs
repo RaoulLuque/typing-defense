@@ -9,29 +9,31 @@ use bevy::window::PrimaryWindow;
 use rand::seq::SliceRandom;
 use rand::Rng;
 
-// Chance of spawning an enemy every super::resources::ENEMY_SPAWN_TIME seconds
+/// Chance of spawning an enemy every super::resources::ENEMY_SPAWN_TIME seconds
 pub const CHANCE_OF_SPAWNING_ENEMY: f64 = 1.0;
-// Base value which is divided by the enemy speed to get the animation speed - lower = faster
+/// Base value which is divided by the enemy speed to get the animation speed - lower = faster
 pub const BASE_ANIMATION_SPEED: f32 = 5.0;
-// Scale factor by which enemy sprites are scaled - higher = bigger
+/// Scale factor by which enemy sprites are scaled - higher = bigger
 pub const ENEMY_SPRITE_SCALE_FACTOR: f32 = 1.4;
 
-// Standard text color
+/// Standard text color
 pub const STANDARD_TEXT_COLOR: Color = Color::AZURE;
-// Text color while typing
+/// Text color while typing
 pub const TYPING_COLOR: Color = Color::ORANGE_RED;
-// Font size for text
+/// Font size for text
 pub const ENEMY_TEXT_FONT_SIZE: f32 = 60.0;
-// Standard enemy text height (height in pixels that the text is above enemies)
+/// Standard enemy text height (height in pixels that the text is above enemies)
 pub const TEXT_HEIGHT: f32 = 50.0;
-// Standard text z value (in order to be in front of decorations)
+/// Standard text z value (in order to be in front of decorations)
 pub const TEXT_Z_VALUE: f32 = 1.0;
 
+/// Asset that holds all the possible words for enemies
 #[derive(serde::Deserialize, Asset, TypePath)]
 pub struct Words {
     pub vec_of_words: Vec<String>,
 }
 
+/// Bundle used for generating enemies
 #[derive(Bundle)]
 pub struct EnemyBundle {
     pub sprite_sheet_bundle: SpriteSheetBundle,
@@ -45,6 +47,7 @@ pub struct EnemyBundle {
     pub name: Name,
 }
 
+/// System that spawns enemies over time according to the enemy spawn timer
 pub fn randomly_spawn_enemies_over_time(
     commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -145,6 +148,7 @@ pub fn randomly_spawn_enemies_over_time(
     }
 }
 
+/// Function that spawns enemies
 pub fn spawn_enemy(
     mut commands: Commands,
     spawn_point_transform: Transform,
@@ -238,7 +242,7 @@ pub fn generate_sprite_information_from_enemy_type(
     }
 }
 
-// Turns a string literal into a vector of text sections each containing one character from the string literal
+/// Turns a string literal into a vector of text sections each containing one character from the string literal
 pub fn turn_string_literal_into_vec_of_text_sections(
     string_literal: &str,
     color: Color,
@@ -258,10 +262,12 @@ pub fn turn_string_literal_into_vec_of_text_sections(
         .collect()
 }
 
+/// Ticks the enemy spawn timer
 pub fn tick_enemy_spawn_timer(mut enemy_spawn_timer: ResMut<EnemySpawnTimer>, time: Res<Time>) {
     enemy_spawn_timer.timer.tick(time.delta());
 }
 
+/// Animates enemies
 pub fn animate_enemies(
     time: Res<Time>,
     mut enemy_query: Query<(&mut WalkingAnimation, &mut TextureAtlas)>,

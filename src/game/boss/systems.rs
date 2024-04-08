@@ -150,12 +150,14 @@ pub fn spawn_boss(
     }
 }
 
+/// Despawns the boss once all the words are typed
 pub fn despawn_boss(mut commands: Commands, boss_query: Query<Entity, With<Boss>>) {
     if let Ok(boss_entity) = boss_query.get_single() {
         commands.entity(boss_entity).despawn_recursive();
     }
 }
 
+/// Despawns the boss on restart
 pub fn despawn_boss_on_restart(
     mut commands: Commands,
     boss_query: Query<Entity, With<Boss>>,

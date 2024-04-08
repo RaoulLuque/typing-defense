@@ -1,5 +1,6 @@
 use super::*;
 
+/// Animates the explosions
 pub fn animate_explosions(
     time: Res<Time>,
     mut commands: Commands,

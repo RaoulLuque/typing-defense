@@ -99,7 +99,7 @@ impl Plugin for MenuPlugin {
     }
 }
 
-// State used for the current menu screen
+/// State used for the current menu screen
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum MenuState {
     Main,
@@ -113,7 +113,7 @@ pub enum MenuState {
     NotInTheMenu,
 }
 
-// State of the settings menu
+/// State of the settings menu
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum SettingsMenuState {
     #[default]
@@ -121,7 +121,7 @@ pub enum SettingsMenuState {
     SettingsOpened,
 }
 
-// State tracking if the game has started
+/// State tracking if the game has started
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum GameStartedState {
     #[default]
