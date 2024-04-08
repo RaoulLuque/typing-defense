@@ -31,7 +31,7 @@ jobs:
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@nightly
       - name: Install Dependencies
-        run: sudo apt-get update; sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev; sudo apt-get install lld; sudo apt-get install mold clang
+        run: sudo apt-get update; sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev; sudo apt-get install libwayland-dev libxkbcommon-dev; sudo apt-get install lld; sudo apt-get install mold clang
       - name: Run cargo test
         run: cargo test
         
