@@ -174,7 +174,7 @@ fn key_to_letter(key: KeyCode) -> Option<String> {
         KeyCode::KeyX => Some("x".to_string()),
         KeyCode::KeyY => Some("z".to_string()),
         KeyCode::KeyZ => Some("y".to_string()),
-        KeyCode::Quote => Some("'".to_string()),
+        KeyCode::Backslash => Some("'".to_string()),
         _ => None,
     }
 }
