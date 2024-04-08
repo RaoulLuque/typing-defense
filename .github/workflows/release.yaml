@@ -126,7 +126,7 @@ jobs:
         with:
           toolchain: stable
       - name: Install Dependencies
-        run: sudo apt-get update; sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev; sudo apt-get install libwayland-dev libxkbcommon-dev
+        run: sudo apt-get update; sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev; sudo apt-get install libwayland-dev libxkbcommon-dev; sudo apt-get install libwayland0
       - name: Install trunk
         uses: jetli/trunk-action@v0.4.0
         with:
